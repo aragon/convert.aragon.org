@@ -5,8 +5,8 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { bigNum, usePostEmail } from 'lib/utils'
 import { breakpoint, GU } from 'lib/microsite-logic'
 import {
-  useConvertTokenToAnj,
   useEthBalance,
+  useBondingCurvePrice,
   useTokenBalance,
   useTokenDecimals,
 } from 'lib/web3-contracts'
@@ -49,6 +49,7 @@ function useConvertInputs(otherSymbol) {
   const [amountOther, setAmountOther] = useState(bigNum(0))
   const [editing, setEditing] = useState(null)
 
+  const { loading, price } = useBondingCurvePrice(amountOther)
   const anjDecimals = useTokenDecimals('ANJ')
   const otherDecimals = useTokenDecimals(otherSymbol)
 
@@ -201,7 +202,6 @@ function FormSection() {
   const [selectedOption, setSelectedOption] = useState(0)
   const tokenBalance = useTokenBalance(options[selectedOption])
   const ethBalance = useEthBalance()
-
   const {
     amountAnj,
     amountOther,
@@ -209,10 +209,7 @@ function FormSection() {
     bindOtherInput,
     inputValueAnj,
     inputValueOther,
-    rateSlippage,
   } = useConvertInputs(options[selectedOption])
-
-  const convertTokenToAnj = useConvertTokenToAnj(options[selectedOption])
   const postEmail = usePostEmail()
 
   const selectedTokenDecimals = useTokenDecimals(options[selectedOption])
@@ -238,9 +235,7 @@ function FormSection() {
         : CONVERTER_STATUSES.SIGNING
     )
     try {
-      const tx = await convertTokenToAnj(amountOther, amountAnj)
       converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
-      await tx.wait(1)
       converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
     } catch (err) {
       console.log(err)
