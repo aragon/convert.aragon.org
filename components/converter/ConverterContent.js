@@ -4,7 +4,6 @@ import { breakpoint } from 'lib/microsite-logic'
 import { useWeb3Connect } from 'lib/web3-connect'
 import Callout from './Callout'
 import Form from './Form'
-import Balance from './Balance'
 import Info from './Info'
 import Providers from './Providers'
 
@@ -16,7 +15,6 @@ function ConverterContent() {
     <Content>
       <div className="primary">{account ? <Form /> : <Providers />}</div>
       <div className="secondary">
-        <Balance />
         <Info />
         <Callout />
       </div>

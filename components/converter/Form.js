@@ -7,17 +7,10 @@ import { breakpoint, GU } from 'lib/microsite-logic'
 import {
   useConvertTokenToAnj,
   useEthBalance,
-  useJurorRegistryAnjBalance,
   useTokenBalance,
   useTokenDecimals,
 } from 'lib/web3-contracts'
-import {
-  UNISWAP_PRECISION,
-  formatUnits,
-  parseUnits,
-  useAnjRate,
-  useTokenReserve,
-} from 'lib/web3-utils'
+import { formatUnits, parseUnits } from 'lib/web3-utils'
 import { useConverterStatus, CONVERTER_STATUSES } from './converter-status'
 import ComboInput from './ComboInput'
 import Token from './Token'
@@ -26,10 +19,7 @@ import Anchor from '../Anchor'
 import question from './assets/question.svg'
 
 const large = css => breakpoint('large', css)
-const options = ['ANT', 'DAI', 'ETH', 'USDC']
-const ANJ_MIN_REQUIRED = bigNum(10)
-  .pow(18)
-  .mul(10000)
+const options = ['ANT', 'ANJ']
 
 // Filters and parse the input value of a token amount.
 // Returns a BN.js instance and the filtered value.
@@ -64,11 +54,6 @@ function useConvertInputs(otherSymbol) {
 
   // convertFromAnj is used as a toggle to execute a conversion to or from ANJ.
   const [convertFromAnj, setConvertFromAnj] = useState(false)
-  const anjRate = useAnjRate(
-    otherSymbol,
-    (convertFromAnj ? amountAnj : amountOther).toString(),
-    convertFromAnj
-  )
 
   // Reset the inputs anytime the selected token changes
   useEffect(() => {
@@ -83,49 +68,42 @@ function useConvertInputs(otherSymbol) {
     if (
       anjDecimals === -1 ||
       otherDecimals === -1 ||
-      anjRate.loading ||
       convertFromAnj ||
       editing === 'anj'
     ) {
       return
     }
-
+    // TODO: Get this from bonding curve (probably should introduce a hook)
     const amount = amountOther
-      .mul(bigNum(10).pow(anjDecimals - otherDecimals))
-      .mul(anjRate.rate)
-      .div(bigNum(10).pow(UNISWAP_PRECISION))
 
     setAmountAnj(amount)
     setInputValueAnj(formatUnits(amount, { digits: anjDecimals }))
-  }, [
-    amountOther,
-    anjDecimals,
-    anjRate,
-    convertFromAnj,
-    editing,
-    otherDecimals,
-  ])
+  }, [amountOther, anjDecimals, convertFromAnj, editing, otherDecimals])
 
   // Calculate the other amount from the ANJ amount
   useEffect(() => {
     if (
       anjDecimals === -1 ||
       otherDecimals === -1 ||
-      anjRate.loading ||
       !convertFromAnj ||
       editing === 'other'
     ) {
       return
     }
 
-    const amount = amountAnj
-      .div(bigNum(10).pow(anjDecimals - otherDecimals))
-      .mul(anjRate.rate)
-      .div(bigNum(10).pow(UNISWAP_PRECISION))
+    // TODO: Get this from bonding curve (probably should introduce a hook)
+    const amount = amountOther
 
     setAmountOther(amount)
     setInputValueOther(formatUnits(amount, { digits: otherDecimals }))
-  }, [amountAnj, anjDecimals, anjRate, convertFromAnj, editing, otherDecimals])
+  }, [
+    amountAnj,
+    amountOther,
+    anjDecimals,
+    convertFromAnj,
+    editing,
+    otherDecimals,
+  ])
 
   // Alternate the comma-separated format, based on the fields focus state.
   const setEditModeOther = useCallback(
@@ -210,23 +188,12 @@ function useConvertInputs(otherSymbol) {
     // The parsed amount
     amountOther,
     amountAnj,
-
     // Event handlers to bind the inputs
     bindOtherInput,
     bindAnjInput,
-
     // The value to be used for inputs
-    inputValueAnj:
-      anjRate.loading && !convertFromAnj && editing !== 'anj'
-        ? 'Loading…'
-        : inputValueAnj,
-
-    inputValueOther:
-      anjRate.loading && convertFromAnj && editing !== 'other'
-        ? 'Loading…'
-        : inputValueOther,
-
-    rateSlippage: anjRate.rateSlippage,
+    inputValueAnj,
+    inputValueOther,
   }
 }
 
@@ -234,7 +201,6 @@ function FormSection() {
   const [selectedOption, setSelectedOption] = useState(0)
   const tokenBalance = useTokenBalance(options[selectedOption])
   const ethBalance = useEthBalance()
-  const [anjReserve, loadingAnjReserve] = useTokenReserve('ANJ')
 
   const {
     amountAnj,
@@ -249,7 +215,6 @@ function FormSection() {
   const convertTokenToAnj = useConvertTokenToAnj(options[selectedOption])
   const postEmail = usePostEmail()
 
-  const balanceAnj = useJurorRegistryAnjBalance()
   const selectedTokenDecimals = useTokenDecimals(options[selectedOption])
 
   const converterStatus = useConverterStatus()
@@ -290,82 +255,13 @@ function FormSection() {
   const selectedTokenBalance =
     options[selectedOption] === 'ETH' ? ethBalance : tokenBalance
 
-  useEffect(() => {
-    if (balanceAnj && balanceAnj.gte(bigNum('10000'))) {
-      setPlaceholder('')
-    } else {
-      setPlaceholder('Min. 10,000 ANJ')
-    }
-  }, [balanceAnj])
-
-  const tokenBalanceError = useMemo(() => {
-    if (
-      amountOther &&
-      inputValueOther &&
-      balanceAnj &&
-      balanceAnj.lt(ANJ_MIN_REQUIRED) &&
-      amountAnj.lt(ANJ_MIN_REQUIRED)
-    ) {
-      return 'You need to activate at least 10,000 ANJ.'
-    }
-
-    if (
-      amountOther &&
-      amountOther.gte(0) &&
-      amountOther.gt(selectedTokenBalance) &&
-      !selectedTokenBalance.eq(-1)
-    ) {
-      return 'Amount is greater than balance held.'
-    }
-
-    return null
-  }, [
-    amountOther,
-    inputValueOther,
-    balanceAnj,
-    amountAnj,
-    selectedTokenBalance,
-  ])
-
   const disabled = Boolean(
     !inputValueOther.trim() ||
       !inputValueAnj.trim() ||
-      tokenBalanceError ||
       converterStatus.status !== CONVERTER_STATUSES.FORM ||
       !/[^@]+@[^@]+/.test(email) ||
       !acceptTerms
   )
-
-  const liquidityError = useMemo(() => {
-    // Reserves are still loading, so we cannot
-    // do any computation yet
-    if (loadingAnjReserve || !anjReserve || inputValueAnj.includes('Loading')) {
-      return false
-    }
-
-    return anjReserve.lt(amountAnj)
-      ? `There is not enough liquidity in the market at this time to purchase ${formatUnits(
-          amountAnj
-        )} ANJ. The maximum amount available for a purchase order at the current price is ${formatUnits(
-          anjReserve,
-          { truncateToDecimalPlace: 3 }
-        )} ANJ`
-      : ''
-  }, [amountAnj, anjReserve, loadingAnjReserve, inputValueAnj])
-
-  const slippageWarning = useMemo(() => {
-    const totalAmount = balanceAnj.add(amountAnj)
-
-    const slippageWarning =
-      totalAmount.gte(ANJ_MIN_REQUIRED) &&
-      totalAmount
-        .sub(
-          totalAmount.mul(rateSlippage).div(bigNum(10).pow(UNISWAP_PRECISION))
-        )
-        .lt(ANJ_MIN_REQUIRED)
-
-    return slippageWarning
-  }, [amountAnj, balanceAnj, rateSlippage])
 
   const handleSelect = useCallback(
     optionIndex => setSelectedOption(optionIndex),
@@ -393,22 +289,13 @@ function FormSection() {
           <Label>Amount of {options[selectedOption]} you want to convert</Label>
           <ComboInput
             inputValue={inputValueOther}
-            options={[
-              <Token symbol="ANT" />,
-              <Token symbol="DAI" />,
-              <Token symbol="ETH" />,
-              <Token symbol="USDC" />,
-            ]}
+            options={options.map(symbol => (
+              <Token symbol={symbol} />
+            ))}
             onSelect={handleSelect}
             selectedOption={selectedOption}
             {...bindOtherInput}
           />
-          <Info>
-            <span>Balance:{` ${formattedTokenBalance}`}</span>
-            {tokenBalanceError && (
-              <span className="error"> {tokenBalanceError} </span>
-            )}
-          </Info>
         </div>
         <div>
           <InputBox>
@@ -423,46 +310,6 @@ function FormSection() {
                 <Token symbol="ANJ" />
               </Adornment>
             </AdornmentBox>
-            <Info style={{ minHeight: '24px' }}>
-              {liquidityError && (
-                <span className="error">
-                  {liquidityError} <br />
-                </span>
-              )}
-              {amountOther.gt(0) && (
-                <>
-                  {slippageWarning ? (
-                    <span className="warning">
-                      The transaction may fail if the price of ANJ increases.
-                    </span>
-                  ) : (
-                    'This amount is an approximation.'
-                  )}
-                  <OverlayTrigger
-                    show="true"
-                    placement="top"
-                    delay={{ hide: 400 }}
-                    overlay={props => (
-                      <Tooltip {...props} show="true">
-                        As this transaction will use an external, decentralized
-                        exchange, we will not know the final exchange rate until
-                        your transaction is mined.{' '}
-                        {slippageWarning && (
-                          <p>
-                            If the price of ANJ increases before you transaction
-                            is mined, you will not reach the required 10,000 ANJ
-                            to successfully activate as a juror and the
-                            transaction will fail.
-                          </p>
-                        )}
-                      </Tooltip>
-                    )}
-                  >
-                    <span className="insight"> Why?</span>
-                  </OverlayTrigger>
-                </>
-              )}
-            </Info>
           </InputBox>
         </div>
         <OverlayTrigger

@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import { OverlayTrigger, Popover } from 'react-bootstrap'
 import { useWeb3Connect } from 'lib/web3-connect'
 import {
-  useJurorRegistryAnjBalance,
   useEthBalance,
   useTokenBalance,
   useTokenDecimals,
@@ -28,7 +27,6 @@ AccountModule.propTypes = {
 
 function ConnectedMode() {
   const { account, networkName, deactivate } = useWeb3Connect()
-  const balanceAnj = useJurorRegistryAnjBalance()
   const balanceEth = useEthBalance()
   const balanceAnt = useTokenBalance('ANT')
   const balanceDai = useTokenBalance('DAI')
@@ -83,14 +81,6 @@ function ConnectedMode() {
                 <div>
                   <p>{formatUnits(balanceUsdc, { digits: usdcDecimals })}</p>
                   <p>${usdcToUsd}</p>
-                </div>
-              </Row>
-              <Row>
-                <Token symbol="ANJ" />
-                <div>
-                  <p>
-                    {formatUnits(balanceAnj, { digits: anjDecimals }) || '0'}
-                  </p>
                 </div>
               </Row>
             </section>
