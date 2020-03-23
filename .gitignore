@@ -1,0 +1,27 @@
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/dist
+/artifacts
+
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# npm
+npm-debug.log*
+
+# Next
+.next/
+
+# Yarn
+.yarn/cache/
+.yarn/unplugged/
+yarn-debug.log*
+yarn-error.log*

@@ -1,0 +1,165 @@
+* {
+  scroll-behavior: smooth;
+}
+
+@font-face {
+  font-family: 'Calibre';
+  src: url('/fonts/Calibre-Regular.woff2') format('woff2'),
+    url('/fonts/Calibre-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  /* This is for bootstrap, which sets the font-weight of the titles to 500 */
+  font-family: 'Calibre';
+  src: url('/fonts/Calibre-Regular.woff2') format('woff2'),
+    url('/fonts/Calibre-Regular.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Calibre';
+  src: url('/fonts/Calibre-Medium.woff2') format('woff2'),
+    url('/fonts/Calibre-Medium.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Calibre';
+  src: url('/fonts/Calibre-Semibold.woff2') format('woff2'),
+    url('/fonts/Calibre-Semibold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'HKGrotesk';
+  src: url('/fonts/HKGrotesk-Bold.ttf') format('truetype');
+  font-weight: 800;
+}
+@font-face {
+  font-family: 'FontMono';
+  src: url('/fonts/BasierSquare-Regular.otf') format('opentype');
+}
+
+body {
+  font-family: 'Calibre', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  background: #1c1c1c;
+}
+
+a,
+a span,
+button,
+a:hover,
+a:active {
+  outline: none;
+  text-decoration: none;
+  transition: all 150ms ease-in-out;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Menu Icon */
+.hamburger {
+  padding: 0;
+  display: inline-block;
+  cursor: pointer;
+  transition-property: opacity, filter;
+  transition-duration: 0.15s;
+  transition-timing-function: linear;
+  font: inherit;
+  color: inherit;
+  text-transform: none;
+  background-color: transparent;
+  border: 0;
+  margin: 0;
+  overflow: visible;
+  outline: none !important;
+  height: 26px;
+}
+.hamburger:hover,
+.hamburger.is-active:hover,
+.hamburger:active,
+.hamburger:focus {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.hamburger.is-active .hamburger-inner,
+.hamburger.is-active .hamburger-inner::before,
+.hamburger.is-active .hamburger-inner::after {
+  background-color: #fff;
+}
+
+.hamburger-box {
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  position: relative;
+}
+
+.hamburger-inner {
+  display: block;
+  top: 50%;
+  margin-top: -2px;
+}
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+  width: 25px;
+  height: 2px;
+  background-color: #fff;
+  position: absolute;
+  transition-property: transform;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+.hamburger-inner::before,
+.hamburger-inner::after {
+  content: '';
+  display: block;
+}
+.hamburger-inner::before {
+  top: -8px;
+}
+.hamburger-inner::after {
+  bottom: -8px;
+}
+
+.hamburger-spin .hamburger-inner {
+  transition-duration: 0.22s;
+  transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+.hamburger-spin .hamburger-inner::before {
+  transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+}
+.hamburger-spin .hamburger-inner::after {
+  transition: bottom 0.1s 0.25s ease-in,
+    transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger-spin.is-active .hamburger-inner {
+  transform: rotate(225deg);
+  transition-delay: 0.12s;
+  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.hamburger-spin.is-active .hamburger-inner::before {
+  top: 0;
+  opacity: 0;
+  transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+}
+.hamburger-spin.is-active .hamburger-inner::after {
+  bottom: 0;
+  transform: rotate(-90deg);
+  transition: bottom 0.1s ease-out,
+    transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+}

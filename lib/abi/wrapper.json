@@ -1,0 +1,46 @@
+[
+  "event Bought(address from, address contributionToken, uint256 buyAmount, uint256 activatedAmount)",
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "_from", "type": "address" },
+      { "name": "_amount", "type": "uint256" },
+      { "name": "_token", "type": "address" },
+      { "name": "", "type": "bytes" }
+    ],
+    "name": "receiveApproval",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "_minTokens", "type": "uint256" },
+      { "name": "_deadline", "type": "uint256" },
+      { "name": "_activate", "type": "bool" }
+    ],
+    "name": "contributeEth",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "_amount", "type": "uint256" },
+      { "name": "_token", "type": "address" },
+      { "name": "_minTokens", "type": "uint256" },
+      { "name": "_minEth", "type": "uint256" },
+      { "name": "_deadline", "type": "uint256" },
+      { "name": "_activate", "type": "bool" }
+    ],
+    "name": "contributeExternalToken",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
