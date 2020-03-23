@@ -1,3 +1,0 @@
-[
-  "function balanceOf(address _juror) external view returns (uint256 active, uint256 available, uint256 locked, uint256 pendingDeactivation)"
-]
