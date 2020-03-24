@@ -4,8 +4,6 @@ import styled from 'styled-components'
 import { OverlayTrigger, Popover } from 'react-bootstrap'
 import { useWeb3Connect } from 'lib/web3-connect'
 import {
-  useJurorRegistryAnjBalance,
-  useEthBalance,
   useTokenBalance,
   useTokenDecimals,
 } from 'lib/web3-contracts'
@@ -28,19 +26,9 @@ AccountModule.propTypes = {
 
 function ConnectedMode() {
   const { account, networkName, deactivate } = useWeb3Connect()
-  const balanceAnj = useJurorRegistryAnjBalance()
-  const balanceEth = useEthBalance()
   const balanceAnt = useTokenBalance('ANT')
-  const balanceDai = useTokenBalance('DAI')
-  const balanceUsdc = useTokenBalance('USDC')
   const antDecimals = useTokenDecimals('ANT')
-  const anjDecimals = useTokenDecimals('ANJ')
-  const daiDecimals = useTokenDecimals('DAI')
-  const usdcDecimals = useTokenDecimals('USDC')
   const antToUsd = useTokenBalanceToUsd('ANT', antDecimals, balanceAnt)
-  const daiToUsd = useTokenBalanceToUsd('DAI', daiDecimals, balanceDai)
-  const ethToUsd = useTokenBalanceToUsd('ETH', 18, balanceEth)
-  const usdcToUsd = useTokenBalanceToUsd('USDC', usdcDecimals, balanceUsdc)
 
   const containerRef = useRef()
 
@@ -62,35 +50,6 @@ function ConnectedMode() {
                 <div>
                   <p>{formatUnits(balanceAnt, { digits: antDecimals })}</p>
                   <p>${antToUsd}</p>
-                </div>
-              </Row>
-              <Row>
-                <Token symbol="DAI" />
-                <div>
-                  <p>{formatUnits(balanceDai, { digits: daiDecimals })}</p>
-                  <p>${daiToUsd}</p>
-                </div>
-              </Row>
-              <Row>
-                <Token symbol="ETH" />
-                <div>
-                  <p>{formatUnits(balanceEth, { digits: 18 })}</p>
-                  <p>${ethToUsd}</p>
-                </div>
-              </Row>
-              <Row>
-                <Token symbol="USDC" />
-                <div>
-                  <p>{formatUnits(balanceUsdc, { digits: usdcDecimals })}</p>
-                  <p>${usdcToUsd}</p>
-                </div>
-              </Row>
-              <Row>
-                <Token symbol="ANJ" />
-                <div>
-                  <p>
-                    {formatUnits(balanceAnj, { digits: anjDecimals }) || '0'}
-                  </p>
                 </div>
               </Row>
             </section>

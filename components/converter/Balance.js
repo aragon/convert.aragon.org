@@ -1,16 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 import Token from './Token'
-import { useWeb3Connect } from 'lib/web3-connect'
-import { formatUnits } from 'lib/web3-utils'
-import {
-  useJurorRegistryAnjBalance,
-  useTokenDecimals,
-} from 'lib/web3-contracts'
+import { useTokenBalance, useTokenDecimals } from '../../lib/web3-contracts'
+import { formatUnits } from '../../lib/web3-utils'
 
 function Balance() {
-  const { account } = useWeb3Connect()
-  const anjBalance = useJurorRegistryAnjBalance()
+  const anjBalance = useTokenBalance('ANJ')
   const anjDecimals = useTokenDecimals('ANJ')
 
   return (
@@ -18,12 +13,13 @@ function Balance() {
       <p>Your account’s active balance</p>
       <h3>
         <span className="mono">
-          {(account &&
-            formatUnits(anjBalance, {
-              digits: anjDecimals,
-              truncateToDecimalPlace: 3,
-            })) ||
-            '0.00'}
+          {anjBalance.eq(-1)
+            ? '0'
+            : formatUnits(anjBalance, {
+                digits: anjDecimals,
+                replaceZeroBy: '0',
+                truncateToDecimalPlace: 2,
+              })}{' '}
         </span>{' '}
         <Token symbol="ANJ" />
       </h3>

@@ -1,0 +1,82 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_buyer",
+        "type": "address"
+      },
+      {
+        "name": "_batchId",
+        "type": "uint256"
+      },
+      {
+        "name": "_collateral",
+        "type": "address"
+      }
+    ],
+    "name": "claimBuyOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_seller",
+        "type": "address"
+      },
+      {
+        "name": "_batchId",
+        "type": "uint256"
+      },
+      {
+        "name": "_collateral",
+        "type": "address"
+      }
+    ],
+    "name": "claimSellOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_collateral",
+        "type": "address"
+      },
+      {
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "openBuyOrder",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_collateral",
+        "type": "address"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "openSellOrder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
