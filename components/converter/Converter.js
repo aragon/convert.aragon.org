@@ -15,6 +15,7 @@ import {
 const large = css => breakpoint('large', css)
 
 function Converter() {
+  return null
   return (
     <ConverterProvider>
       <OuterSection id="get-anj">
@@ -63,7 +64,7 @@ const ConverterSection = styled.div`
   width: 100%;
   max-width: 1180px;
   max-width: 95%;
-  min-height: calc(100vh - 65px);
+  // min-height: calc(100vh - 65px);
   p {
     font-weight: 400;
     font-size: 24px;
@@ -74,6 +75,8 @@ const ConverterSection = styled.div`
 `
 
 const OuterSection = styled.section`
+  max-height: 100vh;
+  overflow: hidden;
   height: auto;
   min-height: 670px;
   display: flex;

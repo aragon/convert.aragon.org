@@ -37,14 +37,16 @@
   src: url('/fonts/BasierSquare-Regular.otf') format('opentype');
 }
 
-body {
+body,
+html {
   font-family: 'Calibre', sans-serif;
   font-weight: 400;
   font-size: 16px;
   margin: 0;
   padding: 0;
-  -webkit-font-smoothing: antialiased;
-  scroll-behavior: smooth;
+  /* -webkit-font-smoothing: antialiased; */
+  /* scroll-behavior: smooth; */
+  overflow-y: hidden;
 }
 
 a,
@@ -52,9 +54,7 @@ a span,
 button,
 a:hover,
 a:active {
-  outline: none;
   text-decoration: none;
-  transition: all 150ms ease-in-out;
 }
 
 img {

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { OverlayTrigger, Popover } from 'react-bootstrap'
 import { useWeb3Connect } from 'lib/web3-connect'
 import {

@@ -26,10 +26,7 @@ export default class extends App {
           <title>Aragon Court</title>
         </Head>
         <Web3ConnectProvider>
-          <Navbar />
-          <div>
-            <Component {...pageProps} />
-          </div>
+          <Component {...pageProps} />
         </Web3ConnectProvider>
       </>
     )
