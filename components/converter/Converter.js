@@ -59,12 +59,11 @@ function ConverterIn() {
 
 const ConverterSection = styled.div`
   background: #ffffff;
-  box-shadow: 0px 5px 13px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   width: 100%;
   max-width: 1180px;
-  min-height: 642px;
   max-width: 95%;
+  min-height: calc(100vh - 65px);
   p {
     font-weight: 400;
     font-size: 24px;
@@ -75,13 +74,6 @@ const ConverterSection = styled.div`
 `
 
 const OuterSection = styled.section`
-  background: linear-gradient(
-    to top,
-    #fff 0%,
-    #fff 83.5%,
-    #1c1c1c 83.5%,
-    #1c1c1c 100%
-  ) !important;
   height: auto;
   min-height: 670px;
   display: flex;

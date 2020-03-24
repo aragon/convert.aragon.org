@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { breakpoint } from 'lib/microsite-logic'
-import MenuModal from './MenuModal'
 
 import logo from './assets/logo.svg'
 
@@ -22,9 +21,6 @@ function Navbar() {
             <a href="./#subscribe">Subscribe</a>
           </LinksBox>
         </Left>
-        <MenuModalBox>
-          <MenuModal />
-        </MenuModalBox>
       </CourtNavbar>
     </Container>
   )
@@ -50,7 +46,6 @@ const Container = styled.div`
   width: 100%;
   max-width: 1180px;
   height: 65px;
-  background: #1c1c1c;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -74,7 +74,6 @@ export default class extends Document {
           <meta property="og:image:height" content="300" />
 
           <meta name="description" content="Become a juror for Aragon Court" />
-          <style>{`html { background: #1c1c1c }`}</style>
         </Head>
         <body>
           <Main />
