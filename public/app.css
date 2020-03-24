@@ -1,7 +1,3 @@
-* {
-  scroll-behavior: smooth;
-}
-
 @font-face {
   font-family: 'Calibre';
   src: url('/fonts/Calibre-Regular.woff2') format('woff2'),
