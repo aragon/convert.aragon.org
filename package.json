@@ -12,7 +12,7 @@
     "deploy": "NODE_ENV=production SITE_ROOT=https://anj.aragon.org/ npm run build && echo 'anj.aragon.org' > dist/CNAME && gh-pages -d dist",
     "deploy:mainnet": "CHAIN_ID=1 npm run deploy",
     "deploy:rinkeby": "CHAIN_ID=4 npm run deploy",
-    "lint": "eslint ./src",
+    "lint": "eslint ./components && eslint ./lib && eslint ./pages",
     "serve": "serve dist -p 3000",
     "start": "next dev -p 8080",
     "start:mainnet": "CHAIN_ID=1 npm start",

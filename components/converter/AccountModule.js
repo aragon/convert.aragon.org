@@ -28,7 +28,6 @@ function ConnectedMode() {
   const { account, networkName, deactivate } = useWeb3Connect()
   const balanceAnt = useTokenBalance('ANT')
   const antDecimals = useTokenDecimals('ANT')
-  const anjDecimals = useTokenDecimals('ANJ')
   const antToUsd = useTokenBalanceToUsd('ANT', antDecimals, balanceAnt)
 
   const containerRef = useRef()
