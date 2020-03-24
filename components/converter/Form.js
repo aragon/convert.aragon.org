@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import * as Sentry from '@sentry/browser'
-import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { bigNum } from 'lib/utils'
 import { breakpoint, GU } from 'lib/microsite-logic'
 import {
@@ -15,7 +14,6 @@ import { formatUnits, parseUnits } from 'lib/web3-utils'
 import { useConverterStatus, CONVERTER_STATUSES } from './converter-status'
 import ComboInput from './ComboInput'
 import Token from './Token'
-import Anchor from '../Anchor'
 
 const large = css => breakpoint('large', css)
 const options = ['ANT', 'ANJ']
@@ -103,7 +101,6 @@ function useConvertInputs(otherSymbol, forwards) {
       return
     }
 
-    // TODO: Get this from bonding curve (probably should introduce a hook)
     const amount = amountOther
 
     setAmountOther(amount)
