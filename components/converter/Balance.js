@@ -5,7 +5,7 @@ import { useTokenBalance, useTokenDecimals } from '../../lib/web3-contracts'
 import { formatUnits } from '../../lib/web3-utils'
 
 function Balance() {
-  const balanceAnj = useTokenBalance('ANJ')
+  const anjBalance = useTokenBalance('ANJ')
   const anjDecimals = useTokenDecimals('ANJ')
 
   return (
@@ -13,9 +13,9 @@ function Balance() {
       <p>Your account’s active balance</p>
       <h3>
         <span className="mono">
-          {balanceAnj.eq(-1)
+          {anjBalance.eq(-1)
             ? '0'
-            : formatUnits(balanceAnj, {
+            : formatUnits(anjBalance, {
                 digits: anjDecimals,
                 replaceZeroBy: '0',
                 truncateToDecimalPlace: 2,
