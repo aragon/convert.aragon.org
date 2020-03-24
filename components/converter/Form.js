@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import * as Sentry from '@sentry/browser'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
-import { bigNum, usePostEmail } from 'lib/utils'
+import { bigNum } from 'lib/utils'
 import { breakpoint, GU } from 'lib/microsite-logic'
 import {
-  useEthBalance,
   useBondingCurvePrice,
+  useClaimOrder,
+  useOpenOrder,
   useTokenBalance,
   useTokenDecimals,
 } from 'lib/web3-contracts'
@@ -15,8 +16,6 @@ import { useConverterStatus, CONVERTER_STATUSES } from './converter-status'
 import ComboInput from './ComboInput'
 import Token from './Token'
 import Anchor from '../Anchor'
-
-import question from './assets/question.svg'
 
 const large = css => breakpoint('large', css)
 const options = ['ANT', 'ANJ']
@@ -42,14 +41,17 @@ function parseInputValue(inputValue, decimals) {
 
 // Convert the two input values as the user types.
 // The token which it is converted from is referred to as “other”.
-function useConvertInputs(otherSymbol) {
+function useConvertInputs(otherSymbol, forwards) {
   const [inputValueAnj, setInputValueAnj] = useState('')
   const [inputValueOther, setInputValueOther] = useState('')
   const [amountAnj, setAmountAnj] = useState(bigNum(0))
   const [amountOther, setAmountOther] = useState(bigNum(0))
   const [editing, setEditing] = useState(null)
 
-  const { loading, price } = useBondingCurvePrice(amountOther)
+  const {
+    loading: bondingPriceLoading,
+    price: bondingCurvePrice,
+  } = useBondingCurvePrice(amountOther, forwards)
   const anjDecimals = useTokenDecimals('ANJ')
   const otherDecimals = useTokenDecimals(otherSymbol)
 
@@ -70,16 +72,25 @@ function useConvertInputs(otherSymbol) {
       anjDecimals === -1 ||
       otherDecimals === -1 ||
       convertFromAnj ||
+      bondingPriceLoading ||
       editing === 'anj'
     ) {
       return
     }
-    // TODO: Get this from bonding curve (probably should introduce a hook)
-    const amount = amountOther
+
+    const amount = bondingCurvePrice
 
     setAmountAnj(amount)
     setInputValueAnj(formatUnits(amount, { digits: anjDecimals }))
-  }, [amountOther, anjDecimals, convertFromAnj, editing, otherDecimals])
+  }, [
+    amountOther,
+    anjDecimals,
+    bondingCurvePrice,
+    bondingPriceLoading,
+    convertFromAnj,
+    editing,
+    otherDecimals,
+  ])
 
   // Calculate the other amount from the ANJ amount
   useEffect(() => {
@@ -193,7 +204,10 @@ function useConvertInputs(otherSymbol) {
     bindOtherInput,
     bindAnjInput,
     // The value to be used for inputs
-    inputValueAnj,
+    inputValueAnj:
+      bondingPriceLoading && !convertFromAnj && editing !== 'anj'
+        ? 'Loading...'
+        : inputValueAnj,
     inputValueOther,
   }
 }
@@ -201,32 +215,24 @@ function useConvertInputs(otherSymbol) {
 function FormSection() {
   const [selectedOption, setSelectedOption] = useState(0)
   const tokenBalance = useTokenBalance(options[selectedOption])
-  const ethBalance = useEthBalance()
+  const openOrder = useOpenOrder()
+  const claimOrder = useClaimOrder()
+  const selectedTokenDecimals = useTokenDecimals(options[selectedOption])
+
+  const converterStatus = useConverterStatus()
+
+  const forwards = options[selectedOption] === 'ANT'
+
   const {
-    amountAnj,
     amountOther,
     bindAnjInput,
     bindOtherInput,
     inputValueAnj,
     inputValueOther,
-  } = useConvertInputs(options[selectedOption])
-  const postEmail = usePostEmail()
-
-  const selectedTokenDecimals = useTokenDecimals(options[selectedOption])
-
-  const converterStatus = useConverterStatus()
-  const [email, setEmail] = useState('')
-  const [acceptTerms, setAcceptTerms] = useState(false)
+  } = useConvertInputs(options[selectedOption], forwards)
 
   const handleSubmit = async event => {
     event.preventDefault()
-
-    try {
-      await postEmail(email)
-    } catch (err) {
-      converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
-      return
-    }
 
     const selectedToken = options[selectedOption]
     converterStatus.setStatus(
@@ -234,11 +240,15 @@ function FormSection() {
         ? CONVERTER_STATUSES.SIGNING_ERC
         : CONVERTER_STATUSES.SIGNING
     )
+
     try {
+      const tx = await openOrder(amountOther, forwards)
       converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
+      await tx.wait()
+      const finalTx = await claimOrder(tx.hash, forwards)
+      await finalTx.wait()
       converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
     } catch (err) {
-      console.log(err)
       if (process.env.NODE_ENV === 'production') {
         Sentry.captureException(err)
       }
@@ -246,16 +256,24 @@ function FormSection() {
     }
   }
 
-  const [placeholder, setPlaceholder] = useState('')
-  const selectedTokenBalance =
-    options[selectedOption] === 'ETH' ? ethBalance : tokenBalance
+  const tokenBalanceError = useMemo(() => {
+    if (
+      amountOther &&
+      amountOther.gte(0) &&
+      amountOther.gt(tokenBalance) &&
+      !tokenBalance.eq(-1)
+    ) {
+      return 'Amount is greater than balance held.'
+    }
+
+    return null
+  }, [amountOther, tokenBalance])
 
   const disabled = Boolean(
     !inputValueOther.trim() ||
       !inputValueAnj.trim() ||
-      converterStatus.status !== CONVERTER_STATUSES.FORM ||
-      !/[^@]+@[^@]+/.test(email) ||
-      !acceptTerms
+      tokenBalanceError ||
+      converterStatus.status !== CONVERTER_STATUSES.FORM
   )
 
   const handleSelect = useCallback(
@@ -263,15 +281,12 @@ function FormSection() {
     []
   )
 
-  const formattedTokenBalance = selectedTokenBalance.eq(-1)
+  const formattedTokenBalance = tokenBalance.eq(-1)
     ? 'Fetching…'
-    : `${formatUnits(
-        options[selectedOption] === 'ETH' ? ethBalance : tokenBalance,
-        {
-          digits: selectedTokenDecimals,
-          replaceZeroBy: '0',
-        }
-      )} ${options[selectedOption]}.`
+    : `${formatUnits(tokenBalance, {
+        digits: selectedTokenDecimals,
+        replaceZeroBy: '0',
+      })} ${options[selectedOption]}.`
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -291,64 +306,28 @@ function FormSection() {
             selectedOption={selectedOption}
             {...bindOtherInput}
           />
+          <Info>
+            <span>Balance:{` ${formattedTokenBalance}`}</span>
+            {tokenBalanceError && (
+              <span className="error"> {tokenBalanceError} </span>
+            )}
+          </Info>
         </div>
         <div>
           <InputBox>
-            <Label>Amount of ANJ you will receive and activate</Label>
+            <Label>Amount of {forwards ? 'ANJ' : 'ANT'} you will receive</Label>
             <AdornmentBox>
-              <Input
-                value={inputValueAnj}
-                placeholder={placeholder}
-                {...bindAnjInput}
-              />
+              <Input value={inputValueAnj} {...bindAnjInput} />
               <Adornment>
-                <Token symbol="ANJ" />
+                <Token symbol={forwards ? 'ANJ' : 'ANT'} />
               </Adornment>
             </AdornmentBox>
           </InputBox>
         </div>
-        <OverlayTrigger
-          placement="right"
-          delay={{ hide: 400 }}
-          overlay={props => (
-            <Tooltip {...props} show="true">
-              By entering your email address, we will notify you directly about
-              any necessary actions you'll need to take as a juror in upcoming
-              court cases. Since there are financial penalties for not
-              participating in cases you are drafted in, we would like all
-              jurors to sign up for court notifications via email.
-            </Tooltip>
-          )}
-        >
-          <Label>
-            Notify me about actions I need to take as a juror
-            <img src={question} alt="" />
-          </Label>
-        </OverlayTrigger>
-        <Input type="email" onChange={event => setEmail(event.target.value)} />
       </div>
 
-      <Conditions>
-        <label>
-          <input
-            type="checkbox"
-            onChange={() => setAcceptTerms(acceptTerms => !acceptTerms)}
-            checked={acceptTerms}
-          />
-          By clicking on “Become a juror”, you are accepting the{' '}
-          <Anchor href="https://anj.aragon.org/legal/terms-general.pdf">
-            court terms
-          </Anchor>{' '}
-          and the{' '}
-          <Anchor href="https://aragon.one/email-collection.md">
-            email collection policy
-          </Anchor>
-          .
-        </label>
-      </Conditions>
-
       <Button type="submit" disabled={disabled}>
-        Become a Juror
+        Obtain {forwards ? 'ANJ' : 'ANT'}
       </Button>
     </Form>
   )
@@ -360,23 +339,8 @@ const Form = styled.form`
   justify-content: space-between;
   flex-direction: column;
   margin-top: 130px;
+  width: 100%;
   ${large('padding-right: 30px; margin-top: 0;')};
-`
-
-const Conditions = styled.p`
-  margin: 24px 0;
-
-  label {
-    display: block;
-    font-size: 16px;
-    line-height: 1.3;
-    margin-bottom: 0;
-  }
-
-  input {
-    margin-right: 8px;
-    vertical-align: text-top;
-  }
 `
 
 const Label = styled.label`

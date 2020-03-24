@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { breakpoint } from 'lib/microsite-logic'
 import { useWeb3Connect } from 'lib/web3-connect'
+import Balance from './Balance'
 import Callout from './Callout'
 import Form from './Form'
 import Info from './Info'
@@ -15,8 +16,8 @@ function ConverterContent() {
     <Content>
       <div className="primary">{account ? <Form /> : <Providers />}</div>
       <div className="secondary">
+        <Balance />
         <Info />
-        <Callout />
       </div>
       <div className="primary-mobile">{account ? <Form /> : <Providers />}</div>
     </Content>
@@ -41,6 +42,7 @@ const Content = styled.div`
   }
   .primary-mobile {
     display: inherit;
+    width: 100%;
     ${large('display: none;')};
   }
   .secondary {

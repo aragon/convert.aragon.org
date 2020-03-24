@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import { breakpoint } from 'lib/microsite-logic'
 import AccountModule from './AccountModule'
+import Token from './Token'
+import { breakpoint } from 'lib/microsite-logic'
 
 const large = css => breakpoint('large', css)
 const medium = css => breakpoint('medium', css)
@@ -9,6 +10,11 @@ const medium = css => breakpoint('medium', css)
 const HeaderSection = () => {
   return (
     <Header>
+      <h1>
+        Convert{'  '}
+        <Token symbol="ANT" badge />
+        to <Token symbol="ANJ" badge />
+      </h1>
       <AccountModule />
     </Header>
   )
