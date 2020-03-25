@@ -1,21 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import 'styled-components/macro'
 import styled from 'styled-components'
-import * as Sentry from '@sentry/browser'
-import { bigNum } from 'lib/utils'
-import { breakpoint, GU } from 'lib/microsite-logic'
+import AccountModule from 'components/converter/AccountModule'
+import Converter from 'components/converter/Converter'
+import {
+  useConverterStatus,
+  CONVERTER_STATUSES,
+} from 'components/converter/converter-status'
+import Navbar from 'components/SplitScreen/Navbar'
+import SplitScreen from 'components/SplitScreen/SplitScreen'
+import Logo from 'components/Logo/Logo'
+import AmountInput from 'components/AmountInput/AmountInput'
 import {
   useBondingCurvePrice,
-  useClaimOrder,
-  useOpenOrder,
-  useTokenBalance,
   useTokenDecimals,
+  useOpenOrder,
+  useClaimOrder,
 } from 'lib/web3-contracts'
 import { formatUnits, parseUnits } from 'lib/web3-utils'
-import { useConverterStatus, CONVERTER_STATUSES } from './converter-status'
-import ComboInput from './ComboInput'
-import Token from './Token'
+import { useWeb3Connect } from 'lib/web3-connect'
+import { bigNum } from 'lib/utils'
 
-const large = css => breakpoint('large', css)
 const options = ['ANT', 'ANJ']
 
 // Filters and parse the input value of a token amount.
@@ -37,15 +42,12 @@ function parseInputValue(inputValue, decimals) {
   return { amount, inputValue }
 }
 
-// Convert the two input values as the user types.
-// The token which it is converted from is referred to as “other”.
-function useConvertInputs(otherSymbol, forwards) {
+function useConvertInputs(otherSymbol, forwards = true) {
   const [inputValueAnj, setInputValueAnj] = useState('')
   const [inputValueOther, setInputValueOther] = useState('')
   const [amountAnj, setAmountAnj] = useState(bigNum(0))
   const [amountOther, setAmountOther] = useState(bigNum(0))
   const [editing, setEditing] = useState(null)
-
   const {
     loading: bondingPriceLoading,
     price: bondingCurvePrice,
@@ -79,7 +81,9 @@ function useConvertInputs(otherSymbol, forwards) {
     const amount = bondingCurvePrice
 
     setAmountAnj(amount)
-    setInputValueAnj(formatUnits(amount, { digits: anjDecimals }))
+    setInputValueAnj(
+      formatUnits(amount, { digits: anjDecimals, truncateToDecimalPlace: 8 })
+    )
   }, [
     amountOther,
     anjDecimals,
@@ -208,30 +212,29 @@ function useConvertInputs(otherSymbol, forwards) {
     inputValueOther,
   }
 }
-
-function FormSection() {
+export default () => {
   const [selectedOption, setSelectedOption] = useState(0)
-  const tokenBalance = useTokenBalance(options[selectedOption])
+  const [inverted, setInverted] = useState(false)
+  const forwards = useMemo(() => !inverted, [inverted])
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
-  const selectedTokenDecimals = useTokenDecimals(options[selectedOption])
-
-  const converterStatus = useConverterStatus()
-
-  const forwards = options[selectedOption] === 'ANT'
-
   const {
     amountOther,
-    bindAnjInput,
     bindOtherInput,
     inputValueAnj,
     inputValueOther,
   } = useConvertInputs(options[selectedOption], forwards)
 
-  const handleSubmit = async event => {
-    event.preventDefault()
-    converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
+  const { account } = useWeb3Connect()
+  const inputDisabled = useMemo(() => !Boolean(account), [account])
 
+  const converterStatus = useConverterStatus()
+  const handleInvert = useCallback(() => {
+    setInverted(v => !v)
+    setSelectedOption(option => (option + 1) % 2)
+  }, [])
+  const handleConvert = useCallback(async () => {
+    converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
     try {
       const tx = await openOrder(amountOther, forwards)
       converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
@@ -243,156 +246,100 @@ function FormSection() {
       if (process.env.NODE_ENV === 'production') {
         Sentry.captureException(err)
       }
+      console.log(err)
       converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
     }
-  }
-
-  const tokenBalanceError = useMemo(() => {
-    if (
-      amountOther &&
-      amountOther.gte(0) &&
-      amountOther.gt(tokenBalance) &&
-      !tokenBalance.eq(-1)
-    ) {
-      return 'Amount is greater than balance held.'
-    }
-
-    return null
-  }, [amountOther, tokenBalance])
-
-  const disabled = Boolean(
-    !inputValueOther.trim() ||
-      !inputValueAnj.trim() ||
-      tokenBalanceError ||
-      converterStatus.status !== CONVERTER_STATUSES.FORM
-  )
-
-  const handleSelect = useCallback(
-    optionIndex => setSelectedOption(optionIndex),
-    []
-  )
-
-  const formattedTokenBalance = tokenBalance.eq(-1)
-    ? 'Fetching…'
-    : `${formatUnits(tokenBalance, {
-        digits: selectedTokenDecimals,
-        replaceZeroBy: '0',
-      })} ${options[selectedOption]}.`
+  }, [amountOther, forwards])
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <div
+      css={`
+        position: relative;
+        height: 100vh;
+      `}
+    >
+      <Navbar inverted={inverted} />
       <div
         css={`
-          margin-bottom: ${3 * GU}px;
+          position: absolute;
+          z-index: 2;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
         `}
       >
-        <div>
-          <Label>Amount of {options[selectedOption]} you want to convert</Label>
-          <ComboInput
-            inputValue={inputValueOther}
-            options={options.map(symbol => (
-              <Token symbol={symbol} />
-            ))}
-            onSelect={handleSelect}
-            selectedOption={selectedOption}
-            {...bindOtherInput}
-          />
-          <Info>
-            <span>Balance:{` ${formattedTokenBalance}`}</span>
-            {tokenBalanceError && (
-              <span className="error"> {tokenBalanceError} </span>
-            )}
-          </Info>
-        </div>
-        <div>
-          <InputBox>
-            <Label>Amount of {forwards ? 'ANJ' : 'ANT'} you will receive</Label>
-            <AdornmentBox>
-              <Input value={inputValueAnj} {...bindAnjInput} />
-              <Adornment>
-                <Token symbol={forwards ? 'ANJ' : 'ANT'} />
-              </Adornment>
-            </AdornmentBox>
-          </InputBox>
-        </div>
+        <SplitScreen
+          inverted={inverted}
+          onConvert={handleConvert}
+          onInvert={handleInvert}
+          primary={
+            inverted ? (
+              <AmountInput
+                symbol="ANJ"
+                color={false}
+                value={inputValueOther}
+                disabled={inputDisabled}
+                {...bindOtherInput}
+              />
+            ) : (
+              <AmountInput
+                symbol="ANT"
+                color={false}
+                value={inputValueOther}
+                disabled={inputDisabled}
+                {...bindOtherInput}
+              />
+            )
+          }
+          secondary={
+            converterStatus.status !== CONVERTER_STATUSES.FORM ? (
+              <Converter />
+            ) : inverted ? (
+              <AmountInput
+                symbol="ANT"
+                color={true}
+                value={inputValueAnj}
+                onChange={() => null}
+              />
+            ) : (
+              <AmountInput
+                symbol="ANJ"
+                color={true}
+                value={inputValueAnj}
+                onChange={() => null}
+              />
+            )
+          }
+        />
       </div>
-
-      <Button type="submit" disabled={disabled}>
-        Obtain {forwards ? 'ANJ' : 'ANT'}
-      </Button>
-    </Form>
+      <div
+        css={`
+          position: absolute;
+          z-index: 4;
+          left: 0;
+          right: 0;
+          bottom: 52px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        `}
+      >
+        <Button
+          onClick={handleConvert}
+          css={`
+            width: 90%;
+            display: ${converterStatus.status !== CONVERTER_STATUSES.FORM
+              ? 'none'
+              : 'block'};
+          `}
+        >
+          Convert
+        </Button>
+      </div>
+    </div>
   )
 }
-
-const Form = styled.form`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-direction: column;
-  margin-top: 130px;
-  width: 100%;
-  ${large('padding-right: 30px; margin-top: 0;')};
-`
-
-const Label = styled.label`
-  font-size: 24px;
-  line-height: 38px;
-  color: #8a96a0;
-  margin-bottom: 6px;
-
-  span {
-    color: #08bee5;
-  }
-  img {
-    padding-left: 10px;
-  }
-`
-const Info = styled.div`
-  margin-top: 3px;
-  margin-bottom: 12px;
-  color: #212b36;
-  .error {
-    color: #ff6969;
-  }
-  .warning {
-    color: #f5a623;
-  }
-  .insight {
-    color: #516dff;
-  }
-`
-
-const InputBox = styled.div`
-  margin-bottom: 20px;
-`
-const Input = styled.input`
-  width: 100%;
-  height: 50px;
-  padding: 6px 12px 0;
-  background: #ffffff;
-  border: 1px solid #dde4e9;
-  color: #212b36;
-  border-radius: 4px;
-  appearance: none;
-  font-size: 20px;
-  font-weight: 400;
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-  }
-  -moz-appearance: textfield;
-  &:focus {
-    outline: none;
-    border-color: #08bee5;
-  }
-  &::placeholder {
-    color: #8fa4b5;
-    opacity: 1;
-  }
-  &:invalid {
-    box-shadow: none;
-  }
-`
 
 const Button = styled.button`
   background: linear-gradient(189.76deg, #ffb36d 6.08%, #ff8888 93.18%);
@@ -401,7 +348,10 @@ const Button = styled.button`
   border-radius: 6px;
   color: white;
   width: 100%;
+  min-width: 330px;
+  max-width: 470px;
   height: 52px;
+  font-family: 'Manrope';
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;
@@ -411,25 +361,3 @@ const Button = styled.button`
     cursor: inherit;
   }
 `
-
-const Adornment = styled.div`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  height: 50px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const AdornmentBox = styled.div`
-  display: inline-flex;
-  position: relative;
-  width: 100%;
-  input {
-    padding-right: 39px;
-  }
-`
-
-export default FormSection

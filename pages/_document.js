@@ -1,6 +1,6 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
-import { ServerStyleSheet } from 'styled-components'
+import { ServerStyleSheet, createGlobalStyle } from 'styled-components'
 
 const SITE_DESCRIPTION = 'Bonding Curve Converter'
 const SITE_TITLE = 'Bonding Curve Converter'
@@ -21,6 +21,16 @@ const ANALYTICS_CODE = `
     g.src=u+'matomo.js';
     s.parentNode.insertBefore(g,s);
   })();
+`
+
+const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: 'Manrope';
+    src: url('../fonts/Manrope-Regular.ttf');
+    src: url('../fonts/Manrope-Medium.ttf');
+    src: url('../fonts/Manrope-Bold.ttf');
+    src: url('../fonts/Manrope-Light.ttf');
+  }
 `
 
 function AnalyticsScript() {
@@ -93,6 +103,7 @@ export default class extends Document {
           <style>{`html { background: #1c1c1c }`}</style>
         </Head>
         <body>
+          <GlobalStyle />
           <Main />
           <NextScript />
           <AnalyticsScript />
