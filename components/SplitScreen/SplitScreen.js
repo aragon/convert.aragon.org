@@ -1,46 +1,89 @@
-import React, { useEffect, useRef } from 'react'
-import styled from 'styled-components'
 import 'styled-components/macro'
-import { useTransition, animated } from 'react-spring'
-import { SPRING_SMOOTH } from 'lib/animation-utils'
+import React, { useEffect, useMemo, useRef } from 'react'
+import styled from 'styled-components'
+import { useSpring, useTransition, animated } from 'react-spring'
+import { useAnimateWhenMounted, SPRING_SMOOTH } from 'lib/animation-utils'
+import { ABSOLUTE_FULL } from 'lib/css-utils'
 import InvertButton from './InvertButton'
 
 import backgroundAnt from './converter-background-ant.svg'
 import backgroundAnj from './converter-background-anj.svg'
 
-function SplitScreen({
-  converting,
-  inverted,
-  onConvert,
-  onInvert,
-  primary,
-  secondary,
-}) {
+const REVEAL_SCALE_FROM = 0.9
+
+function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   const invertButtonRef = useRef(null)
+  const animate = useAnimateWhenMounted()
+  const opened = Boolean(reveal)
+  const status = useMemo(() => ({ inverted, opened }), [inverted, opened])
+  const statusTransitionKey = status => Object.values(status).join('')
 
-  // Don’t animate initially
-  const animate = useRef(false)
-  useEffect(() => {
-    animate.current = true
-  }, [])
-
-  const primaryTransitions = useTransition(inverted, null, {
+  const primaryTransitions = useTransition(status, statusTransitionKey, {
     config: SPRING_SMOOTH,
-    immediate: !animate.current,
+    immediate: !animate,
     from: {
-      transform: 'translate3d(0, -100%, 0)',
+      transform: `
+        translate3d(
+          0,
+          calc(-100%  - ${InvertButton.HEIGHT / 2}px),
+          0
+        )
+      `,
     },
     enter: {
-      transform: 'translate3d(0, 0%, 0)',
+      transform: `
+        translate3d(
+          0,
+          calc(0% - 0px),
+          0
+        )
+      `,
     },
     leave: {
-      transform: 'translate3d(0, -100%, 0)',
+      transform: `
+        translate3d(
+          0,
+          calc(-100%  - ${InvertButton.HEIGHT / 2}px),
+          0
+        )
+      `,
     },
   })
 
-  const secondaryTransitions = useTransition(inverted, null, {
+  const revealTransition = useTransition(reveal, null, {
     config: SPRING_SMOOTH,
-    immediate: !animate.current,
+    from: {
+      transform: `scale3d(${REVEAL_SCALE_FROM}, ${REVEAL_SCALE_FROM}, 1)`,
+      overlayOpacity: 1,
+    },
+    enter: {
+      transform: 'scale3d(1, 1, 1)',
+      overlayOpacity: 0,
+    },
+    leave: {
+      transform: `scale3d(${REVEAL_SCALE_FROM}, ${REVEAL_SCALE_FROM}, 1)`,
+      overlayOpacity: 1,
+    },
+  })
+
+  const buttonTransition = useSpring({
+    config: SPRING_SMOOTH,
+    to: {
+      transform: `
+        translate3d(
+          0,
+          calc(
+            ${Number(opened) * -50}%
+            - ${(InvertButton.HEIGHT / 2) * Number(opened)}px
+          ),
+          0
+        )`,
+    },
+  })
+
+  const secondaryTransitions = useTransition(status, statusTransitionKey, {
+    config: SPRING_SMOOTH,
+    immediate: !animate,
     from: {
       transform: 'translate3d(0, 100%, 0)',
     },
@@ -61,94 +104,129 @@ function SplitScreen({
   return (
     <div
       css={`
-        position: absolute;
-        z-index: 2;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
+        ${ABSOLUTE_FULL};
+        background: #f9fafc;
       `}
     >
-      <div
-        css={`
-          position: relative;
-          width: 100%;
-          height: 50%;
-        `}
-      >
-        {primaryTransitions.map(
-          ({ item: inverted, key, props: { transform } }) => {
-            const image = inverted ? backgroundAnj : backgroundAnt
-            return (
+      {revealTransition.map(
+        ({ item, key, props }) =>
+          item && (
+            <div
+              css={`
+                ${ABSOLUTE_FULL};
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+              `}
+            >
               <animated.div
-                key={key}
-                style={{ transform }}
+                style={{
+                  display: props.overlayOpacity.interpolate(v =>
+                    v === 0 ? 'none' : 'block'
+                  ),
+                  opacity: props.overlayOpacity,
+                }}
                 css={`
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                  bottom: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  width: 100%;
-                  height: 100%;
-                  background: #000 50% 50% / cover no-repeat url(${image});
+                  ${ABSOLUTE_FULL};
+                  z-index: 2;
+                  background: rgba(0, 0, 0, 0.25);
+                `}
+              />
+              <animated.div
+                style={{ transform: props.transform }}
+                css={`
+                  ${ABSOLUTE_FULL};
+                  z-index: 1;
                 `}
               >
-                {primary}
+                {item}
               </animated.div>
-            )
-          }
-        )}
-      </div>
+            </div>
+          )
+      )}
       <div
         css={`
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 3;
+          ${ABSOLUTE_FULL};
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          flex-direction: column;
+          pointer-events: ${reveal ? 'none' : 'auto'};
         `}
       >
-        <InvertButton ref={invertButtonRef} onClick={onInvert} />
-      </div>
-      <div
-        css={`
-          position: relative;
-          width: 100%;
-          height: 50%;
-        `}
-      >
-        {secondaryTransitions.map(
-          ({ item: inverted, key, props: { transform } }) => {
-            return (
-              <animated.div
-                key={key}
-                style={{ transform }}
-                css={`
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                  bottom: 0;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  width: 100%;
-                  height: 100%;
-                  background: #fff;
-                `}
-              >
-                {secondary}
-              </animated.div>
-            )
-          }
-        )}
+        <div
+          css={`
+            position: relative;
+            width: 100%;
+            height: 50%;
+          `}
+        >
+          {primaryTransitions.map(
+            ({ item: { inverted, opened }, key, props: { transform } }) => {
+              const image = inverted ? backgroundAnj : backgroundAnt
+              return opened ? null : (
+                <animated.div
+                  key={key}
+                  style={{ transform }}
+                  css={`
+                    ${ABSOLUTE_FULL};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    height: 100%;
+                    background: #000 50% 50% / cover no-repeat url(${image});
+                  `}
+                >
+                  {primary}
+                </animated.div>
+              )
+            }
+          )}
+        </div>
+        <animated.div
+          css={`
+            ${ABSOLUTE_FULL};
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            z-index: 3;
+          `}
+          style={buttonTransition}
+        >
+          <InvertButton ref={invertButtonRef} onClick={onInvert} />
+        </animated.div>
+        <div
+          css={`
+            position: relative;
+            width: 100%;
+            height: 50%;
+          `}
+        >
+          {secondaryTransitions.map(
+            ({ item: { inverted, opened }, key, props: { transform } }) => {
+              return opened ? null : (
+                <animated.div
+                  key={key}
+                  style={{ transform }}
+                  css={`
+                    ${ABSOLUTE_FULL};
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    height: 100%;
+                    background: #fff;
+                  `}
+                >
+                  {secondary}
+                </animated.div>
+              )
+            }
+          )}
+        </div>
       </div>
     </div>
   )

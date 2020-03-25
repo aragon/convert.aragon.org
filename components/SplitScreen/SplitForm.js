@@ -207,7 +207,7 @@ function useConvertInputs(otherSymbol, forwards = true) {
     // The value to be used for inputs
     inputValueAnj:
       bondingPriceLoading && !convertFromAnj && editing !== 'anj'
-        ? 'Loading...'
+        ? 'Loading…'
         : inputValueAnj,
     inputValueOther,
   }
@@ -233,23 +233,26 @@ export default () => {
     setInverted(v => !v)
     setSelectedOption(option => (option + 1) % 2)
   }, [])
+
   const handleConvert = useCallback(async () => {
     converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
-    try {
-      const tx = await openOrder(amountOther, forwards)
-      converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
-      await tx.wait()
-      const finalTx = await claimOrder(tx.hash, forwards)
-      await finalTx.wait()
-      converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        Sentry.captureException(err)
-      }
-      console.log(err)
-      converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
-    }
-  }, [amountOther, forwards])
+
+    // try {
+    //   const tx = await openOrder(amountOther, forwards)
+    //   converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
+    //   await tx.wait()
+    //   const finalTx = await claimOrder(tx.hash, forwards)
+    //   await finalTx.wait()
+    //   converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
+    // } catch (err) {
+    //   if (process.env.NODE_ENV === 'production') {
+    //     Sentry.captureException(err)
+    //   }
+    //   console.log(err)
+    //   converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
+    // }
+    // }, [amountOther, forwards, converterStatus])
+  }, [converterStatus])
 
   return (
     <div
@@ -259,43 +262,39 @@ export default () => {
       `}
     >
       <Navbar inverted={inverted} />
-      <div
-        css={`
-          position: absolute;
-          z-index: 2;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-        `}
-      >
-        <SplitScreen
-          inverted={inverted}
-          onConvert={handleConvert}
-          onInvert={handleInvert}
-          primary={
-            inverted ? (
-              <AmountInput
-                symbol="ANJ"
-                color={false}
-                value={inputValueOther}
-                disabled={inputDisabled}
-                {...bindOtherInput}
-              />
-            ) : (
-              <AmountInput
-                symbol="ANT"
-                color={false}
-                value={inputValueOther}
-                disabled={inputDisabled}
-                {...bindOtherInput}
-              />
-            )
-          }
-          secondary={
-            converterStatus.status !== CONVERTER_STATUSES.FORM ? (
-              <Converter />
-            ) : inverted ? (
+      <SplitScreen
+        inverted={inverted}
+        opened={converterStatus.status !== CONVERTER_STATUSES.FORM}
+        onConvert={handleConvert}
+        onInvert={handleInvert}
+        primary={
+          inverted ? (
+            <AmountInput
+              symbol="ANJ"
+              color={false}
+              value={inputValueOther}
+              disabled={inputDisabled}
+              {...bindOtherInput}
+            />
+          ) : (
+            <AmountInput
+              symbol="ANT"
+              color={false}
+              value={inputValueOther}
+              disabled={inputDisabled}
+              {...bindOtherInput}
+            />
+          )
+        }
+        secondary={
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            {inverted ? (
               <AmountInput
                 symbol="ANT"
                 color={true}
@@ -309,37 +308,27 @@ export default () => {
                 value={inputValueAnj}
                 onChange={() => null}
               />
-            )
-          }
-        />
-      </div>
-      <div
-        css={`
-          position: absolute;
-          z-index: 4;
-          left: 0;
-          right: 0;
-          bottom: 52px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        `}
-      >
-        <Button
-          onClick={handleConvert}
-          css={`
-            width: 90%;
-            display: ${converterStatus.status !== CONVERTER_STATUSES.FORM
-              ? 'none'
-              : 'block'};
-          `}
-        >
-          Convert
-        </Button>
-      </div>
+            )}
+            <Button
+              onClick={handleConvert}
+              css={`
+                width: 90%;
+              `}
+            >
+              Convert
+            </Button>
+          </div>
+        }
+        reveal={
+          converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
+            <Converter />
+          )
+        }
+      />
     </div>
   )
 }
+//
 
 const Button = styled.button`
   background: linear-gradient(189.76deg, #ffb36d 6.08%, #ff8888 93.18%);
