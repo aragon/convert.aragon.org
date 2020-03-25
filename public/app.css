@@ -1,51 +1,15 @@
 @font-face {
-  font-family: 'Calibre';
-  src: url('/fonts/Calibre-Regular.woff2') format('woff2'),
-    url('/fonts/Calibre-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  /* This is for bootstrap, which sets the font-weight of the titles to 500 */
-  font-family: 'Calibre';
-  src: url('/fonts/Calibre-Regular.woff2') format('woff2'),
-    url('/fonts/Calibre-Regular.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Calibre';
-  src: url('/fonts/Calibre-Medium.woff2') format('woff2'),
-    url('/fonts/Calibre-Medium.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Calibre';
-  src: url('/fonts/Calibre-Semibold.woff2') format('woff2'),
-    url('/fonts/Calibre-Semibold.otf') format('opentype');
-  font-weight: 800;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'HKGrotesk';
-  src: url('/fonts/HKGrotesk-Bold.ttf') format('truetype');
-  font-weight: 800;
-}
-@font-face {
-  font-family: 'FontMono';
-  src: url('/fonts/BasierSquare-Regular.otf') format('opentype');
+  font-family: 'Manrope';
+  src: url('/fonts/ManropeGX.ttf');
 }
 
 body,
 html {
-  font-family: 'Calibre', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-weight: 400;
   font-size: 16px;
   margin: 0;
   padding: 0;
-  /* -webkit-font-smoothing: antialiased; */
-  /* scroll-behavior: smooth; */
   overflow-y: hidden;
 }
 
@@ -54,6 +18,7 @@ a span,
 button,
 a:hover,
 a:active {
+  font-family: 'Manrope', sans-serif;
   text-decoration: none;
 }
 

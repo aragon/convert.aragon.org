@@ -41,7 +41,6 @@ function DisconnectedMode() {
     <ButtonBase
       ref={containerRef}
       css={`
-        font-family: 'Manrope';
         width: 179px;
         height: 40px;
         border: 1px solid rgba(223, 227, 232, 0.75);
@@ -78,7 +77,6 @@ function DisconnectedMode() {
                   padding-top: 8px;
                   padding-left: 16px;
                   padding-bottom: 8px;
-                  font-family: 'Manrope'
                   font-size: 12px;
                 `}
               >
@@ -145,7 +143,6 @@ function ProviderButton({ name, onActivate, image }) {
     <ButtonBase
       onClick={onActivate}
       css={`
-        font-family: 'Manrope';
         position: relative;
         display: flex;
         flex-direction: column;

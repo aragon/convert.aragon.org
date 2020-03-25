@@ -351,7 +351,6 @@ const Button = styled.button`
   min-width: 330px;
   max-width: 470px;
   height: 52px;
-  font-family: 'Manrope';
   font-size: 20px;
   font-weight: 600;
   cursor: pointer;

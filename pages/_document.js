@@ -1,6 +1,6 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
-import { ServerStyleSheet, createGlobalStyle } from 'styled-components'
+import { ServerStyleSheet } from 'styled-components'
 import env from 'lib/environment'
 
 const ANALYTICS_CODE = `
@@ -90,7 +90,6 @@ export default class extends Document {
           <style>{`html { background: #1c1c1c }`}</style>
         </Head>
         <body>
-          <GlobalStyle />
           <Main />
           <NextScript />
           <AnalyticsScript />

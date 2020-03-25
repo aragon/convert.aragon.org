@@ -26,7 +26,6 @@ function AmountInput({
   return (
     <label
       css={`
-        font-family: 'Manrope';
         display: flex;
         flex-direction: column;
         justify-content: center;
