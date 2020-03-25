@@ -36,6 +36,19 @@ function SplitScreen({
     },
   })
 
+  const secondaryTransitions = useTransition(inverted, null, {
+    immediate: !animate.current,
+    from: {
+      transform: 'translate3d(0, 100%, 0)',
+    },
+    enter: {
+      transform: 'translate3d(0, 0%, 0)',
+    },
+    leave: {
+      transform: 'translate3d(0, 100%, 0)',
+    },
+  })
+
   const buttonStyle = useSpring({
     immediate: !animate.current,
     transform: inverted
@@ -83,7 +96,6 @@ function SplitScreen({
                   width: 100%;
                   height: 100%;
                   background: #000 50% 50% / cover no-repeat url(${image});
-                  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
                 `}
               >
                 {primary}
@@ -104,15 +116,39 @@ function SplitScreen({
       >
         <InvertButton onClick={onInvert} />
       </animated.div>
-      <animated.div
+      <div
         css={`
+          position: relative;
           width: 100%;
           height: 50%;
-          background: #fff;
         `}
       >
-        {secondary}
-      </animated.div>
+        {secondaryTransitions.map(
+          ({ item: inverted, key, props: { transform } }) => {
+            return (
+              <animated.div
+                key={key}
+                style={{ transform }}
+                css={`
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  right: 0;
+                  bottom: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 100%;
+                  height: 100%;
+                  background: #fff;
+                `}
+              >
+                {secondary}
+              </animated.div>
+            )
+          }
+        )}
+      </div>
     </div>
   )
 }
