@@ -2,6 +2,7 @@ const path = require('path')
 const { execSync } = require('child_process')
 const withCSS = require('@zeit/next-css')
 const withImages = require('next-images')
+const withFonts = require('next-fonts')
 const { version } = require('./package.json')
 
 const COMMIT_SHA =
