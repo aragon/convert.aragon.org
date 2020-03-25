@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import styled from 'styled-components'
 import 'styled-components/macro'
 import { useTransition, useSpring, animated } from 'react-spring'
 import InvertButton from './InvertButton'
@@ -8,31 +9,21 @@ import backgroundAnj from './converter-background-anj.svg'
 
 const SPRING_CONFIG = { tension: 210, friction: 20 }
 
-function SplitScreen({ visible, inverted, onInvert, primary, secondary }) {
+function SplitScreen({
+  converting,
+  inverted,
+  onConvert,
+  onInvert,
+  primary,
+  secondary,
+}) {
   // Don’t animate initially
   const animate = useRef(false)
   useEffect(() => {
     animate.current = true
   }, [])
 
-  const secondaryStyle = useSpring({
-    transform: visible ? 'translate3d(0, 0%, 0)' : 'translate3d(0, 100%, 0)',
-  })
-
   const primaryTransitions = useTransition(inverted, null, {
-    immediate: !animate.current,
-    from: {
-      transform: 'translate3d(0, -100%, 0)',
-    },
-    enter: {
-      transform: 'translate3d(0, 0%, 0)',
-    },
-    leave: {
-      transform: 'translate3d(0, -100%, 0)',
-    },
-  })
-
-  const secondaryTransitions = useTransition(inverted, null, {
     immediate: !animate.current,
     from: {
       transform: 'translate3d(0, -100%, 0)',
@@ -75,7 +66,7 @@ function SplitScreen({ visible, inverted, onInvert, primary, secondary }) {
       >
         {primaryTransitions.map(
           ({ item: inverted, key, props: { transform } }) => {
-            const image = inverted ? backgroundAnt : backgroundAnj
+            const image = inverted ? backgroundAnj : backgroundAnt
             return (
               <animated.div
                 key={key}
@@ -114,7 +105,6 @@ function SplitScreen({ visible, inverted, onInvert, primary, secondary }) {
         <InvertButton onClick={onInvert} />
       </animated.div>
       <animated.div
-        style={secondaryStyle}
         css={`
           width: 100%;
           height: 50%;

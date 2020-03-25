@@ -29,8 +29,6 @@ function SuccessSection({ onDone }) {
 }
 
 const Success = styled.div`
-  min-width: 1109px;
-  height: 530px;
   display: flex;
   align-items: center;
   justify-content: center;

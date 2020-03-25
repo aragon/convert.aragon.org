@@ -12,8 +12,9 @@ function Processing({ signing, signTwice }) {
             <p className="black">Please sign the transactions</p>
             <p>
               Sign the transactions in your provider so they can get processed.
-              Two transactions may be needed for this conversion if we did not previously
-              receive your approval on this ERC-20 token to convert the requested amount.
+              Two transactions may be needed for this conversion if we did not
+              previously receive your approval on this ERC-20 token to convert
+              the requested amount.
             </p>
           </>
         )}
@@ -37,8 +38,7 @@ function Processing({ signing, signTwice }) {
 }
 
 const ProcessingIn = styled.div`
-  min-width: 1109px;
-  height: 530px;
+  margin-top: 24px;
   display: flex;
   align-items: center;
   justify-content: center;

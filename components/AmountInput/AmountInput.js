@@ -16,10 +16,17 @@ function getImage(color, symbol) {
   }
 }
 
-function AmountInput({ color = true, symbol, value, onChange }) {
+function AmountInput({
+  color = true,
+  disabled = false,
+  symbol,
+  value,
+  onChange,
+}) {
   return (
     <label
       css={`
+        font-family: 'Manrope';
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -54,6 +61,7 @@ function AmountInput({ color = true, symbol, value, onChange }) {
       </div>
       <input
         type="text"
+        disabled={disabled}
         value={value}
         onChange={onChange}
         css={`
@@ -62,9 +70,13 @@ function AmountInput({ color = true, symbol, value, onChange }) {
           text-align: center;
           font-size: 88px;
           font-weight: 600;
-          color: #fff;
+          color: ${color ? '#1c1c1c' : '#FFF'};
           background: transparent;
           border: 0;
+          outline: none;
+          @media screen and (max-width: 414px) {
+            font-size: 36px;
+          }
         `}
       />
     </label>

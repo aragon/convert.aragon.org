@@ -10,15 +10,17 @@ const COMMIT_SHA =
 const BUILD = process.env.BUILD || `${version}-${COMMIT_SHA.slice(0, 7)}`
 
 module.exports = withCSS(
-  withImages({
-    webpack(config, options) {
-      return ['lib', 'components'].reduce((config, dirname) => {
-        config.resolve.alias[dirname] = path.join(__dirname, dirname)
-        return config
-      }, config)
-    },
-    env: {
-      BUILD,
-    },
-  })
+  withFonts(
+    withImages({
+      webpack(config, options) {
+        return ['lib', 'components'].reduce((config, dirname) => {
+          config.resolve.alias[dirname] = path.join(__dirname, dirname)
+          return config
+        }, config)
+      },
+      env: {
+        BUILD,
+      },
+    })
+  )
 )
