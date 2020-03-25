@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "main": "src/index.js",
-  "homepage": "https://bonding.aragon.org/",
+  "homepage": "https://github.com/aragon/bonding.aragon.org",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "build": "next build",

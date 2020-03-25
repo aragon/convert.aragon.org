@@ -1,10 +1,7 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet, createGlobalStyle } from 'styled-components'
-
-const SITE_DESCRIPTION = 'Bonding Curve Converter'
-const SITE_TITLE = 'Bonding Curve Converter'
-const SITE_URL = 'https://court.aragon.org/'
+import env from 'lib/environment'
 
 const ANALYTICS_CODE = `
   var _paq = window._paq || [];
@@ -23,18 +20,8 @@ const ANALYTICS_CODE = `
   })();
 `
 
-const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: 'Manrope';
-    src: url('../fonts/Manrope-Regular.ttf');
-    src: url('../fonts/Manrope-Medium.ttf');
-    src: url('../fonts/Manrope-Bold.ttf');
-    src: url('../fonts/Manrope-Light.ttf');
-  }
-`
-
 function AnalyticsScript() {
-  return process.env.NODE_ENV !== 'production' ? null : (
+  return env('NODE_ENV') !== 'production' ? null : (
     <script dangerouslySetInnerHTML={{ __html: ANALYTICS_CODE }} />
   )
 }
@@ -83,14 +70,14 @@ export default class extends Document {
 
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:site" content="@AragonProject" />
-          <meta name="twitter:description" content={SITE_DESCRIPTION} />
-          <meta name="twitter:title" content={SITE_TITLE} />
+          <meta name="twitter:description" content={env('SITE_DESCRIPTION')} />
+          <meta name="twitter:title" content={env('SITE_TITLE')} />
           <meta name="twitter:image" content="/twitter-card-icon.png" />
 
-          <meta property="og:title" content={SITE_TITLE} />
-          <meta property="og:description" content={SITE_DESCRIPTION} />
-          <meta property="og:url" content={SITE_URL} />
-          <meta property="og:site_name" content={SITE_TITLE} />
+          <meta property="og:title" content={env('SITE_TITLE')} />
+          <meta property="og:description" content={env('SITE_DESCRIPTION')} />
+          <meta property="og:url" content={env('SITE_URL')} />
+          <meta property="og:site_name" content={env('SITE_TITLE')} />
           <meta property="og:image" content="/twitter-card-icon.png" />
           <meta
             property="og:image:secure_url"
@@ -99,7 +86,7 @@ export default class extends Document {
           <meta property="og:image:width" content="300" />
           <meta property="og:image:height" content="300" />
 
-          <meta name="description" content={SITE_DESCRIPTION} />
+          <meta name="description" content={env('SITE_DESCRIPTION')} />
           <style>{`html { background: #1c1c1c }`}</style>
         </Head>
         <body>
