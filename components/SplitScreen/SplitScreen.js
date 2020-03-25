@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import 'styled-components/macro'
-import { useTransition, useSpring, animated } from 'react-spring'
+import { useTransition, animated } from 'react-spring'
+import { SPRING_SMOOTH } from 'lib/animation-utils'
 import InvertButton from './InvertButton'
 
 import backgroundAnt from './converter-background-ant.svg'
 import backgroundAnj from './converter-background-anj.svg'
-
-const SPRING_CONFIG = { tension: 210, friction: 20 }
 
 function SplitScreen({
   converting,
@@ -17,6 +16,8 @@ function SplitScreen({
   primary,
   secondary,
 }) {
+  const invertButtonRef = useRef(null)
+
   // Don’t animate initially
   const animate = useRef(false)
   useEffect(() => {
@@ -24,6 +25,7 @@ function SplitScreen({
   }, [])
 
   const primaryTransitions = useTransition(inverted, null, {
+    config: SPRING_SMOOTH,
     immediate: !animate.current,
     from: {
       transform: 'translate3d(0, -100%, 0)',
@@ -37,6 +39,7 @@ function SplitScreen({
   })
 
   const secondaryTransitions = useTransition(inverted, null, {
+    config: SPRING_SMOOTH,
     immediate: !animate.current,
     from: {
       transform: 'translate3d(0, 100%, 0)',
@@ -49,12 +52,11 @@ function SplitScreen({
     },
   })
 
-  const buttonStyle = useSpring({
-    immediate: !animate.current,
-    transform: inverted
-      ? 'translate(-50%, -50%) rotate(0deg)'
-      : 'translate(-50%, -50%) rotate(-180deg)',
-  })
+  useEffect(() => {
+    if (invertButtonRef.current) {
+      invertButtonRef.current.rotate()
+    }
+  }, [inverted])
 
   return (
     <div
@@ -104,18 +106,17 @@ function SplitScreen({
           }
         )}
       </div>
-      <animated.div
-        style={buttonStyle}
+      <div
         css={`
           position: absolute;
           top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%) rotate(-180deg);
+          transform: translate(-50%, -50%);
           z-index: 3;
         `}
       >
-        <InvertButton onClick={onInvert} />
-      </animated.div>
+        <InvertButton ref={invertButtonRef} onClick={onInvert} />
+      </div>
       <div
         css={`
           position: relative;
