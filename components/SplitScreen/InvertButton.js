@@ -2,7 +2,7 @@ import 'styled-components/macro'
 import React, { useImperativeHandle, useState } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { UNSELECTABLE } from 'lib/css-utils'
-import { useAnimateWhenMounted, SPRING_SMOOTH } from 'lib/animation-utils'
+import { useAnimateWhenMounted, SPRING_FAST } from 'lib/animation-utils'
 
 import arrowImg from './arrow-down.svg'
 
@@ -18,7 +18,7 @@ const InvertButton = React.forwardRef(function InvertButton(
 
   const imgTransitions = useSpring({
     immediate: !animate,
-    config: SPRING_SMOOTH,
+    config: SPRING_FAST,
     to: {
       transform: `rotate3d(0, 0, 1, ${position * 360}deg)`,
     },

@@ -328,7 +328,6 @@ export default () => {
     </div>
   )
 }
-//
 
 const Button = styled.button`
   background: linear-gradient(189.76deg, #ffb36d 6.08%, #ff8888 93.18%);

@@ -2,7 +2,11 @@ import 'styled-components/macro'
 import React, { useEffect, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { useSpring, useTransition, animated } from 'react-spring'
-import { useAnimateWhenMounted, SPRING_SMOOTH } from 'lib/animation-utils'
+import {
+  useAnimateWhenMounted,
+  SPRING_FAST,
+  SPRING_SLOW,
+} from 'lib/animation-utils'
 import { ABSOLUTE_FULL } from 'lib/css-utils'
 import InvertButton from './InvertButton'
 
@@ -16,11 +20,12 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   const invertButtonRef = useRef(null)
   const animate = useAnimateWhenMounted()
   const opened = Boolean(reveal)
+
   const status = useMemo(() => ({ inverted, opened }), [inverted, opened])
   const statusTransitionKey = status => Object.values(status).join('')
 
   const primaryTransitions = useTransition(status, statusTransitionKey, {
-    config: SPRING_SMOOTH,
+    config: opened ? SPRING_SLOW : SPRING_FAST,
     immediate: !animate,
     from: {
       transform: `
@@ -51,8 +56,22 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
     },
   })
 
+  const secondaryTransitions = useTransition(status, statusTransitionKey, {
+    config: opened ? SPRING_SLOW : SPRING_FAST,
+    immediate: !animate,
+    from: {
+      transform: 'translate3d(0, 100%, 0)',
+    },
+    enter: {
+      transform: 'translate3d(0, 0%, 0)',
+    },
+    leave: {
+      transform: 'translate3d(0, 100%, 0)',
+    },
+  })
+
   const revealTransition = useTransition(reveal, null, {
-    config: SPRING_SMOOTH,
+    config: SPRING_SLOW,
     from: {
       transform: `scale3d(${REVEAL_SCALE_FROM}, ${REVEAL_SCALE_FROM}, 1)`,
       overlayOpacity: 1,
@@ -68,7 +87,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   })
 
   const buttonTransition = useSpring({
-    config: SPRING_SMOOTH,
+    config: SPRING_FAST,
     to: {
       transform: `
         translate3d(
@@ -79,20 +98,6 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
           ),
           0
         )`,
-    },
-  })
-
-  const secondaryTransitions = useTransition(status, statusTransitionKey, {
-    config: SPRING_SMOOTH,
-    immediate: !animate,
-    from: {
-      transform: 'translate3d(0, 100%, 0)',
-    },
-    enter: {
-      transform: 'translate3d(0, 0%, 0)',
-    },
-    leave: {
-      transform: 'translate3d(0, 100%, 0)',
     },
   })
 
