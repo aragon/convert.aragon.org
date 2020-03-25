@@ -10,6 +10,7 @@ import backgroundAnt from './converter-background-ant.svg'
 import backgroundAnj from './converter-background-anj.svg'
 
 const REVEAL_SCALE_FROM = 0.9
+const REVEAL_OVERLAY_OPACITY = 0.15
 
 function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   const invertButtonRef = useRef(null)
@@ -130,7 +131,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
                 css={`
                   ${ABSOLUTE_FULL};
                   z-index: 2;
-                  background: rgba(0, 0, 0, 0.25);
+                  background: rgba(0, 0, 0, ${REVEAL_OVERLAY_OPACITY});
                 `}
               />
               <animated.div
