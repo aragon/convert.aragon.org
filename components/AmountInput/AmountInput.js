@@ -63,6 +63,7 @@ function AmountInput({
         disabled={disabled}
         value={value}
         onChange={onChange}
+        placeholder={'0'}
         css={`
           display: block;
           width: 100%;
@@ -73,6 +74,9 @@ function AmountInput({
           background: transparent;
           border: 0;
           outline: none;
+          &::placeholder {
+            color: ${color ? '#1c1c1c' : '#FFF'};
+          }
           @media screen and (max-width: 414px) {
             font-size: 36px;
           }

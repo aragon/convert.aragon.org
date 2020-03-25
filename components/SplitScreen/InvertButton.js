@@ -1,18 +1,19 @@
 import React from 'react'
 import styled from 'styled-components/macro'
 
-import arrowsImg from './arrows.svg'
+import arrowImg from './arrow.svg'
 
 function InvertButton({ onClick, label = 'Invert' }) {
   return (
     <button
       onClick={onClick}
       css={`
-        padding: 13px;
         white-space: nowrap;
         background: #ffffff;
         border: 0;
         border-radius: 100px;
+        width: 64px;
+        height: 64px;
         box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
         cursor: pointer;
         outline: 0 !important;
@@ -25,7 +26,7 @@ function InvertButton({ onClick, label = 'Invert' }) {
         }
       `}
     >
-      <img width="54" height="54" src={arrowsImg} alt={label} />
+      <img width="40" height="40" src={arrowImg} alt={label} />
     </button>
   )
 }

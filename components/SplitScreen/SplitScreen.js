@@ -96,6 +96,7 @@ function SplitScreen({
                   width: 100%;
                   height: 100%;
                   background: #000 50% 50% / cover no-repeat url(${image});
+                  border-bottom: 1px solid #f1f1f1;
                 `}
               >
                 {primary}
@@ -105,12 +106,11 @@ function SplitScreen({
         )}
       </div>
       <animated.div
-        style={buttonStyle}
         css={`
           position: absolute;
           top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%) rotate(-180deg);
+          transform: translate(-50%, -50%);
           z-index: 3;
         `}
       >

@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import 'styled-components/macro'
 import styled from 'styled-components'
-import AccountModule from 'components/converter/AccountModule'
+import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import Converter from 'components/converter/Converter'
 import {
   useConverterStatus,
   CONVERTER_STATUSES,
 } from 'components/converter/converter-status'
+import Balance from 'components/SplitScreen/Balance'
 import Navbar from 'components/SplitScreen/Navbar'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
-import Logo from 'components/Logo/Logo'
 import AmountInput from 'components/AmountInput/AmountInput'
 import {
   useBondingCurvePrice,
+  useTokenBalance,
   useTokenDecimals,
   useOpenOrder,
   useClaimOrder,
@@ -20,6 +21,7 @@ import {
 import { formatUnits, parseUnits } from 'lib/web3-utils'
 import { useWeb3Connect } from 'lib/web3-connect'
 import { bigNum } from 'lib/utils'
+import question from '../converter/assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 
@@ -44,7 +46,7 @@ function parseInputValue(inputValue, decimals) {
 
 function useConvertInputs(otherSymbol, forwards = true) {
   const [inputValueAnj, setInputValueAnj] = useState('')
-  const [inputValueOther, setInputValueOther] = useState('')
+  const [inputValueOther, setInputValueOther] = useState('0.0')
   const [amountAnj, setAmountAnj] = useState(bigNum(0))
   const [amountOther, setAmountOther] = useState(bigNum(0))
   const [editing, setEditing] = useState(null)
@@ -179,6 +181,22 @@ function useConvertInputs(otherSymbol, forwards = true) {
     [anjDecimals]
   )
 
+  const handleManualInputChange = useCallback(
+    (amount, fromAnt) => {
+      setConvertFromAnj(!fromAnt)
+      if (otherDecimals === -1) {
+        return
+      }
+
+      const parsed = parseInputValue(amount, otherDecimals)
+      if (parsed !== null) {
+        setInputValueOther(parsed.inputValue)
+        setAmountOther(parsed.amount)
+      }
+    },
+    [otherDecimals]
+  )
+
   const bindOtherInput = useMemo(
     () => ({
       onChange: handleOtherInputChange,
@@ -204,11 +222,10 @@ function useConvertInputs(otherSymbol, forwards = true) {
     // Event handlers to bind the inputs
     bindOtherInput,
     bindAnjInput,
+    bondingPriceLoading,
+    handleManualInputChange,
     // The value to be used for inputs
-    inputValueAnj:
-      bondingPriceLoading && !convertFromAnj && editing !== 'anj'
-        ? 'Loading...'
-        : inputValueAnj,
+    inputValueAnj,
     inputValueOther,
   }
 }
@@ -221,18 +238,29 @@ export default () => {
   const {
     amountOther,
     bindOtherInput,
+    bondingPriceLoading,
+    handleManualInputChange,
     inputValueAnj,
     inputValueOther,
   } = useConvertInputs(options[selectedOption], forwards)
+  const tokenBalance = useTokenBalance(options[selectedOption])
 
   const { account } = useWeb3Connect()
   const inputDisabled = useMemo(() => !Boolean(account), [account])
+  const inputError = useMemo(() => Boolean(tokenBalance.lt(amountOther)))
 
   const converterStatus = useConverterStatus()
+
   const handleInvert = useCallback(() => {
     setInverted(v => !v)
     setSelectedOption(option => (option + 1) % 2)
   }, [])
+  const handleConvertMax = useCallback(() => {
+    handleManualInputChange(
+      formatUnits(tokenBalance, { truncateToDecimalPlace: 3 }),
+      forwards
+    )
+  }, [tokenBalance, forwards])
   const handleConvert = useCallback(async () => {
     converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
     try {
@@ -275,21 +303,58 @@ export default () => {
           onInvert={handleInvert}
           primary={
             inverted ? (
-              <AmountInput
-                symbol="ANJ"
-                color={false}
-                value={inputValueOther}
-                disabled={inputDisabled}
-                {...bindOtherInput}
-              />
+              <div
+                css={`
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                `}
+              >
+                <AmountInput
+                  error={inputError}
+                  symbol="ANJ"
+                  color={false}
+                  value={inputValueOther}
+                  disabled={inputDisabled}
+                  {...bindOtherInput}
+                />
+                <Balance
+                  tokenBalance={tokenBalance}
+                  tokenAmountToConvert={amountOther}
+                />
+                <MaxButton
+                  css={`
+                    margin-top: 12px;
+                  `}
+                  onClick={handleConvertMax}
+                >
+                  Convert All
+                </MaxButton>
+              </div>
             ) : (
-              <AmountInput
-                symbol="ANT"
-                color={false}
-                value={inputValueOther}
-                disabled={inputDisabled}
-                {...bindOtherInput}
-              />
+              <div
+                css={`
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                `}
+              >
+                <AmountInput
+                  error={inputError}
+                  symbol="ANT"
+                  color={false}
+                  value={inputValueOther}
+                  disabled={inputDisabled}
+                  {...bindOtherInput}
+                />
+                <Balance
+                  tokenBalance={tokenBalance}
+                  tokenAmountToConvert={amountOther}
+                />
+                {account && (
+                  <MaxButton onClick={handleConvertMax}>Convert All</MaxButton>
+                )}
+              </div>
             )
           }
           secondary={
@@ -303,12 +368,40 @@ export default () => {
                 onChange={() => null}
               />
             ) : (
-              <AmountInput
-                symbol="ANJ"
-                color={true}
-                value={inputValueAnj}
-                onChange={() => null}
-              />
+              <div
+                css={`
+                  margin-top: 88px;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                `}
+              >
+                <AmountInput
+                  symbol="ANJ"
+                  color={true}
+                  value={inputValueAnj}
+                  onChange={() => null}
+                />
+                <OverlayTrigger
+                  placement="top"
+                  delay={{ hide: 400 }}
+                  overlay={props => (
+                    <Tooltip {...props} show="true">
+                      By entering your email address, we will notify you
+                      directly about any necessary actions you'll need to take
+                      as a juror in upcoming court cases. Since there are
+                      financial penalties for not participating in cases you are
+                      drafted in, we would like all jurors to sign up for court
+                      notifications via email.
+                    </Tooltip>
+                  )}
+                >
+                  <Label>
+                    The conversion amount is an estimate
+                    <img src={question} alt="" />
+                  </Label>
+                </OverlayTrigger>
+              </div>
             )
           }
         />
@@ -327,6 +420,7 @@ export default () => {
       >
         <Button
           onClick={handleConvert}
+          disabled={bondingPriceLoading}
           css={`
             width: 90%;
             display: ${converterStatus.status !== CONVERTER_STATUSES.FORM
@@ -358,5 +452,42 @@ const Button = styled.button`
   &[disabled] {
     opacity: 0.5;
     cursor: inherit;
+  }
+`
+
+const Label = styled.label`
+  font-size: 16px;
+  line-height: 38px;
+  color: #8a96a0;
+  margin-bottom: 6px;
+
+  span {
+    color: #08bee5;
+  }
+  img {
+    padding-left: 10px;
+  }
+`
+
+const MaxButton = styled.button`
+  background: transparent;
+  border: 1px solid white;
+  box-sizing: border-box;
+  margin-top: 8px;
+  border-radius: 4px;
+  width: 150px;
+  height: 32;
+  text-align: center;
+  font-size: 16px;
+  line-height: 31px;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   }
 `
