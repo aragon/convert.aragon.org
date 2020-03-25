@@ -263,21 +263,23 @@ export default () => {
   }, [tokenBalance, forwards])
   const handleConvert = useCallback(async () => {
     converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
-    try {
-      const tx = await openOrder(amountOther, forwards)
-      converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
-      await tx.wait()
-      const finalTx = await claimOrder(tx.hash, forwards)
-      await finalTx.wait()
-      converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
-    } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        Sentry.captureException(err)
-      }
-      console.log(err)
-      converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
-    }
-  }, [amountOther, forwards])
+
+    // try {
+    //   const tx = await openOrder(amountOther, forwards)
+    //   converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
+    //   await tx.wait()
+    //   const finalTx = await claimOrder(tx.hash, forwards)
+    //   await finalTx.wait()
+    //   converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
+    // } catch (err) {
+    //   if (process.env.NODE_ENV === 'production') {
+    //     Sentry.captureException(err)
+    //   }
+    //   console.log(err)
+    //   converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
+    // }
+    // }, [amountOther, forwards, converterStatus])
+  }, [converterStatus])
 
   return (
     <div
@@ -287,151 +289,106 @@ export default () => {
       `}
     >
       <Navbar inverted={inverted} />
-      <div
-        css={`
-          position: absolute;
-          z-index: 2;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-        `}
-      >
-        <SplitScreen
-          inverted={inverted}
-          onConvert={handleConvert}
-          onInvert={handleInvert}
-          primary={
-            inverted ? (
-              <div
+      <SplitScreen
+        inverted={inverted}
+        opened={converterStatus.status !== CONVERTER_STATUSES.FORM}
+        onConvert={handleConvert}
+        onInvert={handleInvert}
+        primary={
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <AmountInput
+              error={inputError}
+              symbol={inverted ? 'ANJ' : 'ANT'}
+              color={false}
+              value={inputValueOther}
+              disabled={inputDisabled}
+              {...bindOtherInput}
+            />
+            <Balance
+              tokenBalance={tokenBalance}
+              tokenAmountToConvert={amountOther}
+            />
+            {account && (
+              <MaxButton
                 css={`
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
+                  margin-top: 12px;
                 `}
+                onClick={handleConvertMax}
               >
-                <AmountInput
-                  error={inputError}
-                  symbol="ANJ"
-                  color={false}
-                  value={inputValueOther}
-                  disabled={inputDisabled}
-                  {...bindOtherInput}
-                />
-                <Balance
-                  tokenBalance={tokenBalance}
-                  tokenAmountToConvert={amountOther}
-                />
-                <MaxButton
-                  css={`
-                    margin-top: 12px;
-                  `}
-                  onClick={handleConvertMax}
-                >
-                  Convert All
-                </MaxButton>
-              </div>
-            ) : (
-              <div
-                css={`
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                `}
-              >
-                <AmountInput
-                  error={inputError}
-                  symbol="ANT"
-                  color={false}
-                  value={inputValueOther}
-                  disabled={inputDisabled}
-                  {...bindOtherInput}
-                />
-                <Balance
-                  tokenBalance={tokenBalance}
-                  tokenAmountToConvert={amountOther}
-                />
-                {account && (
-                  <MaxButton onClick={handleConvertMax}>Convert All</MaxButton>
-                )}
-              </div>
-            )
-          }
-          secondary={
-            converterStatus.status !== CONVERTER_STATUSES.FORM ? (
-              <Converter />
-            ) : inverted ? (
-              <AmountInput
-                symbol="ANT"
-                color={true}
-                value={inputValueAnj}
-                onChange={() => null}
-              />
-            ) : (
-              <div
-                css={`
-                  margin-top: 88px;
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                `}
-              >
-                <AmountInput
-                  symbol="ANJ"
-                  color={true}
-                  value={inputValueAnj}
-                  onChange={() => null}
-                />
-                <OverlayTrigger
-                  placement="top"
-                  delay={{ hide: 400 }}
-                  overlay={props => (
-                    <Tooltip {...props} show="true">
-                      By entering your email address, we will notify you
-                      directly about any necessary actions you'll need to take
-                      as a juror in upcoming court cases. Since there are
-                      financial penalties for not participating in cases you are
-                      drafted in, we would like all jurors to sign up for court
-                      notifications via email.
-                    </Tooltip>
-                  )}
-                >
-                  <Label>
-                    The conversion amount is an estimate
-                    <img src={question} alt="" />
-                  </Label>
-                </OverlayTrigger>
-              </div>
-            )
-          }
-        />
-      </div>
-      <div
-        css={`
-          position: absolute;
-          z-index: 4;
-          left: 0;
-          right: 0;
-          bottom: 52px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        `}
-      >
-        <Button
-          onClick={handleConvert}
-          disabled={bondingPriceLoading}
-          css={`
-            width: 90%;
-            display: ${converterStatus.status !== CONVERTER_STATUSES.FORM
-              ? 'none'
-              : 'block'};
-          `}
-        >
-          Convert
-        </Button>
-      </div>
+                Convert All
+              </MaxButton>
+            )}
+          </div>
+        }
+        secondary={
+          <div
+            css={`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            `}
+          >
+            <AmountInput
+              symbol={inverted ? 'ANT' : 'ANJ'}
+              color={true}
+              value={inputValueAnj}
+              onChange={() => null}
+            />
+            <LabelWithOverlay
+              label="The conversion amount is an estimate"
+              description="This tool uses a bonding curve to convert ANT into ANJ and
+                      back at a pre-defined rate. The price is calculated by an
+                      automated market maker smart contract that defines a
+                      relationship between token price and token supply. You can
+                      also convert ANT into other tokens such as ETH or DAI on
+                      various exchanges like
+                      Uniswap.
+"
+              overlayPlacement="top"
+            />
+            <Button
+              onClick={handleConvert}
+              disabled={bondingPriceLoading || !account}
+              css={`
+                width: 90%;
+              `}
+            >
+              Convert
+            </Button>
+          </div>
+        }
+        reveal={
+          converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
+            <Converter />
+          )
+        }
+      />
     </div>
+  )
+}
+
+function LabelWithOverlay({ label, description, overlayPlacement }) {
+  return (
+    <OverlayTrigger
+      placement={overlayPlacement}
+      delay={{ hide: 400 }}
+      overlay={props => (
+        <Tooltip {...props} show="true">
+          {description}
+        </Tooltip>
+      )}
+    >
+      <Label>
+        {label}
+        <img src={question} alt="" />
+      </Label>
+    </OverlayTrigger>
   )
 }
 

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { breakpoint } from 'lib/microsite-logic'
 import Header from './Header'
 import ConverterContent from './ConverterContent'
@@ -16,11 +16,22 @@ const large = css => breakpoint('large', css)
 
 function Converter() {
   return (
-    <OuterSection id="get-anj">
+    <div
+      css={`
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 30px;
+        width: 100vw;
+        height: 100vh;
+      `}
+    >
       <ConverterSection>
         <ConverterIn />
       </ConverterSection>
-    </OuterSection>
+    </div>
   )
 }
 
@@ -65,16 +76,6 @@ const ConverterSection = styled.div`
       font-size: 20px;
     }
   }
-`
-
-const OuterSection = styled.section`
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding-bottom: 30px;
 `
 
 export default Converter
