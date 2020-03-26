@@ -43,7 +43,7 @@ export default function App({ Component, pageProps }) {
     <animated.div style={revealProps}>
       <ViewportProvider>
         <Head>
-          <title>Aragon Court</title>
+          <title>Aragon Converter</title>
         </Head>
         <GlobalStyles />
         <Web3ConnectProvider>
