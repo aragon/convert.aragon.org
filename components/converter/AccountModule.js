@@ -282,7 +282,7 @@ const Address = styled.div`
   color: #1c1c1c;
   padding-left: 8px;
   padding-right: 4px;
-  font-family: 'FontMono', monospace;
+  font-family: monospace;
 `
 const ButtonBase = styled.div`
   display: flex;

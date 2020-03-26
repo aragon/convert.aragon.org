@@ -36,7 +36,7 @@ const BalanceSection = styled.div`
     color: #1c1c1c;
   }
   h3 span.mono {
-    font-family: 'FontMono';
+    font-family: monospace;
     letter-spacing: -3px;
   }
 `
