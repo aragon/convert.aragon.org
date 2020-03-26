@@ -79,9 +79,6 @@ function AmountInput({
           &::placeholder {
             color: ${color ? '#1c1c1c' : '#FFF'};
           }
-          @media screen and (max-width: 414px) {
-            font-size: 36px;
-          }
         `}
       />
     </label>

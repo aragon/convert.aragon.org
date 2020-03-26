@@ -48,7 +48,7 @@ const Button = styled.button`
   width: 227px;
   height: 52px;
   text-align: center;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 31px;
   text-align: center;
   cursor: pointer;

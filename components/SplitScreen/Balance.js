@@ -11,7 +11,7 @@ function Balance({ tokenAmountToConvert, tokenBalance }) {
     [tokenAmountToConvert, tokenBalance]
   )
 
-  return !tokenAmountToConvert.eq(-1) && !tokenBalance.eq(-1) ? (
+  return !tokenBalance.eq(-1) ? (
     <div
       css={`
         text-align: center;

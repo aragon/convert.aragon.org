@@ -95,30 +95,6 @@ function useConvertInputs(otherSymbol, forwards = true) {
     otherDecimals,
   ])
 
-  // Calculate the other amount from the ANJ amount
-  useEffect(() => {
-    if (
-      anjDecimals === -1 ||
-      otherDecimals === -1 ||
-      !convertFromAnj ||
-      editing === 'other'
-    ) {
-      return
-    }
-
-    const amount = amountSource
-
-    setAmountSource(amount)
-    setInputValueSource(formatUnits(amount, { digits: otherDecimals }))
-  }, [
-    amountRecipient,
-    amountSource,
-    anjDecimals,
-    convertFromAnj,
-    editing,
-    otherDecimals,
-  ])
-
   // Alternate the comma-separated format, based on the fields focus state.
   const setEditModeOther = useCallback(
     editMode => {
@@ -181,8 +157,7 @@ function useConvertInputs(otherSymbol, forwards = true) {
   )
 
   const handleManualInputChange = useCallback(
-    (amount, fromAnt) => {
-      setConvertFromAnj(!fromAnt)
+    amount => {
       if (otherDecimals === -1) {
         return
       }
@@ -229,7 +204,7 @@ function useConvertInputs(otherSymbol, forwards = true) {
   }
 }
 export default () => {
-  const [selectedOption, setSelectedOption] = useState(0)
+  const [selectedOption, setSelectedOption] = useState(1)
   const [inverted, setInverted] = useState(true)
   const [isFinal, setIsFinal] = useState(false)
   const [transactionHash, setTransactionHash] = useState(null)
