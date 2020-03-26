@@ -27,6 +27,7 @@ function SuccessSection({
             ? 'Do not close this window until the process is finished'
             : `You have successfully converted ${formatUnits(amountRequested, {
                 digits: decimals,
+                truncateToDecimalPlace: 3,
               })}
           ${toAnj ? 'ANJ' : 'ANT'}`}
           .
@@ -56,19 +57,19 @@ const Success = styled.div`
 `
 
 const Button = styled.button`
-  background: #ffffff;
-  border: 1px solid #c7d1da;
+  background: linear-gradient(198.02deg, #ffb36d 6.08%, #ff8888 93.18%);
+  border: 0px solid transparent;
+  color: white;
   box-sizing: border-box;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.05);
-  margin-top: 30px;
+  margin-top: 16px;
   border-radius: 4px;
   width: 227px;
   height: 52px;
   text-align: center;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 31px;
   text-align: center;
-  color: #1c1c1c;
   cursor: pointer;
   &:hover {
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);

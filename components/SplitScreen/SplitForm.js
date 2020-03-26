@@ -490,6 +490,7 @@ const MaxButton = styled.button`
   line-height: 32px;
   text-align: center;
   font-size: 16px;
+  font-weight: 800;
   text-align: center;
   color: #fff;
   background: transparent;

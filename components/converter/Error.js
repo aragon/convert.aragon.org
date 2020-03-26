@@ -52,9 +52,6 @@ const Button = styled.button`
   line-height: 31px;
   text-align: center;
   cursor: pointer;
-  &:hover {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
-  }
   img {
     padding-right: 10.5px;
     margin: 0;
