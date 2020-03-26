@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { useTokenDecimals } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
@@ -35,6 +36,13 @@ function SuccessSection({
       </div>
     </Success>
   )
+}
+
+SuccessSection.propTypes = {
+  final: PropTypes.bool,
+  onDone: PropTypes.func,
+  toAnj: PropTypes.bool,
+  transactionHash: PropTypes.string,
 }
 
 const Success = styled.div`

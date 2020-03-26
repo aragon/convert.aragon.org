@@ -1,11 +1,10 @@
 import React, { useCallback, useRef } from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
 import { OverlayTrigger, Popover } from 'react-bootstrap'
-import { useWeb3Connect } from 'lib/web3-connect'
-import { useTokenBalance, useTokenDecimals } from 'lib/web3-contracts'
-import { shortenAddress } from 'lib/web3-utils'
+import styled from 'styled-components'
 import EthIdenticon from 'components/EthIdenticon/EthIdenticon'
+import { useWeb3Connect } from 'lib/web3-connect'
+import { shortenAddress } from 'lib/web3-utils'
 
 import fortmatic from './provider-icons/fortmatic.svg'
 import frame from './provider-icons/frame.svg'
@@ -174,6 +173,12 @@ function ProviderButton({ name, onActivate, image }) {
   )
 }
 
+ProviderButton.propTypes = {
+  name: PropTypes.string,
+  onActivate: PropTypes.func,
+  image: PropTypes.string,
+}
+
 function ConnectedMode() {
   const { account, deactivate } = useWeb3Connect()
   const containerRef = useRef()
@@ -256,27 +261,6 @@ const StyledPopover = styled(Popover)`
     top: 0px;
   }
 `
-const Row = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 15px 15px 0;
-  border-top: 1px solid #dde6ed;
-  div {
-    text-align: right;
-  }
-  p {
-    font-size: 18px;
-    color: #1c1c1c;
-    margin: 0;
-  }
-  p + p {
-    margin: 0;
-    font-size: 12px;
-    color: #8a95a0;
-    font-weight: 400;
-  }
-`
 
 const Address = styled.div`
   font-size: 18px;
@@ -286,6 +270,7 @@ const Address = styled.div`
   padding-right: 4px;
   font-family: monospace;
 `
+
 const ButtonBase = styled.div`
   display: flex;
   align-items: center;

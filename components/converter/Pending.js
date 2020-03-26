@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import processing from './assets/loader.gif'
 
@@ -17,6 +18,10 @@ function Pending({ isFinal }) {
       </div>
     </PendingIn>
   )
+}
+
+Pending.propTypes = {
+  isFinal: PropTypes.string,
 }
 
 const PendingIn = styled.div`

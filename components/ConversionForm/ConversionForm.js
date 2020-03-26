@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import styled from 'styled-components'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
+import styled from 'styled-components'
+import AmountInput from 'components/AmountInput/AmountInput'
+import Anchor from 'components/Anchor/Anchor'
 import Converter from 'components/converter/Converter'
 import {
   useConverterStatus,
   CONVERTER_STATUSES,
 } from 'components/converter/converter-status'
-import Balance from 'components/SplitScreen/Balance'
 import NavBar from 'components/NavBar/NavBar'
+import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
-import AmountInput from 'components/AmountInput/AmountInput'
+import { bigNum } from 'lib/utils'
+import { useWeb3Connect } from 'lib/web3-connect'
 import {
   useBondingCurvePrice,
   useTokenBalance,
@@ -18,8 +21,7 @@ import {
   useClaimOrder,
 } from 'lib/web3-contracts'
 import { formatUnits, parseUnits } from 'lib/web3-utils'
-import { useWeb3Connect } from 'lib/web3-connect'
-import { bigNum } from 'lib/utils'
+
 import question from '../converter/assets/question.svg'
 
 const options = ['ANT', 'ANJ']
@@ -225,7 +227,11 @@ function ConversionForm() {
 
   const { account } = useWeb3Connect()
   const inputDisabled = useMemo(() => !Boolean(account), [account])
-  const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)))
+  const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)), [
+    amountSource,
+    tokenBalance,
+  ])
+
   const converterStatus = useConverterStatus()
 
   const handleInvert = useCallback(() => {
@@ -237,7 +243,7 @@ function ConversionForm() {
       formatUnits(tokenBalance, { truncateToDecimalPlace: 3 }),
       forwards
     )
-  }, [tokenBalance, forwards])
+  }, [handleManualInputChange, forwards, tokenBalance])
 
   const handleConvert = useCallback(async () => {
     setIsFinal(false)
@@ -259,7 +265,7 @@ function ConversionForm() {
       console.log(err)
       converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
     }
-  }, [amountSource, forwards, converterStatus])
+  }, [amountSource, claimOrder, converterStatus, forwards, openOrder])
 
   const handleLegalTerms = useCallback(async () => {
     converterStatus.setStatus(CONVERTER_STATUSES.LEGAL)
@@ -355,8 +361,8 @@ function ConversionForm() {
               `}
             >
               <Button
-                onClick={handleLegalTerms}
                 disabled={submitButtonDisabled}
+                onClick={handleLegalTerms}
                 css={`
                   width: 90%;
                 `}
@@ -372,7 +378,6 @@ function ConversionForm() {
             <Converter
               handleConvert={handleConvert}
               amountRequested={amountRecipient}
-              backToSplit={() => null}
               toAnj={forwards}
               transactionHash={transactionHash}
               isFinal={isFinal}
@@ -387,13 +392,13 @@ function ConversionForm() {
 function LabelWithOverlay({ label, description, overlayPlacement }) {
   return (
     <OverlayTrigger
-      placement={overlayPlacement}
       delay={{ hide: 400 }}
       overlay={props => (
         <Tooltip {...props} show="true">
           {description}
         </Tooltip>
       )}
+      placement={overlayPlacement}
     >
       <Label>
         {label}
@@ -428,22 +433,19 @@ function Docs() {
       `}
     >
       <li>
-        <a href="https://anj.aragon.org/" target="_blank">
+        <Anchor href="https://anj.aragon.org/">
           About
-        </a>
+        </Anchor>
       </li>
       <li>
-        <a
-          href="https://help.aragon.org/article/41-aragon-court"
-          target="_blank"
-        >
+        <Anchor href="https://help.aragon.org/article/41-aragon-court">
           Docs
-        </a>
+        </Anchor>
       </li>
       <li>
-        <a href="https://court.aragon.org/dashboard" target="_blank">
+        <Anchor href="https://court.aragon.org/dashboard">
           Court
-        </a>
+        </Anchor>
       </li>
     </ul>
   )

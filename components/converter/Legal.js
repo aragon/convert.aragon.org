@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import Anchor from '../Anchor/Anchor'
 import processing from './assets/loader.gif'
 
 function Legal({ handleConvert }) {
@@ -24,13 +26,9 @@ function Legal({ handleConvert }) {
               checked={legalChecked}
             />
             By clicking on “Create transaction” you are accepting our{' '}
-            <a
-              href="https://anj.aragon.org/legal/terms-general.pdf"
-              target="_blank"
-              rel="noopener"
-            >
+            <Anchor href="https://anj.aragon.org/legal/terms-general.pdf">
               legal terms
-            </a>
+            </Anchor>
             .
           </label>
         </Conditions>
@@ -39,6 +37,9 @@ function Legal({ handleConvert }) {
   )
 }
 
+Legal.propTypes = {
+  handleConvert: PropTypes.func,
+}
 const PendingIn = styled.div`
   margin-top: 24px;
   display: flex;
