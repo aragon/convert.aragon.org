@@ -1,15 +1,15 @@
 {
-  "name": "anj.aragon.org",
+  "name": "convert.aragon.org",
   "version": "1.0.0",
   "private": true,
   "main": "src/index.js",
-  "homepage": "https://github.com/aragon/bonding.aragon.org",
+  "homepage": "https://github.com/aragon/convert.aragon.org",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "build": "next build",
     "build:mainnet": "CHAIN_ID=1 npm run build",
     "build:rinkeby": "CHAIN_ID=4 npm run build",
-    "deploy": "NODE_ENV=production npm run build && echo 'anj.aragon.org' > dist/CNAME && gh-pages -d dist",
+    "deploy": "NODE_ENV=production npm run build && echo 'convert.aragon.org' > dist/CNAME && gh-pages -d dist",
     "deploy:mainnet": "CHAIN_ID=1 npm run deploy",
     "deploy:rinkeby": "CHAIN_ID=4 npm run deploy",
     "lint": "eslint ./components ./lib ./pages",
