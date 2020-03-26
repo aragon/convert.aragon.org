@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import error from './assets/error.svg'
 import repeat from './assets/repeat.svg'
 

@@ -1,5 +1,6 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
+
 import processing from './assets/loader.gif'
 
 function Processing({ signing, signTwice }) {

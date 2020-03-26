@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { useTokenDecimals } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
 import { useConverterStatus } from './converter-status'

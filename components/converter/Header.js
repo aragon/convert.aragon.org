@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import AccountModule from './AccountModule'
 import Token from './Token'
 import { breakpoint } from 'lib/microsite-logic'

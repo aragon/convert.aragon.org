@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import 'styled-components/macro'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import AccountModule from 'components/converter/AccountModule'
 import Converter from 'components/converter/Converter'
 import {

@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { breakpoint } from 'lib/microsite-logic'
 import { useNow, PREACTIVATION_END } from 'lib/utils'
 import Timer from '../Timer'
