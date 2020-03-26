@@ -9,11 +9,14 @@ import {
 import { ABSOLUTE_FULL } from 'lib/css-utils'
 import InvertButton from './InvertButton'
 
-import backgroundAnt from './converter-background-ant.svg'
-import backgroundAnj from './converter-background-anj.svg'
+import illustrationAnt from './banner-illustration-ant.svg'
+import illustrationAnj from './banner-illustration-anj.svg'
+
+const BANNER_ANT = [illustrationAnt, '304deg, #01E8F7 18%, #00C2FF 80%']
+const BANNER_ANJ = [illustrationAnj, '208deg, #FFB36D 6%,  #FF8888 93%']
 
 const REVEAL_SCALE_FROM = 0.9
-const REVEAL_OVERLAY_OPACITY = 0.15
+const REVEAL_OVERLAY_OPACITY = 0.1
 
 function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   const invertButtonRef = useRef(null)
@@ -28,29 +31,15 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
     immediate: !animate,
     from: {
       transform: `
-        translate3d(
-          0,
-          calc(-100%  - ${InvertButton.HEIGHT / 2}px),
-          0
-        )
+        translate3d(0, calc(-100%  - ${InvertButton.HEIGHT / 2}px), 0)
       `,
     },
     enter: {
-      transform: `
-        translate3d(
-          0,
-          calc(0% - 0px),
-          0
-        )
-      `,
+      transform: 'translate3d(0, calc(0% - 0px), 0)',
     },
     leave: {
       transform: `
-        translate3d(
-          0,
-          calc(-100%  - ${InvertButton.HEIGHT / 2}px),
-          0
-        )
+        translate3d(0, calc(-100%  - ${InvertButton.HEIGHT / 2}px), 0)
       `,
     },
   })
@@ -169,12 +158,12 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
           `}
         >
           {primaryTransitions.map(
-            ({ item: { inverted, opened }, key, props: { transform } }) => {
-              const image = inverted ? backgroundAnj : backgroundAnt
+            ({ item: { inverted, opened }, key, props }) => {
+              const [image, gradient] = inverted ? BANNER_ANJ : BANNER_ANT
               return opened ? null : (
                 <animated.div
                   key={key}
-                  style={{ transform }}
+                  style={props}
                   css={`
                     ${ABSOLUTE_FULL};
                     display: flex;
@@ -182,7 +171,8 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
                     justify-content: center;
                     width: 100%;
                     height: 100%;
-                    background: #000 50% 50% / cover no-repeat url(${image});
+                    background: 50% 100% / contain no-repeat url(${image}),
+                      linear-gradient(${gradient}) !important;
                   `}
                 >
                   {primary}
