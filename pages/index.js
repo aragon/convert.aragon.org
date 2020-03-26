@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { ConverterProvider } from 'components/converter/converter-status'
-import SplitForm from 'components/SplitScreen/SplitForm'
+import ConversionForm from 'components/ConversionForm/ConversionForm'
 
 export default () => {
   return (
     <ConverterProvider>
-      <SplitForm />
+      <ConversionForm />
     </ConverterProvider>
   )
 }

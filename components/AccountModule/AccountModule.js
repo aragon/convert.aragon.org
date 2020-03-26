@@ -5,13 +5,13 @@ import { OverlayTrigger, Popover } from 'react-bootstrap'
 import { useWeb3Connect } from 'lib/web3-connect'
 import { useTokenBalance, useTokenDecimals } from 'lib/web3-contracts'
 import { shortenAddress } from 'lib/web3-utils'
-import EthIdenticon from './EthIdenticon'
+import EthIdenticon from 'components/EthIdenticon/EthIdenticon'
 
-import fortmatic from './assets/fortmatic.svg'
-import frame from './assets/frame.svg'
-import metamask from './assets/metamask.svg'
-import portis from './assets/portis.svg'
-import lightning from '../assets/lightning.svg'
+import fortmatic from './provider-icons/fortmatic.svg'
+import frame from './provider-icons/frame.svg'
+import metamask from './provider-icons/metamask.svg'
+import portis from './provider-icons/portis.svg'
+import lightning from './lightning.svg'
 
 function AccountModule() {
   const { account } = useWeb3Connect()

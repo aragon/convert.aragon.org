@@ -1,6 +1,6 @@
 import React from 'react'
 import 'styled-components/macro'
-import AccountModule from 'components/converter/AccountModule'
+import AccountModule from 'components/AccountModule/AccountModule'
 import Logo from 'components/Logo/Logo'
 
 function Navbar({ logoMode }) {

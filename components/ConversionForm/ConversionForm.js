@@ -7,7 +7,7 @@ import {
   CONVERTER_STATUSES,
 } from 'components/converter/converter-status'
 import Balance from 'components/SplitScreen/Balance'
-import Navbar from 'components/SplitScreen/Navbar'
+import NavBar from 'components/NavBar/NavBar'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
 import AmountInput from 'components/AmountInput/AmountInput'
 import {
@@ -203,7 +203,8 @@ function useConvertInputs(otherSymbol, forwards = true) {
     inputValueSource,
   }
 }
-export default () => {
+
+function ConversionForm() {
   const [selectedOption, setSelectedOption] = useState(1)
   const [inverted, setInverted] = useState(true)
   const [isFinal, setIsFinal] = useState(false)
@@ -279,7 +280,7 @@ export default () => {
         height: 100vh;
       `}
     >
-      <Navbar logoMode={navbarLogoMode} />
+      <NavBar logoMode={navbarLogoMode} />
       <SplitScreen
         inverted={inverted}
         onConvert={handleConvert}
@@ -511,3 +512,5 @@ const MaxButton = styled.button`
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
   }
 `
+
+export default ConversionForm
