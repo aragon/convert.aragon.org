@@ -458,24 +458,32 @@ const Label = styled.label`
 `
 
 const MaxButton = styled.button`
-  background: transparent;
-  border: 1px solid white;
-  box-sizing: border-box;
-  margin-top: 8px;
-  border-radius: 4px;
-  width: 150px;
-  height: 32;
-  text-align: center;
-  font-size: 16px;
-  line-height: 31px;
-  text-align: center;
-  color: white;
-  cursor: pointer;
-  outline: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  height: 32px;
+  margin-top: 8px;
+  line-height: 32px;
+  text-align: center;
+  font-size: 16px;
+  text-align: center;
+  color: #fff;
+  background: transparent;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  cursor: pointer;
+  outline: 0 !important;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+
+  &:hover,
+  &:active {
+    outline: 0 !important;
+  }
+  &:focus,
+  &:active {
+    padding: 0;
+    transform: translateY(0.5px);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
   }
 `
