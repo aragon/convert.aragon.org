@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Anchor from '../Anchor/Anchor'
 import environment from 'lib/environment'
 import { shortenAddress } from 'lib/web3-utils'
 
@@ -16,17 +17,14 @@ function TransactionBadge({ transactionHash }) {
         line-height: 20px;
       `}
     >
-      <a
+      <Anchor
         href={getEtherscanHref(transactionHash)}
-        target="_blank"
-        rel="noopener noreferrer"
         css={`
           color: black;
         `}
       >
-        {' '}
         {shortenAddress(transactionHash)}
-      </a>
+      </Anchor>
     </div>
   )
 }

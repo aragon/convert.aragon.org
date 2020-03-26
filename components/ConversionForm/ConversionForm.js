@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
+import Anchor from 'components/Anchor/Anchor'
 import Converter from 'components/converter/Converter'
 import {
   useConverterStatus,
@@ -432,31 +433,19 @@ function Docs() {
       `}
     >
       <li>
-        <a
-          href="https://anj.aragon.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Anchor href="https://anj.aragon.org/">
           About
-        </a>
+        </Anchor>
       </li>
       <li>
-        <a
-          href="https://help.aragon.org/article/41-aragon-court"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Anchor href="https://help.aragon.org/article/41-aragon-court">
           Docs
-        </a>
+        </Anchor>
       </li>
       <li>
-        <a
-          href="https://court.aragon.org/dashboard"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Anchor href="https://court.aragon.org/dashboard">
           Court
-        </a>
+        </Anchor>
       </li>
     </ul>
   )
