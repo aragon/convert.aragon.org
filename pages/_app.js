@@ -1,7 +1,7 @@
 import React from 'react'
 import * as Sentry from '@sentry/browser'
-import App from 'next/app'
 import Head from 'next/head'
+import { useSpring, animated } from 'react-spring'
 import { createGlobalStyle } from 'styled-components/macro'
 import { ViewportProvider } from 'use-viewport'
 import { Web3ConnectProvider } from 'lib/web3-connect'
@@ -33,10 +33,14 @@ const GlobalStyles = createGlobalStyle`
   }
 `
 
-export default class extends App {
-  render() {
-    const { Component, pageProps } = this.props
-    return (
+export default function App({ Component, pageProps }) {
+  const revealProps = useSpring({
+    from: { opacity: 0, transform: 'scale3d(0.98, 0.98, 1)' },
+    to: { opacity: 1, transform: 'scale3d(1, 1, 1)' },
+  })
+
+  return (
+    <animated.div style={revealProps}>
       <ViewportProvider>
         <Head>
           <title>Aragon Court</title>
@@ -46,6 +50,6 @@ export default class extends App {
           <Component {...pageProps} />
         </Web3ConnectProvider>
       </ViewportProvider>
-    )
-  }
+    </animated.div>
+  )
 }

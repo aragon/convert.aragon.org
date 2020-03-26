@@ -87,7 +87,13 @@ export default class extends Document {
           <meta property="og:image:height" content="300" />
 
           <meta name="description" content={env('SITE_DESCRIPTION')} />
-          <style>{`html { background: #1c1c1c }`}</style>
+          <style>{`
+            html, body {
+            min-height: 100vh;
+            background: no-repeat center/170px url(/splash.svg),
+                        linear-gradient(30deg, #FFC58F -24%, #FF7C7C 62%) !important;
+            }
+          `}</style>
         </Head>
         <body>
           <Main />
