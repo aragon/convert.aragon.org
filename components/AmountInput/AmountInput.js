@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useViewport } from 'use-viewport'
 
@@ -24,6 +24,16 @@ function AmountInput({
   onChange,
 }) {
   const viewport = useViewport()
+
+  // Super ugly Next.js workaround to let us have differences between SSR & client
+  const [isCompact, setIsCompact] = useState(false)
+  const smallLayout = viewport.below(414)
+  useEffect(() => {
+    setTimeout(() => {
+      setIsCompact(smallLayout)
+    }, 0)
+  }, [smallLayout])
+
   return (
     <label
       css={`
@@ -69,9 +79,9 @@ function AmountInput({
           display: block;
           width: 100%;
           text-align: center;
-          font-size: ${viewport.below(414) ? '36px' : '88px'};
           font-weight: 600;
           color: ${color ? '#1c1c1c' : '#FFF'};
+          font-size: ${isCompact ? '36px' : '88px'};
           background: transparent;
           border: 0;
           outline: none;
