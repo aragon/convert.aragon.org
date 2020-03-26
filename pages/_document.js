@@ -1,33 +1,7 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
-
-const SITE_DESCRIPTION = 'Bonding Curve Converter'
-const SITE_TITLE = 'Bonding Curve Converter'
-const SITE_URL = 'https://court.aragon.org/'
-
-const ANALYTICS_CODE = `
-  var _paq = window._paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//arastats.eu/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '9']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript';
-    g.async=true;
-    g.defer=true;
-    g.src=u+'matomo.js';
-    s.parentNode.insertBefore(g,s);
-  })();
-`
-
-function AnalyticsScript() {
-  return process.env.NODE_ENV !== 'production' ? null : (
-    <script dangerouslySetInnerHTML={{ __html: ANALYTICS_CODE }} />
-  )
-}
+import env from 'lib/environment'
 
 export default class extends Document {
   static async getInitialProps(ctx) {
@@ -73,14 +47,14 @@ export default class extends Document {
 
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:site" content="@AragonProject" />
-          <meta name="twitter:description" content={SITE_DESCRIPTION} />
-          <meta name="twitter:title" content={SITE_TITLE} />
+          <meta name="twitter:description" content={env('SITE_DESCRIPTION')} />
+          <meta name="twitter:title" content={env('SITE_TITLE')} />
           <meta name="twitter:image" content="/twitter-card-icon.png" />
 
-          <meta property="og:title" content={SITE_TITLE} />
-          <meta property="og:description" content={SITE_DESCRIPTION} />
-          <meta property="og:url" content={SITE_URL} />
-          <meta property="og:site_name" content={SITE_TITLE} />
+          <meta property="og:title" content={env('SITE_TITLE')} />
+          <meta property="og:description" content={env('SITE_DESCRIPTION')} />
+          <meta property="og:url" content={env('SITE_URL')} />
+          <meta property="og:site_name" content={env('SITE_TITLE')} />
           <meta property="og:image" content="/twitter-card-icon.png" />
           <meta
             property="og:image:secure_url"
@@ -89,13 +63,18 @@ export default class extends Document {
           <meta property="og:image:width" content="300" />
           <meta property="og:image:height" content="300" />
 
-          <meta name="description" content={SITE_DESCRIPTION} />
-          <style>{`html { background: #1c1c1c }`}</style>
+          <meta name="description" content={env('SITE_DESCRIPTION')} />
+          <style>{`
+            html, body {
+            min-height: 100vh;
+            background: no-repeat center/170px url(/splash.svg),
+                        linear-gradient(30deg, #FFC58F -24%, #FF7C7C 62%) !important;
+            }
+          `}</style>
         </Head>
         <body>
           <Main />
           <NextScript />
-          <AnalyticsScript />
         </body>
       </Html>
     )

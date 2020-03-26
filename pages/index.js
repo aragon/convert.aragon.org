@@ -1,10 +1,11 @@
-import React from 'react'
-import Converter from '../components/converter/Converter'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { ConverterProvider } from 'components/converter/converter-status'
+import ConversionForm from 'components/ConversionForm/ConversionForm'
 
 export default () => {
   return (
-    <div>
-      <Converter />
-    </div>
+    <ConverterProvider>
+      <ConversionForm />
+    </ConverterProvider>
   )
 }
