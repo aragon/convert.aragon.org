@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import TransactionBadge from './TransactionBadge'
 
@@ -22,6 +23,11 @@ function Processing({ isFinal, transactionHash }) {
       </div>
     </ProcessingIn>
   )
+}
+
+Processing.propTypes = {
+  isFinal: PropTypes.bool,
+  transactionHash: PropTypes.string,
 }
 
 const ProcessingIn = styled.div`

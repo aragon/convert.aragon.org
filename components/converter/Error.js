@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import error from './assets/error.svg'
 import repeat from './assets/repeat.svg'
@@ -17,6 +18,10 @@ function ErrorSection({ onDone }) {
       </div>
     </Error>
   )
+}
+
+ErrorSection.propTypes = {
+  onDone: PropTypes.func,
 }
 
 const Error = styled.div`

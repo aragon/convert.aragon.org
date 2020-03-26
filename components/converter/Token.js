@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
 function Token({ symbol, badge }) {
@@ -10,6 +11,11 @@ function Token({ symbol, badge }) {
       </div>
     </TokenSection>
   )
+}
+
+Token.propTypes = {
+  symbol: PropTypes.string,
+  badge: PropTypes.bool,
 }
 
 const TokenSection = styled.div`

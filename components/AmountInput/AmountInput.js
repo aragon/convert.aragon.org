@@ -19,9 +19,9 @@ function getImage(color, symbol) {
 function AmountInput({
   color = true,
   disabled = false,
+  onChange,
   symbol,
   value,
-  onChange,
 }) {
   const viewport = useViewport()
   return (
@@ -86,7 +86,10 @@ function AmountInput({
 
 AmountInput.propTypes = {
   color: PropTypes.bool,
+  disabled: PropTypes.bool,
+  onChange: PropTypes.func,
   symbol: PropTypes.oneOf(['ANT', 'ANJ']).isRequired,
+  value: PropTypes.string,
 }
 
 export default AmountInput

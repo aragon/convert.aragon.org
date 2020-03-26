@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import processing from './assets/loader.gif'
 
@@ -39,6 +40,9 @@ function Legal({ handleConvert }) {
   )
 }
 
+Legal.propTypes = {
+  handleConvert: PropTypes.func,
+}
 const PendingIn = styled.div`
   margin-top: 24px;
   display: flex;

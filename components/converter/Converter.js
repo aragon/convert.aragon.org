@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { breakpoint } from 'lib/microsite-logic'
 import ErrorScreen from './Error'
 import LegalScreen from './Legal'
 import PendingScreen from './Pending'
 import ProcessingScreen from './Processing'
 import SuccessScreen from './Success'
 import { CONVERTER_STATUSES, useConverterStatus } from './converter-status'
+import { breakpoint } from 'lib/microsite-logic'
 
 const large = css => breakpoint('large', css)
 
 function Converter({
   amountRequested,
-  backToSplit,
   handleConvert,
   isFinal,
   toAnj,
@@ -34,7 +34,6 @@ function Converter({
       <ConverterSection>
         <ConverterIn
           amountRequested={amountRequested}
-          backToSplit={backToSplit}
           handleConvert={handleConvert}
           isFinal={isFinal}
           toAnj={toAnj}
@@ -45,18 +44,23 @@ function Converter({
   )
 }
 
+Converter.propTypes = {
+  handleConvert: PropTypes.func,
+  isFinal: PropTypes.bool,
+  toAnj: PropTypes.bool,
+  transactionHash: PropTypes.string,
+}
+
 function ConverterIn({
   amountRequested,
-  backToSplit,
   handleConvert,
   isFinal,
   toAnj,
   transactionHash,
 }) {
   const { status, setStatus } = useConverterStatus()
-  const backToForm = useCallback(() => {
+  const handleBackToForm = useCallback(() => {
     setStatus(CONVERTER_STATUSES.FORM)
-    backToSplit()
   }, [setStatus])
 
   if (status === CONVERTER_STATUSES.SUCCESS) {
@@ -64,14 +68,14 @@ function ConverterIn({
       <SuccessScreen
         amountRequested={amountRequested}
         final={isFinal}
-        onDone={backToForm}
+        onDone={handleBackToForm}
         toAnj={toAnj}
         transactionHash={transactionHash}
       />
     )
   }
   if (status === CONVERTER_STATUSES.ERROR) {
-    return <ErrorScreen onDone={backToForm} />
+    return <ErrorScreen onDone={handleBackToForm} />
   }
   if (status === CONVERTER_STATUSES.PENDING) {
     return <PendingScreen final={isFinal} />

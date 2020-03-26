@@ -1,8 +1,9 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import AccountModule from 'components/AccountModule/AccountModule'
 import Logo from 'components/Logo/Logo'
 
-function Navbar({ logoMode }) {
+function NavBar({ logoMode }) {
   return (
     <div
       css={`
@@ -22,4 +23,8 @@ function Navbar({ logoMode }) {
   )
 }
 
-export default Navbar
+NavBar.propTypes = {
+  logoMode: PropTypes.string,
+}
+
+export default NavBar
