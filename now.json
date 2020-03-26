@@ -8,9 +8,9 @@
   },
   "build": {
     "env": {
-      "FORTMATIC_API_KEY": "@converter-fortmatic-api-key",
-      "PORTIS_DAPP_ID": "@converter-portis-dapp-id",
-      "SENTRY_DSN": "@converter-sentry-dsn"
+      "FORTMATIC_API_KEY": "@convert-fortmatic-api-key",
+      "PORTIS_DAPP_ID": "@convert-portis-dapp-id",
+      "SENTRY_DSN": "@convert-sentry-dsn"
     }
   }
 }
