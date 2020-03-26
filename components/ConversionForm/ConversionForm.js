@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import Converter from 'components/converter/Converter'
 import {

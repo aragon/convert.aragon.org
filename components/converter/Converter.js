@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { breakpoint } from 'lib/microsite-logic'
 import ErrorScreen from './Error'
 import PendingScreen from './Pending'

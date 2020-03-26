@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { useSpring, useTransition, animated } from 'react-spring'
 import {
   useAnimateWhenMounted,

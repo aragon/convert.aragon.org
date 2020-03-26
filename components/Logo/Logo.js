@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
-import 'styled-components/macro'
 import { useTransition, animated } from 'react-spring'
 
 import logo from './logo.svg'

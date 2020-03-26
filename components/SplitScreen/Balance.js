@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react'
 import { formatUnits } from 'lib/web3-utils'
-import 'styled-components/macro'
 
 function Balance({ tokenAmountToConvert, tokenBalance }) {
   const balanceError = useMemo(
