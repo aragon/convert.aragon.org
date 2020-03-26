@@ -230,7 +230,7 @@ function useConvertInputs(otherSymbol, forwards = true) {
 }
 export default () => {
   const [selectedOption, setSelectedOption] = useState(0)
-  const [inverted, setInverted] = useState(false)
+  const [inverted, setInverted] = useState(true)
   const [isFinal, setIsFinal] = useState(false)
   const [transactionHash, setTransactionHash] = useState(null)
   const forwards = useMemo(() => !inverted, [inverted])
