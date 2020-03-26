@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components/macro'
+import styled from 'styled-components'
 import { breakpoint } from 'lib/microsite-logic'
 import { useWeb3Connect } from 'lib/web3-connect'
 import Balance from './Balance'

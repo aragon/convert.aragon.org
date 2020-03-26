@@ -1,4 +1,3 @@
-import 'styled-components/macro'
 import React, { useImperativeHandle, useState } from 'react'
 import { useSpring, animated } from 'react-spring'
 import { UNSELECTABLE } from 'lib/css-utils'

@@ -1,6 +1,6 @@
 import React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
-import { ServerStyleSheet } from 'styled-components/macro'
+import { ServerStyleSheet } from 'styled-components'
 import env from 'lib/environment'
 
 export default class extends Document {

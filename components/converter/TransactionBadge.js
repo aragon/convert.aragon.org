@@ -1,5 +1,4 @@
 import React from 'react'
-import 'styled-components/macro'
 import { shortenAddress } from 'lib/web3-utils'
 import { environment } from '../../lib/environment'
 
