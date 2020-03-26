@@ -70,7 +70,11 @@
     }
   },
   "lint-staged": {
-    "src/*.js": [
+    "components/*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "lib/*.js": [
       "eslint --fix",
       "git add"
     ]
