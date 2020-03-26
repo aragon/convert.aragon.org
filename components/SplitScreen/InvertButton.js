@@ -4,10 +4,10 @@ import { useSpring, animated } from 'react-spring'
 import { UNSELECTABLE } from 'lib/css-utils'
 import { useAnimateWhenMounted, SPRING_FAST } from 'lib/animation-utils'
 
-import arrowImg from './arrow-down.svg'
+import arrowsImg from './arrows.svg'
 
-const WIDTH = 70
-const HEIGHT = 70
+const WIDTH = 64
+const HEIGHT = 64
 
 const InvertButton = React.forwardRef(function InvertButton(
   { onClick, label = 'Invert' },
@@ -20,7 +20,7 @@ const InvertButton = React.forwardRef(function InvertButton(
     immediate: !animate,
     config: SPRING_FAST,
     to: {
-      transform: `rotate3d(0, 0, 1, ${position * 360}deg)`,
+      transform: `rotate3d(0, 0, 1, ${position * 180}deg)`,
     },
   })
 
@@ -57,6 +57,7 @@ const InvertButton = React.forwardRef(function InvertButton(
           border: 0;
         }
         &:active {
+          padding: 0;
           transform: translateY(1px);
           box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
         }
@@ -64,10 +65,10 @@ const InvertButton = React.forwardRef(function InvertButton(
     >
       <animated.img
         alt={label}
-        height={HEIGHT * 0.76}
-        src={arrowImg}
+        height="43"
+        src={arrowsImg}
         style={imgTransitions}
-        width={WIDTH * 0.76}
+        width="43"
         css={`
           transform-origin: 50% 50%;
         `}
