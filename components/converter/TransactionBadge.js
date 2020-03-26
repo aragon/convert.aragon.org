@@ -1,6 +1,7 @@
 import React from 'react'
 import 'styled-components/macro'
 import { shortenAddress } from 'lib/web3-utils'
+import { environment } from '../../lib/environment'
 
 function TransactionBadge({ transactionHash }) {
   return (
@@ -12,15 +13,30 @@ function TransactionBadge({ transactionHash }) {
         border-radius: 3px;
         padding: 4px 8px;
         font-size: 20px;
-        line-height: 21px;
+        line-height: 20px;
       `}
     >
-        <a href={`https://etherscan.io/tx/${transactionHash}`} target="_blank" css={`color: black;`}>
+      <a
+        href={getEtherscanHref(transactionHash)}
+        target="_blank"
+        rel="noopener"
+        css={`
+          color: black;
+        `}
+      >
         {' '}
         {shortenAddress(transactionHash)}
       </a>
     </div>
   )
+}
+
+function getEtherscanHref(transactionHash) {
+  const chainId = environment('CHAIN_ID')
+
+  return `https://${
+    chainId === 4 ? 'rinkeby.' : ''
+  }etherscan.io/tx/${transactionHash}`
 }
 
 export default TransactionBadge
