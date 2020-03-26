@@ -54,7 +54,7 @@ function AmountInput({
         <span
           css={`
             position: relative;
-            top: 3px;
+            top: 1px;
           `}
         >
           {symbol}

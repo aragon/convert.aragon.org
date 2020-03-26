@@ -1,6 +1,7 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import TransactionBadge from './TransactionBadge'
+
 import processing from './assets/loader.gif'
 
 function Processing({ isFinal, transactionHash }) {

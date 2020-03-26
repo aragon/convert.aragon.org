@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import * as Sentry from '@sentry/browser'
 import { bigNum } from 'lib/utils'
 import { breakpoint, GU } from 'lib/microsite-logic'

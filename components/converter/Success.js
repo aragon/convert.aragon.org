@@ -1,9 +1,9 @@
 import React from 'react'
-import styled from 'styled-components'
-import TransactionBadge from './TransactionBadge'
+import styled from 'styled-components/macro'
 import { useTokenDecimals } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
 import { useConverterStatus } from './converter-status'
+import TransactionBadge from './TransactionBadge'
 
 import successImg from './assets/success.svg'
 
