@@ -65,7 +65,7 @@ function AmountInput({
         disabled={disabled}
         value={value}
         onChange={onChange}
-        placeholder={'0'}
+        placeholder="0"
         css={`
           display: block;
           width: 100%;
