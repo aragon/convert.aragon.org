@@ -1,6 +1,5 @@
 import React from 'react'
 import { shortenAddress } from 'lib/web3-utils'
-import { environment } from '../../lib/environment'
 
 function TransactionBadge({ transactionHash }) {
   return (
@@ -31,7 +30,7 @@ function TransactionBadge({ transactionHash }) {
 }
 
 function getEtherscanHref(transactionHash) {
-  const chainId = environment('CHAIN_ID')
+  const chainId = process.env.CHAIN_ID || '1'
 
   return `https://${
     chainId === 4 ? 'rinkeby.' : ''
