@@ -253,7 +253,7 @@ export default () => {
   const converterStatus = useConverterStatus()
 
   const handleInvert = useCallback(() => {
-    setInverted(v => !v)
+    setInverted(inverted => !inverted)
     setSelectedOption(option => (option + 1) % 2)
   }, [])
   const handleConvertMax = useCallback(() => {
@@ -287,6 +287,7 @@ export default () => {
       converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
     }
   }, [amountSource, forwards, converterStatus])
+
   const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
 
   return (
@@ -299,7 +300,6 @@ export default () => {
       <Navbar inverted={inverted} />
       <SplitScreen
         inverted={inverted}
-        opened={converterStatus.status !== CONVERTER_STATUSES.FORM}
         onConvert={handleConvert}
         onInvert={handleInvert}
         primary={
