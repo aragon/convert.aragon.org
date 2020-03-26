@@ -137,6 +137,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
                   ${ABSOLUTE_FULL};
                   z-index: 2;
                   background: rgba(0, 0, 0, ${REVEAL_OVERLAY_OPACITY});
+                  pointer-events: none;
                 `}
               />
               <animated.div

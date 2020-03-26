@@ -45,15 +45,15 @@ function parseInputValue(inputValue, decimals) {
 }
 
 function useConvertInputs(otherSymbol, forwards = true) {
-  const [inputValueAnj, setInputValueAnj] = useState('')
-  const [inputValueOther, setInputValueOther] = useState('0.0')
-  const [amountAnj, setAmountAnj] = useState(bigNum(0))
-  const [amountOther, setAmountOther] = useState(bigNum(0))
+  const [inputValueRecipient, setInputValueRecipient] = useState('')
+  const [inputValueSource, setInputValueSource] = useState('0.0')
+  const [amountRecipient, setAmountRecipient] = useState(bigNum(0))
+  const [amountSource, setAmountSource] = useState(bigNum(0))
   const [editing, setEditing] = useState(null)
   const {
     loading: bondingPriceLoading,
     price: bondingCurvePrice,
-  } = useBondingCurvePrice(amountOther, forwards)
+  } = useBondingCurvePrice(amountSource, forwards)
   const anjDecimals = useTokenDecimals('ANJ')
   const otherDecimals = useTokenDecimals(otherSymbol)
 
@@ -62,10 +62,10 @@ function useConvertInputs(otherSymbol, forwards = true) {
 
   // Reset the inputs anytime the selected token changes
   useEffect(() => {
-    setInputValueOther('')
-    setInputValueAnj('')
-    setAmountAnj(bigNum(0))
-    setAmountOther(bigNum(0))
+    setInputValueSource('')
+    setInputValueRecipient('')
+    setAmountRecipient(bigNum(0))
+    setAmountSource(bigNum(0))
   }, [otherSymbol])
 
   // Calculate the ANJ amount from the other amount
@@ -82,12 +82,12 @@ function useConvertInputs(otherSymbol, forwards = true) {
 
     const amount = bondingCurvePrice
 
-    setAmountAnj(amount)
-    setInputValueAnj(
+    setAmountRecipient(amount)
+    setInputValueRecipient(
       formatUnits(amount, { digits: anjDecimals, truncateToDecimalPlace: 8 })
     )
   }, [
-    amountOther,
+    amountSource,
     anjDecimals,
     bondingCurvePrice,
     bondingPriceLoading,
@@ -107,13 +107,13 @@ function useConvertInputs(otherSymbol, forwards = true) {
       return
     }
 
-    const amount = amountOther
+    const amount = amountSource
 
-    setAmountOther(amount)
-    setInputValueOther(formatUnits(amount, { digits: otherDecimals }))
+    setAmountSource(amount)
+    setInputValueSource(formatUnits(amount, { digits: otherDecimals }))
   }, [
-    amountAnj,
-    amountOther,
+    amountRecipient,
+    amountSource,
     anjDecimals,
     convertFromAnj,
     editing,
@@ -124,27 +124,27 @@ function useConvertInputs(otherSymbol, forwards = true) {
   const setEditModeOther = useCallback(
     editMode => {
       setEditing(editMode ? 'other' : null)
-      setInputValueOther(
-        formatUnits(amountOther, {
+      setInputValueSource(
+        formatUnits(amountSource, {
           digits: otherDecimals,
           commas: !editMode,
         })
       )
     },
-    [amountOther, otherDecimals]
+    [amountSource, otherDecimals]
   )
 
   const setEditModeAnj = useCallback(
     editMode => {
       setEditing(editMode ? 'anj' : null)
-      setInputValueAnj(
-        formatUnits(amountAnj, {
+      setInputValueRecipient(
+        formatUnits(amountRecipient, {
           digits: anjDecimals,
           commas: !editMode,
         })
       )
     },
-    [amountAnj, anjDecimals]
+    [amountRecipient, anjDecimals]
   )
 
   const handleOtherInputChange = useCallback(
@@ -157,8 +157,8 @@ function useConvertInputs(otherSymbol, forwards = true) {
 
       const parsed = parseInputValue(event.target.value, otherDecimals)
       if (parsed !== null) {
-        setInputValueOther(parsed.inputValue)
-        setAmountOther(parsed.amount)
+        setInputValueSource(parsed.inputValue)
+        setAmountSource(parsed.amount)
       }
     },
     [otherDecimals]
@@ -174,8 +174,8 @@ function useConvertInputs(otherSymbol, forwards = true) {
 
       const parsed = parseInputValue(event.target.value, anjDecimals)
       if (parsed !== null) {
-        setInputValueAnj(parsed.inputValue)
-        setAmountAnj(parsed.amount)
+        setInputValueRecipient(parsed.inputValue)
+        setAmountRecipient(parsed.amount)
       }
     },
     [anjDecimals]
@@ -190,8 +190,8 @@ function useConvertInputs(otherSymbol, forwards = true) {
 
       const parsed = parseInputValue(amount, otherDecimals)
       if (parsed !== null) {
-        setInputValueOther(parsed.inputValue)
-        setAmountOther(parsed.amount)
+        setInputValueSource(parsed.inputValue)
+        setAmountSource(parsed.amount)
       }
     },
     [otherDecimals]
@@ -217,38 +217,40 @@ function useConvertInputs(otherSymbol, forwards = true) {
 
   return {
     // The parsed amount
-    amountOther,
-    amountAnj,
+    amountSource,
+    amountRecipient,
     // Event handlers to bind the inputs
     bindOtherInput,
     bindAnjInput,
     bondingPriceLoading,
     handleManualInputChange,
     // The value to be used for inputs
-    inputValueAnj,
-    inputValueOther,
+    inputValueRecipient,
+    inputValueSource,
   }
 }
 export default () => {
   const [selectedOption, setSelectedOption] = useState(0)
   const [inverted, setInverted] = useState(false)
+  const [isFinal, setIsFinal] = useState(false)
+  const [transactionHash, setTransactionHash] = useState(null)
   const forwards = useMemo(() => !inverted, [inverted])
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
   const {
-    amountOther,
+    amountSource,
+    amountRecipient,
     bindOtherInput,
     bondingPriceLoading,
     handleManualInputChange,
-    inputValueAnj,
-    inputValueOther,
+    inputValueRecipient,
+    inputValueSource,
   } = useConvertInputs(options[selectedOption], forwards)
   const tokenBalance = useTokenBalance(options[selectedOption])
 
   const { account } = useWeb3Connect()
   const inputDisabled = useMemo(() => !Boolean(account), [account])
-  const inputError = useMemo(() => Boolean(tokenBalance.lt(amountOther)))
-
+  const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)))
   const converterStatus = useConverterStatus()
 
   const handleInvert = useCallback(() => {
@@ -261,25 +263,32 @@ export default () => {
       forwards
     )
   }, [tokenBalance, forwards])
-  const handleConvert = useCallback(async () => {
-    converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
 
-    // try {
-    //   const tx = await openOrder(amountOther, forwards)
-    //   converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
-    //   await tx.wait()
-    //   const finalTx = await claimOrder(tx.hash, forwards)
-    //   await finalTx.wait()
-    //   converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
-    // } catch (err) {
-    //   if (process.env.NODE_ENV === 'production') {
-    //     Sentry.captureException(err)
-    //   }
-    //   console.log(err)
-    //   converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
-    // }
-    // }, [amountOther, forwards, converterStatus])
-  }, [converterStatus])
+  const handleConvert = useCallback(async () => {
+    setIsFinal(false)
+    setTransactionHash(null)
+    try {
+      converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
+      const tx = await openOrder(amountSource, forwards)
+      setTransactionHash(tx.hash)
+      converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
+      await tx.wait()
+      converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
+      const finalTx = await claimOrder(tx.hash, forwards)
+      setIsFinal(true)
+      setTransactionHash(finalTx.hash)
+      converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
+      await finalTx.wait()
+      converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
+    } catch (err) {
+      if (process.env.NODE_ENV === 'production') {
+        Sentry.captureException(err)
+      }
+      console.log(err)
+      converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
+    }
+  }, [amountSource, forwards, converterStatus])
+  const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
 
   return (
     <div
@@ -306,13 +315,13 @@ export default () => {
               error={inputError}
               symbol={inverted ? 'ANJ' : 'ANT'}
               color={false}
-              value={inputValueOther}
+              value={inputValueSource}
               disabled={inputDisabled}
               {...bindOtherInput}
             />
             <Balance
               tokenBalance={tokenBalance}
-              tokenAmountToConvert={amountOther}
+              tokenAmountToConvert={amountSource}
             />
             {account && (
               <MaxButton
@@ -337,7 +346,7 @@ export default () => {
             <AmountInput
               symbol={inverted ? 'ANT' : 'ANJ'}
               color={true}
-              value={inputValueAnj}
+              value={inputValueRecipient}
               onChange={() => null}
             />
             <LabelWithOverlay
@@ -354,7 +363,7 @@ export default () => {
             />
             <Button
               onClick={handleConvert}
-              disabled={bondingPriceLoading || !account}
+              disabled={submitButtonDisabled}
               css={`
                 width: 90%;
               `}
@@ -365,7 +374,13 @@ export default () => {
         }
         reveal={
           converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
-            <Converter />
+            <Converter
+              amountRequested={amountRecipient}
+              backToSplit={() => null}
+              toAnj={forwards}
+              transactionHash={transactionHash}
+              isFinal={isFinal}
+            />
           )
         }
       />
@@ -389,6 +404,16 @@ function LabelWithOverlay({ label, description, overlayPlacement }) {
         <img src={question} alt="" />
       </Label>
     </OverlayTrigger>
+  )
+}
+
+function Docs({ isMobile }) {
+  return (
+    <ul>
+      <li>About</li>
+      <li>Help</li>
+      <li>Court</li>
+    </ul>
   )
 }
 

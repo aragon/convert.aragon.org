@@ -1,29 +1,25 @@
 import React from 'react'
 import styled from 'styled-components'
-import TransactionBadge from './TransactionBadge'
 import processing from './assets/loader.gif'
 
-function Processing({ isFinal, transactionHash }) {
+function Pending({ isFinal }) {
   return (
-    <ProcessingIn>
+    <PendingIn>
       <div>
         <img src={processing} alt="" />
         <>
-          <p className="black">
-            Processing {isFinal ? 'last' : 'first'} transaction
-          </p>
+          <p className="black">Sign {isFinal ? 'last' : 'first'} transaction</p>
           <p>
-            Please wait for transaction{' '}
-            <TransactionBadge transactionHash={transactionHash} /> to be mined.
-            Do not close this window until the process is finished.
+            This process might take up to a few minutes. Do not close this
+            window until the process is finished.
           </p>
         </>
       </div>
-    </ProcessingIn>
+    </PendingIn>
   )
 }
 
-const ProcessingIn = styled.div`
+const PendingIn = styled.div`
   margin-top: 24px;
   display: flex;
   align-items: center;
@@ -43,4 +39,4 @@ const ProcessingIn = styled.div`
   }
 `
 
-export default Processing
+export default Pending

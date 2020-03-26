@@ -43,6 +43,7 @@ function DisconnectedMode() {
       css={`
         width: 179px;
         height: 40px;
+        background: rgba(255, 255, 255, 0.5);
         border: 1px solid rgba(223, 227, 232, 0.75);
         box-sizing: border-box;
         box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
@@ -121,6 +122,7 @@ function DisconnectedMode() {
             margin-top: 4px;
             font-size: 16px;
             font-weight: medium;
+            background: transparent;
           `}
         >
           <img
