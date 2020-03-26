@@ -6,7 +6,7 @@ const withFonts = require('next-fonts')
 const { version } = require('./package.json')
 
 const COMMIT_SHA =
-  process.env.COMMIT_SHA || execSync("git log --pretty=format:'%h' -n 1")
+  process.env.COMMIT_SHA || process.env.NOW_GITHUB_COMMIT_SHA || execSync("git log --pretty=format:'%h' -n 1")
 
 const BUILD = process.env.BUILD || `${version}-${COMMIT_SHA.slice(0, 7)}`
 
