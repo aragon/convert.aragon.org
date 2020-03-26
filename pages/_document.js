@@ -3,29 +3,6 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components/macro'
 import env from 'lib/environment'
 
-const ANALYTICS_CODE = `
-  var _paq = window._paq || [];
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="//arastats.eu/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '9']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript';
-    g.async=true;
-    g.defer=true;
-    g.src=u+'matomo.js';
-    s.parentNode.insertBefore(g,s);
-  })();
-`
-
-function AnalyticsScript() {
-  return env('NODE_ENV') !== 'production' ? null : (
-    <script dangerouslySetInnerHTML={{ __html: ANALYTICS_CODE }} />
-  )
-}
-
 export default class extends Document {
   static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet()
@@ -98,7 +75,6 @@ export default class extends Document {
         <body>
           <Main />
           <NextScript />
-          <AnalyticsScript />
         </body>
       </Html>
     )
