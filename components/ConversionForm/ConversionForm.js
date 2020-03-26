@@ -256,9 +256,6 @@ function ConversionForm() {
       await finalTx.wait()
       converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
     } catch (err) {
-      if (process.env.NODE_ENV === 'production') {
-        Sentry.captureException(err)
-      }
       console.log(err)
       converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
     }
@@ -401,7 +398,7 @@ function LabelWithOverlay({ label, description, overlayPlacement }) {
   )
 }
 
-function Docs({ isMobile }) {
+function Docs() {
   return (
     <ul
       css={`
