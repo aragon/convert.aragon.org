@@ -26,12 +26,7 @@ function DisconnectedMode() {
   const { activate } = useWeb3Connect()
 
   const activateAndTrack = useCallback(
-    async providerId => {
-      const ok = await activate(providerId)
-      if (ok && window._paq && window._paq.push) {
-        window._paq.push(['trackEvent', 'Web3', 'connect', providerId])
-      }
-    },
+    async providerId => await activate(providerId),
     [activate]
   )
 
