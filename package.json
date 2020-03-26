@@ -70,13 +70,11 @@
     }
   },
   "lint-staged": {
-    "components/*.js": [
-      "eslint --fix",
-      "git add"
+    "components/**/*.js": [
+      "eslint --fix"
     ],
-    "lib/*.js": [
-      "eslint --fix",
-      "git add"
+    "lib/**/*.js": [
+      "eslint --fix"
     ]
   }
 }
