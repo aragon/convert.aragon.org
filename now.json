@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "public": true,
+  "scope": "aragon",
+  "alias": "convert.aragon.org",
+  "github": {
+    "silent": true
+  },
+  "build": {
+    "env": {
+      "FORTMATIC_API_KEY": "@fortmatic-api-key",
+      "PORTIS_DAPP_ID": "@portis-dapp-id",
+      "SENTRY_DSN": "@sentry-dsn"
+    }
+  }
+}
