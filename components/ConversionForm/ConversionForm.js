@@ -261,6 +261,10 @@ function ConversionForm() {
     }
   }, [amountSource, forwards, converterStatus])
 
+  const handleLegalTerms = useCallback(async () => {
+    converterStatus.setStatus(CONVERTER_STATUSES.LEGAL)
+  }, [converterStatus])
+
   const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
 
   const navbarLogoMode = useMemo(() => {
@@ -351,7 +355,7 @@ function ConversionForm() {
               `}
             >
               <Button
-                onClick={handleConvert}
+                onClick={handleLegalTerms}
                 disabled={submitButtonDisabled}
                 css={`
                   width: 90%;
@@ -366,6 +370,7 @@ function ConversionForm() {
         reveal={
           converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
             <Converter
+              handleConvert={handleConvert}
               amountRequested={amountRecipient}
               backToSplit={() => null}
               toAnj={forwards}

@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 import { useTokenDecimals } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
-import { useConverterStatus } from './converter-status'
 import TransactionBadge from './TransactionBadge'
 
 import successImg from './assets/success.svg'
@@ -71,9 +70,6 @@ const Button = styled.button`
   line-height: 31px;
   text-align: center;
   cursor: pointer;
-  &:hover {
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
-  }
 `
 
 export default SuccessSection
