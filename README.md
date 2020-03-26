@@ -1,4 +1,4 @@
-![Aragon Court](./aragon-court.png)
+# Aragon Court
 
 ## Deploy
 
