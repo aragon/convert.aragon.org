@@ -41,6 +41,7 @@ function DisconnectedMode() {
     <ButtonBase
       ref={containerRef}
       css={`
+        position: relative;
         width: 179px;
         height: 40px;
         background: rgba(255, 255, 255, 0.5);
@@ -48,6 +49,10 @@ function DisconnectedMode() {
         box-sizing: border-box;
         box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
         border-radius: 3px;
+        &:active {
+          top: 1px;
+          box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
       `}
     >
       <OverlayTrigger
@@ -176,16 +181,18 @@ function ProviderButton({ name, onActivate, image }) {
 
 function ConnectedMode() {
   const { account, deactivate } = useWeb3Connect()
-  const balanceAnt = useTokenBalance('ANT')
-  const antDecimals = useTokenDecimals('ANT')
-
   const containerRef = useRef()
 
   return (
     <Container ref={containerRef}>
       <ButtonBase
         css={`
+          position: relative;
           background: rgba(255, 255, 255, 0.5);
+          &:active {
+            top: 1px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+          }
         `}
         onClick={deactivate}
       >

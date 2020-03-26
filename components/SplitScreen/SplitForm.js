@@ -367,15 +367,27 @@ export default () => {
 "
               overlayPlacement="top"
             />
-            <Button
-              onClick={handleConvert}
-              disabled={submitButtonDisabled}
+            <div
               css={`
-                width: 90%;
+                position: relative;
+                width: 100vw;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
               `}
             >
-              Convert
-            </Button>
+              <Button
+                onClick={handleConvert}
+                disabled={submitButtonDisabled}
+                css={`
+                  width: 90%;
+                `}
+              >
+                Convert
+              </Button>
+              <Docs />
+            </div>
           </div>
         }
         reveal={
@@ -415,10 +427,46 @@ function LabelWithOverlay({ label, description, overlayPlacement }) {
 
 function Docs({ isMobile }) {
   return (
-    <ul>
-      <li>About</li>
-      <li>Help</li>
-      <li>Court</li>
+    <ul
+      css={`
+        position: absolute;
+        bottom: 0px;
+        right: 8px;
+        list-style: none;
+        color: #a0a8c2;
+        font-size: 16px;
+        padding: 0;
+        li {
+          display: inline;
+          margin: 0 32px;
+          a {
+            color: #a0a8c2;
+          }
+        }
+        @media screen and (max-width: 1024px) {
+          position: relative;
+          bottom: -32px;
+        }
+      `}
+    >
+      <li>
+        <a href="https://anj.aragon.org/" target="_blank">
+          About
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://help.aragon.org/article/41-aragon-court"
+          target="_blank"
+        >
+          Docs
+        </a>
+      </li>
+      <li>
+        <a href="https://court.aragon.org/dashboard" target="_blank">
+          Court
+        </a>
+      </li>
     </ul>
   )
 }
