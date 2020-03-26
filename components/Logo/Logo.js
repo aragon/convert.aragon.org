@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import 'styled-components/macro'
 import { useTransition, animated } from 'react-spring'
 
@@ -18,7 +19,11 @@ function getImage(mode) {
   return logo
 }
 
-function Logo({ label = 'Aragon Bonding Curve Converter', onClick, mode }) {
+function Logo({
+  label = 'Aragon Bonding Curve Converter',
+  onClick = () => {},
+  mode = 'normal',
+}) {
   // Don’t animate initially
   const animate = useRef(false)
   useEffect(() => {
@@ -69,6 +74,12 @@ function Logo({ label = 'Aragon Bonding Curve Converter', onClick, mode }) {
       ))}
     </button>
   )
+}
+
+Logo.propTypes = {
+  label: PropTypes.string,
+  mode: PropTypes.oneOf(['ant', 'anj', 'normal']),
+  onClick: PropTypes.func,
 }
 
 export default Logo

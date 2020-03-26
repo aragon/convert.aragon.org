@@ -3,7 +3,7 @@ import 'styled-components/macro'
 import AccountModule from 'components/converter/AccountModule'
 import Logo from 'components/Logo/Logo'
 
-function Navbar({ inverted }) {
+function Navbar({ logoMode }) {
   return (
     <div
       css={`
@@ -17,7 +17,7 @@ function Navbar({ inverted }) {
         padding: 16px 40px 0 40px;
       `}
     >
-      <Logo mode={inverted ? 'anj' : 'ant'} />
+      <Logo mode={logoMode} />
       <AccountModule />
     </div>
   )

@@ -290,6 +290,13 @@ export default () => {
 
   const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
 
+  const navbarLogoMode = useMemo(() => {
+    if (converterStatus.status !== CONVERTER_STATUSES.FORM) {
+      return 'normal'
+    }
+    return inverted ? 'anj' : 'ant'
+  }, [converterStatus, inverted])
+
   return (
     <div
       css={`
@@ -297,7 +304,7 @@ export default () => {
         height: 100vh;
       `}
     >
-      <Navbar inverted={inverted} />
+      <Navbar logoMode={navbarLogoMode} />
       <SplitScreen
         inverted={inverted}
         onConvert={handleConvert}
