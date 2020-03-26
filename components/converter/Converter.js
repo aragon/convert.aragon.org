@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import styled from 'styled-components'
 import { breakpoint } from 'lib/microsite-logic'
 import ErrorScreen from './Error'
+import LegalScreen from './Legal'
 import PendingScreen from './Pending'
 import ProcessingScreen from './Processing'
 import SuccessScreen from './Success'
@@ -10,11 +11,12 @@ import { CONVERTER_STATUSES, useConverterStatus } from './converter-status'
 const large = css => breakpoint('large', css)
 
 function Converter({
-  toAnj,
-  transactionHash,
-  isFinal,
   amountRequested,
   backToSplit,
+  handleConvert,
+  isFinal,
+  toAnj,
+  transactionHash,
 }) {
   return (
     <div
@@ -33,6 +35,7 @@ function Converter({
         <ConverterIn
           amountRequested={amountRequested}
           backToSplit={backToSplit}
+          handleConvert={handleConvert}
           isFinal={isFinal}
           toAnj={toAnj}
           transactionHash={transactionHash}
@@ -45,9 +48,10 @@ function Converter({
 function ConverterIn({
   amountRequested,
   backToSplit,
+  handleConvert,
+  isFinal,
   toAnj,
   transactionHash,
-  isFinal,
 }) {
   const { status, setStatus } = useConverterStatus()
   const backToForm = useCallback(() => {
@@ -76,6 +80,9 @@ function ConverterIn({
     return (
       <ProcessingScreen isFinal={isFinal} transactionHash={transactionHash} />
     )
+  }
+  if (status === CONVERTER_STATUSES.LEGAL) {
+    return <LegalScreen handleConvert={handleConvert} />
   }
   return null
 }
