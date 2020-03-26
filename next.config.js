@@ -28,6 +28,9 @@ module.exports = withCSS(
         }, config)
       },
       env: ENV,
+      devIndicators: {
+        autoPrerender: false,
+      },
     })
   )
 )

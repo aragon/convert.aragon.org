@@ -1,6 +1,7 @@
 import React from 'react'
 import * as Sentry from '@sentry/browser'
-import Head from 'next/head'
+import NextApp from 'next/app'
+import NextHead from 'next/head'
 import { useSpring, animated } from 'react-spring'
 import { createGlobalStyle } from 'styled-components'
 import { ViewportProvider } from 'use-viewport'
@@ -40,16 +41,16 @@ export default function App({ Component, pageProps }) {
   })
 
   return (
-    <animated.div style={revealProps}>
-      <ViewportProvider>
-        <Head>
+    <ViewportProvider>
+      <animated.div style={revealProps}>
+        <NextHead>
           <title>Aragon Court</title>
-        </Head>
+        </NextHead>
         <GlobalStyles />
         <Web3ConnectProvider>
           <Component {...pageProps} />
         </Web3ConnectProvider>
-      </ViewportProvider>
-    </animated.div>
+      </animated.div>
+    </ViewportProvider>
   )
 }
