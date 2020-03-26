@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/browser'
 import App from 'next/app'
 import Head from 'next/head'
 import { createGlobalStyle } from 'styled-components'
+import { ViewportProvider } from 'use-viewport'
 import Navbar from 'components/Navbar'
 import { Web3ConnectProvider } from 'lib/web3-connect'
 import env from 'lib/environment'
@@ -37,7 +38,7 @@ export default class extends App {
   render() {
     const { Component, pageProps } = this.props
     return (
-      <>
+      <ViewportProvider>
         <Head>
           <title>Aragon Court</title>
         </Head>
@@ -45,7 +46,7 @@ export default class extends App {
         <Web3ConnectProvider>
           <Component {...pageProps} />
         </Web3ConnectProvider>
-      </>
+      </ViewportProvider>
     )
   }
 }

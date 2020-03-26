@@ -1,6 +1,7 @@
+import 'styled-components/macro'
 import React from 'react'
 import PropTypes from 'prop-types'
-import 'styled-components/macro'
+import { useViewport } from 'use-viewport'
 
 import anjColor from './anj-color.svg'
 import anjWhite from './anj-white.svg'
@@ -23,6 +24,7 @@ function AmountInput({
   value,
   onChange,
 }) {
+  const viewport = useViewport()
   return (
     <label
       css={`
@@ -67,15 +69,12 @@ function AmountInput({
           display: block;
           width: 100%;
           text-align: center;
-          font-size: 88px;
+          font-size: ${viewport.below(414) ? '36px' : '88px'};
           font-weight: 600;
           color: ${color ? '#1c1c1c' : '#FFF'};
           background: transparent;
           border: 0;
           outline: none;
-          @media screen and (max-width: 414px) {
-            font-size: 36px;
-          }
         `}
       />
     </label>
