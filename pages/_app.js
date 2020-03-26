@@ -4,7 +4,6 @@ import App from 'next/app'
 import Head from 'next/head'
 import { createGlobalStyle } from 'styled-components/macro'
 import { ViewportProvider } from 'use-viewport'
-import Navbar from 'components/Navbar'
 import { Web3ConnectProvider } from 'lib/web3-connect'
 import env from 'lib/environment'
 
