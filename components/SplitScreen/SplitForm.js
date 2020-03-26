@@ -329,7 +329,7 @@ export default () => {
                 `}
                 onClick={handleConvertMax}
               >
-                Convert All
+                Convert all
               </MaxButton>
             )}
           </div>
