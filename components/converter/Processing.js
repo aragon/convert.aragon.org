@@ -1,38 +1,24 @@
 import React from 'react'
 import styled from 'styled-components/macro'
+import TransactionBadge from './TransactionBadge'
 
 import processing from './assets/loader.gif'
 
-function Processing({ signing, signTwice }) {
+function Processing({ isFinal, transactionHash }) {
   return (
     <ProcessingIn>
       <div>
         <img src={processing} alt="" />
-        {signing && signTwice && (
-          <>
-            <p className="black">Please sign the transactions</p>
-            <p>
-              Sign the transactions in your provider so they can get processed.
-              Two transactions may be needed for this conversion if we did not
-              previously receive your approval on this ERC-20 token to convert
-              the requested amount.
-            </p>
-          </>
-        )}
-        {signing && !signTwice && (
-          <>
-            <p className="black">Please sign the transaction</p>
-            <p>
-              Sign the transaction in your provider so it can get processed.
-            </p>
-          </>
-        )}
-        {!signing && !signTwice && (
-          <>
-            <p className="black">Processing your transaction</p>
-            <p>Your transaction is being processed, please be patient.</p>
-          </>
-        )}
+        <>
+          <p className="black">
+            Processing {isFinal ? 'last' : 'first'} transaction
+          </p>
+          <p>
+            Please wait for transaction{' '}
+            <TransactionBadge transactionHash={transactionHash} /> to be mined.
+            Do not close this window until the process is finished.
+          </p>
+        </>
       </div>
     </ProcessingIn>
   )

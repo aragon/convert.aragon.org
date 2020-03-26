@@ -3,26 +3,35 @@ import styled from 'styled-components/macro'
 import { useTokenDecimals } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
 import { useConverterStatus } from './converter-status'
+import TransactionBadge from './TransactionBadge'
 
 import successImg from './assets/success.svg'
 
-function SuccessSection({ onDone }) {
-  const { lastAnjBought } = useConverterStatus()
+function SuccessSection({
+  amountRequested,
+  final,
+  onDone,
+  toAnj,
+  transactionHash,
+}) {
   const decimals = useTokenDecimals('ANJ')
   return (
     <Success>
       <div>
         <img src={successImg} alt="" />
-        <p className="green">The transaction was successful</p>
+        <p className="green">Transaction successful</p>
         <p>
-          Welcome juror. You have successfully activated
-          {decimals > -1 && lastAnjBought.gte(0)
-            ? ` the total amount of ${formatUnits(lastAnjBought, {
+          Transaction <TransactionBadge transactionHash={transactionHash} /> has
+          been confirmed.{' '}
+          {!final
+            ? 'Do not close this window until the process is finished'
+            : `You have successfully converted ${formatUnits(amountRequested, {
                 digits: decimals,
-              })} ANJ.`
-            : ` the requested ANJ amount.`}
+              })}
+          ${toAnj ? 'ANJ' : 'ANT'}`}
+          .
         </p>
-        <Button onClick={onDone}>Continue</Button>
+        {final && <Button onClick={onDone}>Start new conversion</Button>}
       </div>
     </Success>
   )
