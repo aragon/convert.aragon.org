@@ -24,8 +24,8 @@ function getBorderColor(status) {
   }
 }
 
-function Step({title, status, dormant}) {
-  const desc = useMemo(() => STATUS_DESC[status].desc, [status])
+function Step({title, status, dormant, number}) {
+  const desc = useMemo(() => STATUS_DESC[status], [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
   return (
@@ -36,7 +36,7 @@ function Step({title, status, dormant}) {
     `}>
       <div css={`
         width: 110px;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
       `}>
         <div css={`
           position: relative;
@@ -60,6 +60,27 @@ function Step({title, status, dormant}) {
 
             border: 2px solid ${dormant ? 'transparent' : borderColor};
           `}>
+            {
+              status === 'waiting' &&
+              <span css={`
+                position: absolute;
+
+                top: 50%;
+                left: 50%;
+
+                transform: translate(-50%, -50%);
+
+                line-height: 1;
+                color: #FFFFFF;
+                font-size: 24px;
+                font-weight: 600;
+
+                z-index: 1;
+              `}>
+                {number}
+              </span>
+            }
+
             <StatusIcon status={status}/>
           </div>
         </div>
@@ -67,9 +88,10 @@ function Step({title, status, dormant}) {
       </div>
       <h2 css={`
         text-align: center;
-        margin-bottom: 8px;
+        margin-bottom: 7px;
         font-size: 20px;
         color: ${status === 'error' ? '#FF7C7C' : '#4A5165'};
+        font-weight: 500;
       `}>
         {title}
       </h2>
