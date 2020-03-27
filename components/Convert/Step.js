@@ -1,33 +1,12 @@
 import React, {useMemo} from 'react'
 import PropTypes from 'prop-types'
-import successIcon from './assets/success.svg'
-import waitingIcon from './assets/waiting.svg'
-import workingIcon from './assets/working.svg'
-import errorIcon from './assets/error.svg'
-import errorPip from './assets/error-pip.svg'
-import successPip from './assets/success-pip.svg'
+import StatusIcon from './StatusIcon'
 
-const statusInfo = {
-  dormant: {
-    desc: 'Waiting for signature',
-    icon: waitingIcon,
-  },
-  waiting: {
-    desc: 'Waiting for signature',
-    icon: waitingIcon,
-  },
-  working: {
-    desc: 'Transaction being mined',
-    icon: workingIcon,
-  },
-  success: {
-    desc: 'Transaction confirmed',
-    icon: successIcon,
-  },
-  error: {
-    desc: 'An error has occured at the time of transaction',
-    icon: errorIcon,
-  }
+const STATUS_DESC = {
+  waiting: 'Waiting for signature',
+  working: 'Transaction being mined',
+  success: 'Transaction confirmed',
+  error: 'An error has occured at the time of transaction',
 }
 
 function getBorderColor(status) {
@@ -40,40 +19,13 @@ function getBorderColor(status) {
       return '#FFAA75'
     case 'waiting':
       return '#FFAA75'
-    case 'dormant':
-      return 'transparent'
     default:
       return 'transparent'
   }
 }
 
-function renderPipIfErrorOrSuccess(status) {
-  let pipImage
-
-  if (status === 'error') {
-    pipImage = errorPip
-  } else if (status === 'success') {
-    pipImage = successPip
-  }
-
-  return (
-    <>
-    {
-      (status === 'error' || status === 'success') && 
-        <img src={pipImage} alt="" css={`
-        position: absolute;
-
-        bottom: 0;
-        right: 0;
-      `}/>
-    }
-    </>
-  )
-}
-
-function Step({title, status}) {
-  const icon = useMemo(() => statusInfo[status].icon, [status])
-  const desc = useMemo(() => statusInfo[status].desc, [status])
+function Step({title, status, dormant}) {
+  const desc = useMemo(() => STATUS_DESC[status].desc, [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
   return (
@@ -106,14 +58,9 @@ function Step({title, status}) {
 
             border-radius: 100%;
 
-            border: 2px solid ${borderColor};
+            border: 2px solid ${dormant ? 'transparent' : borderColor};
           `}>
-            <div css={`
-              position: relative;
-            `}>
-              {renderPipIfErrorOrSuccess(status)}
-              <img src={icon} alt=""/>
-            </div>
+            <StatusIcon status={status}/>
           </div>
         </div>
 
@@ -142,8 +89,8 @@ function Step({title, status}) {
 
 Step.propTypes = {
   title: PropTypes.string,
+  dormant: PropTypes.bool,
   status: PropTypes.oneOf([
-    'dormant',
     'waiting',
     'working',
     'success',
