@@ -33,6 +33,7 @@ function Step({title, status, dormant, number}) {
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 180px;
     `}>
       <div css={`
         width: 110px;
