@@ -75,6 +75,9 @@
     ],
     "lib/**/*.js": [
       "eslint --fix"
+    ],
+    "pages/**/*.js": [
+      "eslint --fix"
     ]
   }
 }
