@@ -1,25 +1,32 @@
-import React from 'react'
+import React, {useMemo} from 'react'
 import PropTypes from 'prop-types'
+import successIcon from './assets/success.svg'
+import waitingIcon from './assets/waiting.svg'
+import workingIcon from './assets/working.svg'
+import errorIcon from './assets/error.svg'
 
-export const STEP_STATUS = {
-  WAITING: 'WAITING',
-  IN_PROGRESS: 'IN_PROGRESS',
-  SUCCESS: 'SUCCESS',
-  ERROR: 'ERROR',
+const statusInfo = {
+  waiting: {
+    desc: 'Waiting for signature',
+    icon: waitingIcon,
+  },
+  working: {
+    desc: 'Transaction being mined',
+    icon: workingIcon,
+  },
+  success: {
+    desc: 'Transaction confirmed',
+    icon: successIcon,
+  },
+  error: {
+    desc: 'An error has occured at the time of transaction',
+    icon: errorIcon,
+  }
 }
 
 function Step({title, status}) {
-  function statusDesc() {
-    if (status === STEP_STATUS.WAITING) {
-      return 'waiting'
-    } else if (status === STEP_STATUS.IN_PROGRESS) {
-      return 'in progress'
-    } else if (status === STEP_STATUS.SUCCESS) {
-      return 'success'
-    } else if (status === STEP_STATUS.ERROR) {
-      return 'error'
-    }
-  }
+  const icon = useMemo(() => statusInfo[status].icon, [status])
+  const desc = useMemo(() => statusInfo[status].desc, [status])
 
   return (
     <div css={`
@@ -28,26 +35,53 @@ function Step({title, status}) {
       align-items: center;
     `}>
       <div css={`
-        background-color: red;
-        height: 100px;
-        width: 100px;
+        width: 110px;
         margin-bottom: 30px;
       `}>
+        <div css={`
+          position: relative;
+          width: 100%;
+          padding-top: 100%;
+          
+        `}>
+
+          <div css={`
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+
+            border-radius: 100%;
+
+            border: 2px solid black;
+          `}>
+            <img src={icon} alt=""/>
+          </div>
+        </div>
 
       </div>
       <h2 css={`
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         font-size: 20px;
+        color: #4A5165;
       `}>
         {title}
       </h2>
+
       <p css={`
         text-align: center;
         margin-bottom: 0;
         font-size: 14px;
+        color: ${status === 'success' ? 'green' : '#637381'};
       `}>
-        {statusDesc()}
+        {desc}
       </p>
     </div>
   )
@@ -57,10 +91,10 @@ function Step({title, status}) {
 Step.propTypes = {
   title: PropTypes.string,
   status: PropTypes.oneOf([
-    STEP_STATUS.WAITING,
-    STEP_STATUS.IN_PROGRESS,
-    STEP_STATUS.SUCCESS,
-    STEP_STATUS.ERROR,
+    'waiting',
+    'working',
+    'success',
+    'error',
   ]),
 }
 

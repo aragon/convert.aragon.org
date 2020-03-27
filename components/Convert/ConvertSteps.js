@@ -1,16 +1,17 @@
 import React from 'react'
-import Step, {STEP_STATUS} from './Step'
+import Step from './Step'
 
 function ConvertSteps() {
   return (
     <div css={`
       display: grid;
-      grid-template-columns: repeat(3, minmax(0px, 1fr));
-      grid-gap: 90px;
+      grid-template-columns: repeat(4, minmax(0px, 1fr));
+      grid-gap: 30px;
     `}>
-      <Step title="Approve ANT" status={STEP_STATUS.WAITING}/>
-      <Step title="Create buy order" status={STEP_STATUS.IN_PROGRESS}/>
-      <Step title="Claim order" status={STEP_STATUS.ERROR}/>
+      <Step title="Approve ANT" status="waiting"/>
+      <Step title="Create buy order" status="working"/>
+      <Step title="Claim order" status="success"/>
+      <Step title="Claim order" status="error"/>
     </div>
   )
 }
