@@ -2,6 +2,7 @@ import React, {useMemo} from 'react'
 import PropTypes from 'prop-types'
 import StatusIcon from './StatusIcon'
 import {keyframes, css} from 'styled-components'
+import TransactionBadge from './TransactionBadge'
 
 const STATUS_DESC = {
   waiting: 'Waiting for signature',
@@ -10,7 +11,7 @@ const STATUS_DESC = {
   error: 'An error has occured at the time of transaction',
 }
 
-const workingSpinAnimation = css`
+const spinAnimation = css`
   mask-image: linear-gradient(35deg, transparent 15%, rgba(0, 0, 0, 1.0));
   animation: ${keyframes`
     from {
@@ -21,6 +22,18 @@ const workingSpinAnimation = css`
       transform: rotate(360deg);
     }
   `} 0.5s linear infinite;
+`
+
+const pulseAnimation = css`
+  animation: ${keyframes`
+    from {
+      opacity: 0.25;
+    }
+
+    to {
+      opacity: 1;
+    }
+  `} 0.75s linear alternate infinite;
 `
 
 function getBorderColor(status) {
@@ -38,7 +51,7 @@ function getBorderColor(status) {
   }
 }
 
-function Step({title, status, dormant, number, className}) {
+function Step({title, status, dormant, number, className, transactionHash}) {
   const desc = useMemo(() => STATUS_DESC[status], [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
@@ -104,7 +117,8 @@ function Step({title, status, dormant, number, className}) {
 
               border: 2px solid ${dormant ? 'transparent' : borderColor};
 
-              ${status === 'working' && workingSpinAnimation}
+              ${status === 'waiting' && pulseAnimation}
+              ${status === 'working' && spinAnimation}
             `}></div>
             
           </div>
@@ -129,6 +143,15 @@ function Step({title, status, dormant, number, className}) {
       `}>
         {desc}
       </p>
+
+      {
+        transactionHash && <TransactionBadge
+        transactionHash={transactionHash}
+        css={`
+          margin-top: 12px;
+        `}
+      />
+      }
     </div>
   )
 }
@@ -136,6 +159,7 @@ function Step({title, status, dormant, number, className}) {
 
 Step.propTypes = {
   title: PropTypes.string,
+  transactionHash: PropTypes.string,
   dormant: PropTypes.bool,
   status: PropTypes.oneOf([
     'waiting',
