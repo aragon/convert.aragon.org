@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react'
 import PropTypes from 'prop-types'
 import StatusIcon from './StatusIcon'
+import {keyframes, css} from 'styled-components'
 
 const STATUS_DESC = {
   waiting: 'Waiting for signature',
@@ -8,6 +9,19 @@ const STATUS_DESC = {
   success: 'Transaction confirmed',
   error: 'An error has occured at the time of transaction',
 }
+
+const workingSpinAnimation = css`
+  mask-image: linear-gradient(35deg, transparent 15%, rgba(0, 0, 0, 1.0));
+  animation: ${keyframes`
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  `} 0.5s linear infinite;
+`
 
 function getBorderColor(status) {
   switch (status) {
@@ -24,16 +38,15 @@ function getBorderColor(status) {
   }
 }
 
-function Step({title, status, dormant, number}) {
+function Step({title, status, dormant, number, className}) {
   const desc = useMemo(() => STATUS_DESC[status], [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
   return (
-    <div css={`
+    <div className={className} css={`
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 180px;
     `}>
       <div css={`
         width: 110px;
@@ -56,10 +69,6 @@ function Step({title, status, dormant, number}) {
             left: 0;
             bottom: 0;
             right: 0;
-
-            border-radius: 100%;
-
-            border: 2px solid ${dormant ? 'transparent' : borderColor};
           `}>
             {
               status === 'waiting' &&
@@ -83,6 +92,21 @@ function Step({title, status, dormant, number}) {
             }
 
             <StatusIcon status={status}/>
+           
+            <div css={`
+              position: absolute;
+              top: 0;
+              left: 0;
+              bottom: 0;
+              right: 0;
+
+              border-radius: 100%;
+
+              border: 2px solid ${dormant ? 'transparent' : borderColor};
+
+              ${status === 'working' && workingSpinAnimation}
+            `}></div>
+            
           </div>
         </div>
 
