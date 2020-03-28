@@ -2,6 +2,7 @@ import React, {useMemo} from 'react'
 import Button from './Button'
 import PropTypes from 'prop-types'
 import { css } from 'styled-components'
+import repeat from './assets/repeat.svg'
 
 const smallCaps = css`
   font-size: 32px;
@@ -10,19 +11,19 @@ const smallCaps = css`
 function getTitle(anjCount, antCount, stage, toAnj) {
   const anjToAntTitle = (<>Convert {anjCount} <span css={smallCaps}>ANJ</span> to <span css={smallCaps}>ANT</span></>)
   const antToAnjTitle = (<>Convert {antCount} <span css={smallCaps}>ANT</span> to <span css={smallCaps}>ANJ</span></>)
-  const antToAnjCompletedTitle = (<>You successfully converted <br/>{antCount} <span css={smallCaps}>ANT</span> to {anjCount} <span css={smallCaps}>ANJ</span></>)
-  const anjToAntCompletedTitle = (<>You successfully converted <br/>{antCount} <span css={smallCaps}>ANT</span> to {anjCount} <span css={smallCaps}>ANJ</span></>)
+  const antToAnjSuccessTitle = (<>You successfully converted <br/>{antCount} <span css={smallCaps}>ANT</span> to {anjCount} <span css={smallCaps}>ANJ</span></>)
+  const anjToAntSuccessTitle = (<>You successfully converted <br/>{anjCount} <span css={smallCaps}>ANJ</span> to {antCount} <span css={smallCaps}>ANT</span></>)
 
-  if (stage === 'working' || 'error') {
+  if (stage === 'working' || stage === 'error') {
     return (
       <>
         {toAnj ? antToAnjTitle : anjToAntTitle}
       </>
     )
-  } else if (stage === 'completed') {
+  } else if (stage === 'success') {
     return (
       <>
-        {toAnj ? antToAnjCompletedTitle : anjToAntCompletedTitle}
+        {toAnj ? antToAnjSuccessTitle : anjToAntSuccessTitle}
       </>
     )
   } 
@@ -48,7 +49,7 @@ function Convert({children, anjCount, antCount, stage, toAnj}) {
         align-items: flex-end;
       `}>
         <h1 css={`
-          margin-bottom: 100px;
+          margin-bottom: 80px;
           color: #20232C;
           text-align: center;
         `}>
@@ -84,12 +85,12 @@ function Convert({children, anjCount, antCount, stage, toAnj}) {
               </div>
 
               <div>
-                <Button>Repeat transaction</Button>
+                <Button><img src={repeat} alt="" css={`margin-right: 10px;`}/>Repeat transaction</Button>
               </div>
             </div>
           }
 
-          {stage === 'completed' &&
+          {stage === 'success' &&
             <div css={`
               display: flex;
               justify-content: center;
@@ -110,7 +111,7 @@ Button.propTypes = {
   toAnj: PropTypes.bool,
   stage: PropTypes.oneOf([
     'working',
-    'completed',
+    'success',
     'error'
   ]),
 }

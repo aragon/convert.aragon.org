@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import {css} from 'styled-components'
 
 const baseStyles = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
 `
 
@@ -23,7 +26,6 @@ function Button({className, children, mode}) {
   return (
     <button mode={mode} className={className} css={`
       ${baseStyles}
-
       ${modeStyles[mode]}
     
       border-radius: 6px;
