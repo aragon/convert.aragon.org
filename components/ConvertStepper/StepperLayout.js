@@ -29,7 +29,7 @@ function getTitle(anjCount, antCount, stage, toAnj) {
   } 
 }
 
-function Convert({children, anjCount, antCount, stage, toAnj}) {
+function StepperLayout({children, anjCount, antCount, stage, toAnj}) {
   const title = useMemo(() => getTitle(anjCount, antCount, stage, toAnj), [anjCount, antCount, stage, toAnj])
 
   return (
@@ -116,4 +116,4 @@ Button.propTypes = {
   ]),
 }
 
-export default Convert
+export default StepperLayout
