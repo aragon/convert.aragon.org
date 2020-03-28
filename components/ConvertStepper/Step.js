@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import StatusIcon from './StatusIcon'
 import {keyframes, css} from 'styled-components'
 import TransactionBadge from './TransactionBadge'
+import { ABSOLUTE_FILL } from 'lib/css-utils'
 
 const STATUS_DESC = {
   waiting: 'Waiting for signature',
@@ -34,14 +35,6 @@ const pulseAnimation = css`
       opacity: 0.25;
     }
   `} 0.75s linear alternate infinite;
-`
-
-const absoluteFill = css`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 `
 
 function getBorderColor(status) {
@@ -80,7 +73,7 @@ function Step({title, status, dormant, number, className, transactionHash}) {
         `}>
 
           <div css={`
-            ${absoluteFill}
+            ${ABSOLUTE_FILL}
 
             display: flex;
 
@@ -111,7 +104,7 @@ function Step({title, status, dormant, number, className, transactionHash}) {
             <StatusIcon status={status}/>
            
             <div css={`
-              ${absoluteFill}
+              ${ABSOLUTE_FILL}
 
               border-radius: 100%;
 
@@ -153,7 +146,7 @@ function Step({title, status, dormant, number, className, transactionHash}) {
         width: 100%;
       `}>
         <div css={`
-          ${absoluteFill}
+          ${ABSOLUTE_FILL}
 
           display: flex;
           justify-content: center;
