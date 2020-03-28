@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import successIcon from './assets/success.svg'
 import waitingIcon from './assets/waiting.svg'
@@ -25,42 +25,40 @@ function renderPipIfErrorOrSuccess(status) {
 
   return (
     <>
-    {
-      (status === 'error' || status === 'success') && 
-        <img src={pipImage} alt="" css={`
-        position: absolute;
+      {(status === 'error' || status === 'success') && (
+        <img
+          src={pipImage}
+          alt=""
+          css={`
+            position: absolute;
 
-        bottom: 0;
-        right: 0;
-      `}/>
-    }
+            bottom: 0;
+            right: 0;
+          `}
+        />
+      )}
     </>
   )
 }
 
-function StatusIcon({status}) {
+function StatusIcon({ status }) {
   const icon = STATUS_ICONS[status]
 
   return (
-    <div css={`
-      position: relative;
-    `}>
+    <div
+      css={`
+        position: relative;
+      `}
+    >
       {renderPipIfErrorOrSuccess(status)}
-      <img src={icon} alt=""/>
+      <img src={icon} alt="" />
     </div>
   )
 }
 
 StatusIcon.propTypes = {
   title: PropTypes.string,
-  status: PropTypes.oneOf([
-    'waiting',
-    'working',
-    'success',
-    'error',
-  ]),
+  status: PropTypes.oneOf(['waiting', 'working', 'success', 'error']),
 }
-
-
 
 export default StatusIcon

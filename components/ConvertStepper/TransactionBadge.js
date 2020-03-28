@@ -21,7 +21,7 @@ function TransactionBadge({ transactionHash, className }) {
       <Anchor
         href={getEtherscanHref(transactionHash)}
         css={`
-          color: #20232C;
+          color: #20232c;
         `}
       >
         {shortenAddress(transactionHash)}

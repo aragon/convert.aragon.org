@@ -1,7 +1,7 @@
-import React, {useMemo} from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import StatusIcon from './StatusIcon'
-import {keyframes, css} from 'styled-components'
+import { keyframes, css } from 'styled-components'
 import TransactionBadge from './TransactionBadge'
 import { ABSOLUTE_FILL } from 'lib/css-utils'
 
@@ -13,7 +13,7 @@ const STATUS_DESC = {
 }
 
 const spinAnimation = css`
-  mask-image: linear-gradient(35deg, transparent 15%, rgba(0, 0, 0, 1.0));
+  mask-image: linear-gradient(35deg, transparent 15%, rgba(0, 0, 0, 1));
   animation: ${keyframes`
     from {
       transform: rotate(0deg);
@@ -52,133 +52,141 @@ function getBorderColor(status) {
   }
 }
 
-function Step({title, status, dormant, number, className, transactionHash}) {
+function Step({ title, status, dormant, number, className, transactionHash }) {
   const desc = useMemo(() => STATUS_DESC[status], [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
   return (
-    <div className={className} css={`
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    `}>
-      <div css={`
-        width: 110px;
-        margin-bottom: 25px;
-      `}>
-        <div css={`
-          position: relative;
-          width: 100%;
-          padding-top: 100%;
-        `}>
-
-          <div css={`
-            ${ABSOLUTE_FILL}
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-          `}>
-            {
-              status === 'waiting' &&
-              <span css={`
-                position: absolute;
-
-                top: 50%;
-                left: 50%;
-
-                transform: translate(-50%, -50%);
-
-                line-height: 1;
-                color: #FFFFFF;
-                font-size: 24px;
-                font-weight: 600;
-
-                z-index: 1;
-              `}>
-                {number}
-              </span>
-            }
-
-            <StatusIcon status={status}/>
-           
-            <div css={`
+    <div
+      className={className}
+      css={`
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      `}
+    >
+      <div
+        css={`
+          width: 110px;
+          margin-bottom: 25px;
+        `}
+      >
+        <div
+          css={`
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+          `}
+        >
+          <div
+            css={`
               ${ABSOLUTE_FILL}
 
-              border-radius: 100%;
+              display: flex;
 
-              border: 2px solid ${dormant ? 'transparent' : borderColor};
+              align-items: center;
+              justify-content: center;
+            `}
+          >
+            {status === 'waiting' && (
+              <span
+                css={`
+                  position: absolute;
 
-              ${status === 'waiting' && pulseAnimation}
-              ${status === 'working' && spinAnimation}
-            `}></div>
-            
+                  top: 50%;
+                  left: 50%;
+
+                  transform: translate(-50%, -50%);
+
+                  line-height: 1;
+                  color: #ffffff;
+                  font-size: 24px;
+                  font-weight: 600;
+
+                  z-index: 1;
+                `}
+              >
+                {number}
+              </span>
+            )}
+
+            <StatusIcon status={status} />
+
+            <div
+              css={`
+                ${ABSOLUTE_FILL}
+
+                border-radius: 100%;
+
+                border: 2px solid ${dormant ? 'transparent' : borderColor};
+
+                ${status === 'waiting' && pulseAnimation}
+                ${status === 'working' && spinAnimation}
+              `}
+            ></div>
           </div>
         </div>
-
       </div>
-      <h2 css={`
-        text-align: center;
-        margin-bottom: 7px;
-        font-size: 20px;
-        color: ${status === 'error' ? '#FF7C7C' : '#4A5165'};
-        font-weight: 500;
-      `}>
+      <h2
+        css={`
+          text-align: center;
+          margin-bottom: 7px;
+          font-size: 20px;
+          color: ${status === 'error' ? '#FF7C7C' : '#4A5165'};
+          font-weight: 500;
+        `}
+      >
         {title}
       </h2>
 
-      <p css={`
-        text-align: center;
-        margin-bottom: 0;
-        font-size: 14px;
-        color: ${status === 'success' ? '#2CC68F' : '#637381'};
-      `}>
+      <p
+        css={`
+          text-align: center;
+          margin-bottom: 0;
+          font-size: 14px;
+          color: ${status === 'success' ? '#2CC68F' : '#637381'};
+        `}
+      >
         {desc}
       </p>
-      
-      <div css={`
-        position: relative;
 
-        /* Avoid visual jump when showing tx by pre-filling space */
-        padding-bottom: 40px;
-        margin-bottom: -40px;
-        width: 100%;
-      `}>
-        <div css={`
-          ${ABSOLUTE_FILL}
+      <div
+        css={`
+          position: relative;
 
-          display: flex;
-          justify-content: center;
-        `}>
-          {
-            transactionHash && 
+          /* Avoid visual jump when showing tx by pre-filling space */
+          padding-bottom: 40px;
+          margin-bottom: -40px;
+          width: 100%;
+        `}
+      >
+        <div
+          css={`
+            ${ABSOLUTE_FILL}
+
+            display: flex;
+            justify-content: center;
+          `}
+        >
+          {transactionHash && (
             <TransactionBadge
               transactionHash={transactionHash}
               css={`
                 margin-top: 12px;
               `}
             />
-          }
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-
 Step.propTypes = {
   title: PropTypes.string,
   transactionHash: PropTypes.string,
   dormant: PropTypes.bool,
-  status: PropTypes.oneOf([
-    'waiting',
-    'working',
-    'success',
-    'error',
-  ]),
+  status: PropTypes.oneOf(['waiting', 'working', 'success', 'error']),
 }
-
-
 
 export default Step

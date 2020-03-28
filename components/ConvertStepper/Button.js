@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {css} from 'styled-components'
+import { css } from 'styled-components'
 
 const MODE_STYLE = {
   primary: css`
@@ -9,42 +9,47 @@ const MODE_STYLE = {
     color: white;
   `,
   secondary: css`
-    background-color: #FFFFFF;
-    border: solid 1px #C7D1DA;
-    color: #212B36;
-  `
+    background-color: #ffffff;
+    border: solid 1px #c7d1da;
+    color: #212b36;
+  `,
 }
 
-function Button({className, children, mode, disabled}) {
+function Button({ className, children, mode, disabled }) {
   return (
-    <button mode={mode} className={className} disabled={disabled} css={`
-      ${MODE_STYLE[mode]}
-  
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
-      
-      border-radius: 6px;
-      
-      width: 100%;
-      max-width: 272px;
-      height: 52px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
+    <button
+      mode={mode}
+      className={className}
+      disabled={disabled}
+      css={`
+        ${MODE_STYLE[mode]}
 
-      &:disabled,
-      &[disabled] {
-        opacity: 0.5;
-        cursor: inherit;
-      }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
 
-      &:active {
-        transform: translateY(1px);
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
-      }
-    `}>
+        border-radius: 6px;
+
+        width: 100%;
+        max-width: 272px;
+        height: 52px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:disabled,
+        &[disabled] {
+          opacity: 0.5;
+          cursor: inherit;
+        }
+
+        &:active {
+          transform: translateY(1px);
+          box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
+        }
+      `}
+    >
       {children}
     </button>
   )
@@ -53,10 +58,7 @@ function Button({className, children, mode, disabled}) {
 Button.propTypes = {
   children: PropTypes.node,
   disabled: PropTypes.bool,
-  mode: PropTypes.oneOf([
-    'primary',
-    'secondary',
-  ]),
+  mode: PropTypes.oneOf(['primary', 'secondary']),
 }
 
 Button.defaultProps = {
