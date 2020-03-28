@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Anchor from '../Anchor/Anchor'
-import environment from 'lib/environment'
 import { shortenAddress } from 'lib/web3-utils'
+import { getEtherscanHref } from 'lib/utils'
 
 function TransactionBadge({ transactionHash, className }) {
   return (
@@ -32,14 +32,6 @@ function TransactionBadge({ transactionHash, className }) {
 
 TransactionBadge.propTypes = {
   transactionHash: PropTypes.string,
-}
-
-function getEtherscanHref(transactionHash) {
-  const chainId = environment('CHAIN_ID')
-
-  return `https://${
-    chainId === 4 ? 'rinkeby.' : ''
-  }etherscan.io/tx/${transactionHash}`
 }
 
 export default TransactionBadge
