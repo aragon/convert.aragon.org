@@ -39,7 +39,7 @@ function renderPipIfErrorOrSuccess(status) {
 }
 
 function StatusIcon({status}) {
-  const icon = useMemo(() => STATUS_ICONS[status], [status])
+  const icon = STATUS_ICONS[status]
 
   return (
     <div css={`
