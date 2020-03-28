@@ -2,14 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {css} from 'styled-components'
 
-const baseStyles = css`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
-`
-
-const modeStyles = {
+const MODE_STYLE = {
   primary: css`
     border: solid 0px transparent;
     background: linear-gradient(189.76deg, #ffb36d 6.08%, #ff8888 93.18%);
@@ -22,12 +15,16 @@ const modeStyles = {
   `
 }
 
-function Button({className, children, mode}) {
+function Button({className, children, mode, disabled}) {
   return (
-    <button mode={mode} className={className} css={`
-      ${baseStyles}
-      ${modeStyles[mode]}
-    
+    <button mode={mode} className={className} disabled={disabled} css={`
+      ${MODE_STYLE[mode]}
+  
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+      
       border-radius: 6px;
       
       width: 100%;
@@ -41,6 +38,11 @@ function Button({className, children, mode}) {
       &[disabled] {
         opacity: 0.5;
         cursor: inherit;
+      }
+
+      &:active {
+        transform: translateY(1px);
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
       }
     `}>
       {children}
