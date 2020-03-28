@@ -8,8 +8,8 @@ const STEP_WIDTH = 180
 function ConvertStepper() {
   return (
     <StepperLayout
-      anjCount="324234"
       antCount="323424"
+      anjCount="54235"
       stage="success"
       toAnj={true}
     >
