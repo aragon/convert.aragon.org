@@ -1,20 +1,17 @@
 import React from 'react'
 import ConvertSteps from './ConvertSteps'
+import StepperLayout from './StepperLayout'
 
 function Convert() {
   return (
-    <div css={`
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-      width: 100vw;
-      height: 100vh;
-      background-color: #F9FAFC;
-    `}>
-
+    <StepperLayout
+      anjCount="324234"
+      antCount="323424"
+      stage="working"
+      toAnj={true}
+    >
       <ConvertSteps />
-    </div>
+    </StepperLayout>
   )
 }
 

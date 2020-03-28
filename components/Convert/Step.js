@@ -27,13 +27,21 @@ const spinAnimation = css`
 const pulseAnimation = css`
   animation: ${keyframes`
     from {
-      opacity: 0.25;
+      opacity: 1;
     }
 
     to {
-      opacity: 1;
+      opacity: 0.25;
     }
   `} 0.75s linear alternate infinite;
+`
+
+const absoluteFill = css`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `
 
 function getBorderColor(status) {
@@ -72,16 +80,12 @@ function Step({title, status, dormant, number, className, transactionHash}) {
         `}>
 
           <div css={`
+            ${absoluteFill}
+
             display: flex;
 
             align-items: center;
             justify-content: center;
-            position: absolute;
-
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
           `}>
             {
               status === 'waiting' &&
@@ -107,11 +111,7 @@ function Step({title, status, dormant, number, className, transactionHash}) {
             <StatusIcon status={status}/>
            
             <div css={`
-              position: absolute;
-              top: 0;
-              left: 0;
-              bottom: 0;
-              right: 0;
+              ${absoluteFill}
 
               border-radius: 100%;
 
@@ -143,15 +143,32 @@ function Step({title, status, dormant, number, className, transactionHash}) {
       `}>
         {desc}
       </p>
+      
+      <div css={`
+        position: relative;
 
-      {
-        transactionHash && <TransactionBadge
-        transactionHash={transactionHash}
-        css={`
-          margin-top: 12px;
-        `}
-      />
-      }
+        /* Avoid visual jump when showing tx by pre-filling space */
+        padding-bottom: 40px;
+        margin-bottom: -40px;
+        width: 100%;
+      `}>
+        <div css={`
+          ${absoluteFill}
+
+          display: flex;
+          justify-content: center;
+        `}>
+          {
+            transactionHash && 
+            <TransactionBadge
+              transactionHash={transactionHash}
+              css={`
+                margin-top: 12px;
+              `}
+            />
+          }
+        </div>
+      </div>
     </div>
   )
 }
