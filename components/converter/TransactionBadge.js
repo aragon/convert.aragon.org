@@ -35,10 +35,8 @@ TransactionBadge.propTypes = {
 
 function getEtherscanHref(transactionHash) {
   const chainId = environment('CHAIN_ID')
-
-  return `https://${
-    chainId === 4 ? 'rinkeby.' : ''
-  }etherscan.io/tx/${transactionHash}`
+  const chainPrefix = chainId === '4' ? 'rinkeby.' : ''
+  return `https://${chainPrefix}etherscan.io/tx/${transactionHash}`
 }
 
 export default TransactionBadge
