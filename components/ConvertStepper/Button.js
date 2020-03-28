@@ -4,8 +4,8 @@ import { css } from 'styled-components'
 
 const MODE_STYLE = {
   primary: css`
-    border: solid 0px transparent;
     background: linear-gradient(189.76deg, #ffb36d 6.08%, #ff8888 93.18%);
+    border: solid 0px transparent;
     color: white;
   `,
   secondary: css`
@@ -18,7 +18,6 @@ const MODE_STYLE = {
 function Button({ className, children, mode, disabled }) {
   return (
     <button
-      mode={mode}
       className={className}
       disabled={disabled}
       css={`

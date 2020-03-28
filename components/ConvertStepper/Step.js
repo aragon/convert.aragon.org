@@ -9,7 +9,7 @@ const STATUS_DESC = {
   waiting: 'Waiting for signature',
   working: 'Transaction being mined',
   success: 'Transaction confirmed',
-  error: 'An error has occured at the time of transaction',
+  error: 'An error occurred with the transaction',
 }
 
 const spinAnimation = css`
@@ -22,7 +22,7 @@ const spinAnimation = css`
     to {
       transform: rotate(360deg);
     }
-  `} 0.5s linear infinite;
+  `} 1.25s linear infinite;
 `
 
 const pulseAnimation = css`

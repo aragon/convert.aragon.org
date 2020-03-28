@@ -1,7 +1,7 @@
 import React from 'react'
+import Divider from './Divider'
 import StepperLayout from './StepperLayout'
 import Step from './Step'
-import Divider from './Divider'
 
 const STEP_WIDTH = 180
 

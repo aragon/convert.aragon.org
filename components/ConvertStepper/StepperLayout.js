@@ -102,7 +102,7 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
               `}
             >
               This process might take up to a few minutes. Do not close this
-              window until the process is&nbsp;finished.
+              window until the process is finished.
             </p>
           )}
 

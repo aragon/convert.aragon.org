@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import successIcon from './assets/success.svg'
 import waitingIcon from './assets/waiting.svg'
@@ -14,18 +14,17 @@ const STATUS_ICONS = {
   error: errorIcon,
 }
 
-function renderPipIfErrorOrSuccess(status) {
-  let pipImage
+const PIP_ICONS = {
+  error: errorPip,
+  success: successPip,
+}
 
-  if (status === 'error') {
-    pipImage = errorPip
-  } else if (status === 'success') {
-    pipImage = successPip
-  }
+function renderPipIfErrorOrSuccess(status) {
+  let pipImage = PIP_ICONS[status]
 
   return (
     <>
-      {(status === 'error' || status === 'success') && (
+      {pipImage && (
         <img
           src={pipImage}
           alt=""
