@@ -9,34 +9,35 @@ import {
 } from 'lib/web3-contracts-new'
 import Step from './Step'
 
-const INITIAL_STEPPER_STATE = {
-  approval: {
-    status: 'working',
-    active: true,
-  },
-  buyOrder: {
-    status: 'waiting',
-    active: false,
-  },
-  claimOrder: {
-    status: 'waiting',
-    active: false,
-  },
-}
-
 function ConvertStepper({ toAnj, amountSource }) {
   const checkAllowance = useAllowance()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
-  const [stepperState, setStepperState] = useState(INITIAL_STEPPER_STATE)
+  const [stepperState, setStepperState] = useState({
+    approval: {
+      status: 'waiting',
+      active: true,
+    },
+    buyOrder: {
+      status: 'waiting',
+      active: toAnj ? false : true,
+      hash: '',
+    },
+    claimOrder: {
+      status: 'waiting',
+      active: false,
+      hash: '',
+    },
+  })
 
-  const setStepStatus = useCallback((step, status) => {
+  const setStepStatus = useCallback((step, status, hash) => {
     setStepperState(prevState => {
       return {
         ...prevState,
         [step]: {
           status: status,
           active: true,
+          hash: hash ? hash : prevState[step].hash,
         },
       }
     })
@@ -47,7 +48,7 @@ function ConvertStepper({ toAnj, amountSource }) {
       try {
         setStepStatus('claimOrder', 'waiting')
         const transaction = await claimOrder(hash, toAnj)
-        setStepStatus('claimOrder', 'working')
+        setStepStatus('claimOrder', 'working', transaction.hash)
         await transaction.wait()
         setStepStatus('claimOrder', 'success')
       } catch (err) {
@@ -62,7 +63,7 @@ function ConvertStepper({ toAnj, amountSource }) {
     try {
       setStepStatus('buyOrder', 'waiting')
       const transaction = await openOrder(amountSource, toAnj)
-      setStepStatus('buyOrder', 'working')
+      setStepStatus('buyOrder', 'working', transaction.hash)
       await transaction.wait()
       setStepStatus('buyOrder', 'success')
       handleClaimOrderStep(transaction.hash)
@@ -115,6 +116,7 @@ function ConvertStepper({ toAnj, amountSource }) {
         number={toAnj ? '2' : '1'}
         active={stepperState.buyOrder.active}
         status={stepperState.buyOrder.status}
+        transactionHash={stepperState.buyOrder.hash}
       />
       <Divider />
       <Step
@@ -122,6 +124,7 @@ function ConvertStepper({ toAnj, amountSource }) {
         number={toAnj ? '3' : '2'}
         active={stepperState.claimOrder.active}
         status={stepperState.claimOrder.status}
+        transactionHash={stepperState.claimOrder.hash}
       />
     </StepperLayout>
   )

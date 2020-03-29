@@ -251,7 +251,7 @@ function ConversionForm() {
     setIsFinal(false)
     setTransactionHash(null)
     try {
-      converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
+      converterStatus.setStatus(CONVERTER_STATUSES.STEPPER)
       // const tx = await openOrder(amountSource, toAnj)
       // setTransactionHash(tx.hash)
       // converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)

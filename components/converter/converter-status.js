@@ -9,7 +9,7 @@ export const CONVERTER_STATUSES = {
   ERROR: Symbol('STATE_ERROR'),
   LEGAL: Symbol('STATE_LEGAL'),
   SUCCESS: Symbol('STATE_SUCCESS'),
-  SIGNING: Symbol('SIGNING'),
+  STEPPER: Symbol('STATS_STEPPER'),
 }
 
 const ConverterContext = React.createContext()
