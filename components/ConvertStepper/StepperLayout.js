@@ -31,7 +31,14 @@ function getTitle(fromAmount, toAmount, stage, toAnj) {
   }
 }
 
-function StepperLayout({ children, fromAmount, toAmount, stage, toAnj }) {
+function StepperLayout({
+  children,
+  fromAmount,
+  toAmount,
+  stage,
+  toAnj,
+  onRepeatTransaction,
+}) {
   const title = useMemo(() => getTitle(fromAmount, toAmount, stage, toAnj), [
     fromAmount,
     toAmount,
@@ -85,7 +92,7 @@ function StepperLayout({ children, fromAmount, toAmount, stage, toAnj }) {
       >
         <div
           css={`
-            padding-top: 90px;
+            padding-top: 100px;
           `}
         >
           {stage === 'working' && (
@@ -118,7 +125,7 @@ function StepperLayout({ children, fromAmount, toAmount, stage, toAnj }) {
               </div>
 
               <div>
-                <Button>
+                <Button onClick={onRepeatTransaction}>
                   <img
                     src={repeat}
                     alt=""

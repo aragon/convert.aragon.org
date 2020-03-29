@@ -18,18 +18,10 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
   const antDecimals = useTokenDecimals('ANT')
   const anjDecimals = useTokenDecimals('ANJ')
 
-  const formattedFromAmount = formatUnits(amountSource, {
-    digits: toAnj ? antDecimals : anjDecimals,
-    truncateToDecimalPlace: 8,
-    commas: true,
-  })
-
-  const formattedToAmount = formatUnits(amountRecipient, {
-    digits: toAnj ? anjDecimals : antDecimals,
-    truncateToDecimalPlace: 8,
-    commas: true,
-  })
-
+  const [stepperStage, setStepperStage] = useState('working')
+  const [currentStep, setCurrentStep] = useState(
+    toAnj ? 'approval' : 'buyOrder'
+  )
   const [stepState, setStepState] = useState({
     approval: {
       status: 'waiting',
@@ -46,7 +38,18 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
       hash: '',
     },
   })
-  const [stepperStage, setStepperStage] = useState('working')
+
+  const formattedFromAmount = formatUnits(amountSource, {
+    digits: toAnj ? antDecimals : anjDecimals,
+    truncateToDecimalPlace: 8,
+    commas: true,
+  })
+
+  const formattedToAmount = formatUnits(amountRecipient, {
+    digits: toAnj ? anjDecimals : antDecimals,
+    truncateToDecimalPlace: 8,
+    commas: true,
+  })
 
   const applyStepState = useCallback((step, status, hash) => {
     setStepState(prevState => {
@@ -62,16 +65,25 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
   }, [])
 
   const handleClaimOrderStep = useCallback(
-    async hash => {
+    async buyOrderHash => {
+      const stepType = 'claimOrder'
+
+      setCurrentStep(stepType)
+
       try {
-        applyStepState('claimOrder', 'waiting')
-        const transaction = await claimOrder(hash, toAnj)
-        applyStepState('claimOrder', 'working', transaction.hash)
+        // Awaiting confirmation
+        applyStepState(stepType, 'waiting')
+        const transaction = await claimOrder(buyOrderHash, toAnj)
+
+        // Mining transaction
+        applyStepState(stepType, 'working', transaction.hash)
         await transaction.wait()
-        applyStepState('claimOrder', 'success')
+
+        // Success
+        applyStepState(stepType, 'success')
         setStepperStage('success')
       } catch (err) {
-        applyStepState('claimOrder', 'error')
+        applyStepState(stepType, 'error')
         setStepperStage('error')
         console.log(err)
       }
@@ -80,38 +92,62 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
   )
 
   const handleBuyOrderStep = useCallback(async () => {
+    const stepType = 'buyOrder'
+
+    setCurrentStep(stepType)
+
     try {
-      applyStepState('buyOrder', 'waiting')
+      // Awaiting confirmation
+      applyStepState(stepType, 'waiting')
       const transaction = await openOrder(amountSource, toAnj)
-      applyStepState('buyOrder', 'working', transaction.hash)
+
+      // Mining transaction
+      applyStepState(stepType, 'working', transaction.hash)
       await transaction.wait()
-      applyStepState('buyOrder', 'success')
+
+      // Success
+      applyStepState(stepType, 'success')
       handleClaimOrderStep(transaction.hash)
     } catch (err) {
-      applyStepState('buyOrder', 'error')
+      applyStepState(stepType, 'error')
       setStepperStage('error')
       console.log(err)
     }
   }, [amountSource, openOrder, applyStepState, toAnj, handleClaimOrderStep])
 
   const handleApprovalStep = useCallback(async () => {
+    const stepType = 'approval'
+
+    setCurrentStep(stepType)
+
     try {
+      // Awaiting approval
+      applyStepState(stepType, 'waiting')
       await checkAllowance(amountSource)
-      applyStepState('approval', 'success')
+
+      // Success
+      applyStepState(stepType, 'success')
       handleBuyOrderStep()
     } catch (err) {
-      applyStepState('approval', 'error')
+      applyStepState(stepType, 'error')
       setStepperStage('error')
       console.log(err)
     }
   }, [amountSource, checkAllowance, applyStepState, handleBuyOrderStep])
 
-  useEffect(() => {
-    console.log(amountSource)
-    if (toAnj) {
+  function handleRepeatTransaction() {
+    if (currentStep === 'approval') {
       handleApprovalStep()
-    } else {
+    } else if (currentStep === 'buyOrder') {
       handleBuyOrderStep()
+    } else if (currentStep === 'claimOrder') {
+      handleClaimOrderStep(stepState.buyOrder.hash)
+    }
+  }
+
+  useEffect(() => {
+    if (amountSource) {
+      toAnj ? handleApprovalStep() : handleBuyOrderStep()
     }
   }, [amountSource, handleApprovalStep, handleBuyOrderStep, toAnj])
 
@@ -121,6 +157,7 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
       toAmount={formattedToAmount}
       stage={stepperStage}
       toAnj={toAnj}
+      onRepeatTransaction={handleRepeatTransaction}
     >
       {toAnj && (
         <>

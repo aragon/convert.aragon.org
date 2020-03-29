@@ -15,11 +15,12 @@ const MODE_STYLE = {
   `,
 }
 
-function Button({ className, children, mode, disabled }) {
+function Button({ className, children, mode, disabled, onClick }) {
   return (
     <button
       className={className}
       disabled={disabled}
+      onClick={onClick}
       css={`
         ${MODE_STYLE[mode]}
 
