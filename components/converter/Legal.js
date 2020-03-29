@@ -3,14 +3,11 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Anchor from '../Anchor/Anchor'
 import processing from './assets/loader.gif'
-import { breakpoint } from 'lib/microsite-logic'
-
-const large = css => breakpoint('large', css)
 
 function Legal({ handleConvert }) {
   const [legalChecked, setLegalChecked] = useState(false)
   return (
-    <ConverterSection>
+    <Container>
       <PendingIn>
         <div>
           <img src={processing} alt="" />
@@ -38,7 +35,7 @@ function Legal({ handleConvert }) {
           </Conditions>
         </div>
       </PendingIn>
-    </ConverterSection>
+    </Container>
   )
 }
 
@@ -104,13 +101,15 @@ const Conditions = styled.p`
   }
 `
 
-const ConverterSection = styled.div`
-  margin-top: 52px;
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: transparent;
-  border-radius: 8px;
+
   width: 100%;
-  max-width: 1180px;
-  max-width: 95%;
+  height: 100%;
 
   p {
     font-weight: 400;
@@ -119,10 +118,7 @@ const ConverterSection = styled.div`
     color: #8a96a0;
   }
 
-  ${large('max-width: 1180px;')};
-
   @media screen and (max-width: 414px) {
-    margin-top: 20px;
     p {
       font-size: 20px;
     }
