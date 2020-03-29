@@ -11,7 +11,12 @@ import Step from './Step'
 import { formatUnits } from 'lib/web3-utils'
 import { useTokenDecimals } from 'lib/web3-contracts'
 
-function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
+function ConvertStepper({
+  toAnj,
+  amountSource,
+  amountRecipient,
+  handleReturnHome,
+}) {
   const checkAllowance = useAllowance()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
@@ -158,6 +163,7 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
       stage={stepperStage}
       toAnj={toAnj}
       onRepeatTransaction={handleRepeatTransaction}
+      onReturnHome={handleReturnHome}
     >
       {toAnj && (
         <>
@@ -192,6 +198,7 @@ function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
 
 ConvertStepper.propTypes = {
   toAnj: PropTypes.bool,
+  handleReturnHome: PropTypes.func,
 }
 
 export default ConvertStepper

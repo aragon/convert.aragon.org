@@ -63,12 +63,16 @@ function useConvertInputs(otherSymbol, toAnj = true) {
   // convertFromAnj is used as a toggle to execute a conversion to or from ANJ.
   const [convertFromAnj, setConvertFromAnj] = useState(false)
 
-  // Reset the inputs anytime the selected token changes
-  useEffect(() => {
+  function resetInputs() {
     setInputValueSource('')
     setInputValueRecipient('')
     setAmountRecipient(bigNum(0))
     setAmountSource(bigNum(0))
+  }
+
+  // Reset the inputs anytime the selected token changes
+  useEffect(() => {
+    resetInputs()
   }, [otherSymbol])
 
   // Calculate the ANJ amount from the other amount
@@ -205,6 +209,7 @@ function useConvertInputs(otherSymbol, toAnj = true) {
     // The value to be used for inputs
     inputValueRecipient,
     inputValueSource,
+    resetInputs,
   }
 }
 
@@ -224,6 +229,7 @@ function ConversionForm() {
     handleManualInputChange,
     inputValueRecipient,
     inputValueSource,
+    resetInputs,
   } = useConvertInputs(options[selectedOption], toAnj)
   const tokenBalance = useTokenBalance(options[selectedOption])
 
@@ -272,6 +278,11 @@ function ConversionForm() {
   const handleLegalTerms = useCallback(async () => {
     converterStatus.setStatus(CONVERTER_STATUSES.LEGAL)
   }, [converterStatus])
+
+  const handleReturnHome = useCallback(() => {
+    resetInputs()
+    converterStatus.setStatus(CONVERTER_STATUSES.FORM)
+  }, [converterStatus, resetInputs])
 
   const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
 
@@ -392,6 +403,7 @@ function ConversionForm() {
                   toAnj={toAnj}
                   amountSource={amountSource}
                   amountRecipient={amountRecipient}
+                  handleReturnHome={handleReturnHome}
                 />
               )}
             </>

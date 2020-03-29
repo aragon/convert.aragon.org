@@ -38,6 +38,7 @@ function StepperLayout({
   stage,
   toAnj,
   onRepeatTransaction,
+  onReturnHome,
 }) {
   const title = useMemo(() => getTitle(fromAmount, toAmount, stage, toAnj), [
     fromAmount,
@@ -121,7 +122,9 @@ function StepperLayout({
                   justify-content: flex-end;
                 `}
               >
-                <Button mode="secondary">Abandon process</Button>
+                <Button mode="secondary" onClick={onReturnHome}>
+                  Abandon process
+                </Button>
               </div>
 
               <div>
@@ -146,7 +149,7 @@ function StepperLayout({
                 justify-content: center;
               `}
             >
-              <Button>Start new conversion</Button>
+              <Button onClick={onReturnHome}>Start new conversion</Button>
             </div>
           )}
         </div>
@@ -161,6 +164,8 @@ Button.propTypes = {
   antCount: PropTypes.number,
   toAnj: PropTypes.bool,
   stage: PropTypes.oneOf(['working', 'success', 'error']),
+  onRepeatTransaction: PropTypes.func,
+  onReturnHome: PropTypes.func,
 }
 
 export default StepperLayout
