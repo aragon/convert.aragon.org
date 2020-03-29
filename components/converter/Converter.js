@@ -1,11 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from 'components/converter/node_modules/react'
 import Divider from './Divider'
-import PropTypes from 'prop-types'
+import PropTypes from 'components/converter/node_modules/prop-types'
 import StepperLayout from './StepperLayout'
-import { useAllowance, useOpenOrder, useClaimOrder } from 'lib/web3-contracts'
+import {
+  useAllowance,
+  useOpenOrder,
+  useClaimOrder,
+} from 'components/converter/node_modules/lib/web3-contracts'
 import Step from './Step'
-import { formatUnits } from 'lib/web3-utils'
-import { useTokenDecimals } from 'lib/web3-contracts'
+import { formatUnits } from 'components/converter/node_modules/lib/web3-utils'
+import { useTokenDecimals } from 'components/converter/node_modules/lib/web3-contracts'
 
 function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
   const checkAllowance = useAllowance()

@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'components/converter/node_modules/react'
+import PropTypes from 'components/converter/node_modules/prop-types'
 import Anchor from '../Anchor/Anchor'
-import { shortenAddress } from 'lib/web3-utils'
-import { getEtherscanHref } from 'lib/utils'
+import { shortenAddress } from 'components/converter/node_modules/lib/web3-utils'
+import { getEtherscanHref } from 'components/converter/node_modules/lib/utils'
 
 function TransactionBadge({ transactionHash, className }) {
   return (
