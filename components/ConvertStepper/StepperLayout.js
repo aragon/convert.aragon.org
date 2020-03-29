@@ -8,45 +8,33 @@ const smallCaps = css`
   font-size: 32px;
 `
 
-function getTitle(anjCount, antCount, stage, toAnj) {
-  const anjToAntTitle = (
+function getTitle(fromAmount, toAmount, stage, toAnj) {
+  const convertTitle = (
     <>
-      Convert {anjCount} <span css={smallCaps}>ANJ</span> to{' '}
-      <span css={smallCaps}>ANT</span>
+      Convert {fromAmount} <span css={smallCaps}>{toAnj ? 'ANT' : 'ANJ'}</span>{' '}
+      to <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
     </>
   )
-  const antToAnjTitle = (
-    <>
-      Convert {antCount} <span css={smallCaps}>ANT</span> to{' '}
-      <span css={smallCaps}>ANJ</span>
-    </>
-  )
-  const antToAnjSuccessTitle = (
+
+  const successTitle = (
     <>
       You successfully converted <br />
-      {antCount} <span css={smallCaps}>ANT</span> to {anjCount}{' '}
-      <span css={smallCaps}>ANJ</span>
-    </>
-  )
-  const anjToAntSuccessTitle = (
-    <>
-      You successfully converted <br />
-      {anjCount} <span css={smallCaps}>ANJ</span> to {antCount}{' '}
-      <span css={smallCaps}>ANT</span>
+      {fromAmount} <span css={smallCaps}>{toAnj ? 'ANT' : 'ANJ'}</span> to{' '}
+      {toAmount} <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
     </>
   )
 
   if (stage === 'working' || stage === 'error') {
-    return <>{toAnj ? antToAnjTitle : anjToAntTitle}</>
+    return convertTitle
   } else if (stage === 'success') {
-    return <>{toAnj ? antToAnjSuccessTitle : anjToAntSuccessTitle}</>
+    return successTitle
   }
 }
 
-function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
-  const title = useMemo(() => getTitle(anjCount, antCount, stage, toAnj), [
-    anjCount,
-    antCount,
+function StepperLayout({ children, fromAmount, toAmount, stage, toAnj }) {
+  const title = useMemo(() => getTitle(fromAmount, toAmount, stage, toAnj), [
+    fromAmount,
+    toAmount,
     stage,
     toAnj,
   ])

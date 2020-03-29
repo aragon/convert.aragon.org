@@ -8,11 +8,28 @@ import {
   useClaimOrder,
 } from 'lib/web3-contracts-new'
 import Step from './Step'
+import { formatUnits } from 'lib/web3-utils'
+import { useTokenDecimals } from 'lib/web3-contracts'
 
-function ConvertStepper({ toAnj, amountSource }) {
+function ConvertStepper({ toAnj, amountSource, amountRecipient }) {
   const checkAllowance = useAllowance()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
+  const antDecimals = useTokenDecimals('ANT')
+  const anjDecimals = useTokenDecimals('ANJ')
+
+  const formattedFromAmount = formatUnits(amountSource, {
+    digits: toAnj ? antDecimals : anjDecimals,
+    truncateToDecimalPlace: 8,
+    commas: true,
+  })
+
+  const formattedToAmount = formatUnits(amountRecipient, {
+    digits: toAnj ? anjDecimals : antDecimals,
+    truncateToDecimalPlace: 8,
+    commas: true,
+  })
+
   const [stepState, setStepState] = useState({
     approval: {
       status: 'waiting',
@@ -81,7 +98,6 @@ function ConvertStepper({ toAnj, amountSource }) {
     try {
       await checkAllowance(amountSource)
       applyStepState('approval', 'success')
-      setStepperStage('success')
       handleBuyOrderStep()
     } catch (err) {
       applyStepState('approval', 'error')
@@ -91,6 +107,7 @@ function ConvertStepper({ toAnj, amountSource }) {
   }, [amountSource, checkAllowance, applyStepState, handleBuyOrderStep])
 
   useEffect(() => {
+    console.log(amountSource)
     if (toAnj) {
       handleApprovalStep()
     } else {
@@ -100,8 +117,8 @@ function ConvertStepper({ toAnj, amountSource }) {
 
   return (
     <StepperLayout
-      antCount="323424"
-      anjCount="54235"
+      fromAmount={formattedFromAmount}
+      toAmount={formattedToAmount}
       stage={stepperStage}
       toAnj={toAnj}
     >

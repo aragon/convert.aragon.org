@@ -388,7 +388,11 @@ function ConversionForm() {
               {converterStatus.status === CONVERTER_STATUSES.LEGAL ? (
                 <LegalScreen handleConvert={handleConvert} />
               ) : (
-                <ConvertStepper toAnj={toAnj} amountSource={amountSource} />
+                <ConvertStepper
+                  toAnj={toAnj}
+                  amountSource={amountSource}
+                  amountRecipient={amountRecipient}
+                />
               )}
             </>
           )
