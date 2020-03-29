@@ -81,7 +81,13 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
         </h1>
       </div>
 
-      <div>{children}</div>
+      <div
+        css={`
+          display: flex;
+        `}
+      >
+        {children}
+      </div>
 
       <div
         css={`

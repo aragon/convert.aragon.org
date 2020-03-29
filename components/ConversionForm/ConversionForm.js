@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
 import Converter from 'components/converter/Converter'
+import ConvertStepper from 'components/ConvertStepper/ConvertStepper'
+import LegalScreen from 'components/converter/Legal'
 import {
   useConverterStatus,
   CONVERTER_STATUSES,
@@ -45,7 +47,7 @@ function parseInputValue(inputValue, decimals) {
   return { amount, inputValue }
 }
 
-function useConvertInputs(otherSymbol, forwards = true) {
+function useConvertInputs(otherSymbol, toAnj = true) {
   const [inputValueRecipient, setInputValueRecipient] = useState('')
   const [inputValueSource, setInputValueSource] = useState('0.0')
   const [amountRecipient, setAmountRecipient] = useState(bigNum(0))
@@ -54,7 +56,7 @@ function useConvertInputs(otherSymbol, forwards = true) {
   const {
     loading: bondingPriceLoading,
     price: bondingCurvePrice,
-  } = useBondingCurvePrice(amountSource, forwards)
+  } = useBondingCurvePrice(amountSource, toAnj)
   const anjDecimals = useTokenDecimals('ANJ')
   const otherDecimals = useTokenDecimals(otherSymbol)
 
@@ -211,7 +213,7 @@ function ConversionForm() {
   const [inverted, setInverted] = useState(true)
   const [isFinal, setIsFinal] = useState(false)
   const [transactionHash, setTransactionHash] = useState(null)
-  const forwards = useMemo(() => !inverted, [inverted])
+  const toAnj = useMemo(() => !inverted, [inverted])
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
   const {
@@ -222,7 +224,7 @@ function ConversionForm() {
     handleManualInputChange,
     inputValueRecipient,
     inputValueSource,
-  } = useConvertInputs(options[selectedOption], forwards)
+  } = useConvertInputs(options[selectedOption], toAnj)
   const tokenBalance = useTokenBalance(options[selectedOption])
 
   const { account } = useWeb3Connect()
@@ -241,31 +243,31 @@ function ConversionForm() {
   const handleConvertMax = useCallback(() => {
     handleManualInputChange(
       formatUnits(tokenBalance, { truncateToDecimalPlace: 3 }),
-      forwards
+      toAnj
     )
-  }, [handleManualInputChange, forwards, tokenBalance])
+  }, [handleManualInputChange, toAnj, tokenBalance])
 
   const handleConvert = useCallback(async () => {
     setIsFinal(false)
     setTransactionHash(null)
     try {
-      converterStatus.setStatus(CONVERTER_STATUSES.PENDING)
-      const tx = await openOrder(amountSource, forwards)
-      setTransactionHash(tx.hash)
       converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
-      await tx.wait()
-      converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
-      const finalTx = await claimOrder(tx.hash, forwards)
-      setIsFinal(true)
-      setTransactionHash(finalTx.hash)
-      converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
-      await finalTx.wait()
-      converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
+      // const tx = await openOrder(amountSource, toAnj)
+      // setTransactionHash(tx.hash)
+      // converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
+      // await tx.wait()
+      // converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
+      // const finalTx = await claimOrder(tx.hash, toAnj)
+      // setIsFinal(true)
+      // setTransactionHash(finalTx.hash)
+      // converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
+      // await finalTx.wait()
+      // converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
     } catch (err) {
       console.log(err)
       converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
     }
-  }, [amountSource, claimOrder, converterStatus, forwards, openOrder])
+  }, [amountSource, claimOrder, converterStatus, toAnj, openOrder])
 
   const handleLegalTerms = useCallback(async () => {
     converterStatus.setStatus(CONVERTER_STATUSES.LEGAL)
@@ -375,13 +377,20 @@ function ConversionForm() {
         }
         reveal={
           converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
-            <Converter
-              handleConvert={handleConvert}
-              amountRequested={amountRecipient}
-              toAnj={forwards}
-              transactionHash={transactionHash}
-              isFinal={isFinal}
-            />
+            // <Converter
+            //   handleConvert={handleConvert}
+            //   amountRequested={amountRecipient}
+            //   toAnj={toAnj}
+            //   transactionHash={transactionHash}
+            //   isFinal={isFinal}
+            // />
+            <>
+              {converterStatus.status === CONVERTER_STATUSES.LEGAL ? (
+                <LegalScreen handleConvert={handleConvert} />
+              ) : (
+                <ConvertStepper toAnj={toAnj} amountSource={amountSource} />
+              )}
+            </>
           )
         }
       />
@@ -433,9 +442,7 @@ function Docs() {
       `}
     >
       <li>
-        <Anchor href="https://anj.aragon.org/">
-          About
-        </Anchor>
+        <Anchor href="https://anj.aragon.org/">About</Anchor>
       </li>
       <li>
         <Anchor href="https://help.aragon.org/article/41-aragon-court">
@@ -443,9 +450,7 @@ function Docs() {
         </Anchor>
       </li>
       <li>
-        <Anchor href="https://court.aragon.org/dashboard">
-          Court
-        </Anchor>
+        <Anchor href="https://court.aragon.org/dashboard">Court</Anchor>
       </li>
     </ul>
   )

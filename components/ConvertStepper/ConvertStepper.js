@@ -1,74 +1,134 @@
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Divider from './Divider'
+import PropTypes from 'prop-types'
 import StepperLayout from './StepperLayout'
+import {
+  useAllowance,
+  useOpenOrder,
+  useClaimOrder,
+} from 'lib/web3-contracts-new'
 import Step from './Step'
 
-const STEP_WIDTH = 180
+const INITIAL_STEPPER_STATE = {
+  approval: {
+    status: 'working',
+    active: true,
+  },
+  buyOrder: {
+    status: 'waiting',
+    active: false,
+  },
+  claimOrder: {
+    status: 'waiting',
+    active: false,
+  },
+}
 
-function ConvertStepper() {
+function ConvertStepper({ toAnj, amountSource }) {
+  const checkAllowance = useAllowance()
+  const openOrder = useOpenOrder()
+  const claimOrder = useClaimOrder()
+  const [stepperState, setStepperState] = useState(INITIAL_STEPPER_STATE)
+
+  const setStepStatus = useCallback((step, status) => {
+    setStepperState(prevState => {
+      return {
+        ...prevState,
+        [step]: {
+          status: status,
+          active: true,
+        },
+      }
+    })
+  }, [])
+
+  const handleClaimOrderStep = useCallback(
+    async hash => {
+      try {
+        setStepStatus('claimOrder', 'waiting')
+        const transaction = await claimOrder(hash, toAnj)
+        setStepStatus('claimOrder', 'working')
+        await transaction.wait()
+        setStepStatus('claimOrder', 'success')
+      } catch (err) {
+        setStepStatus('claimOrder', 'error')
+        console.log(err)
+      }
+    },
+    [claimOrder, setStepStatus, toAnj]
+  )
+
+  const handleBuyOrderStep = useCallback(async () => {
+    try {
+      setStepStatus('buyOrder', 'waiting')
+      const transaction = await openOrder(amountSource, toAnj)
+      setStepStatus('buyOrder', 'working')
+      await transaction.wait()
+      setStepStatus('buyOrder', 'success')
+      handleClaimOrderStep(transaction.hash)
+    } catch (err) {
+      setStepStatus('buyOrder', 'error')
+      console.log(err)
+    }
+  }, [amountSource, openOrder, setStepStatus, toAnj, handleClaimOrderStep])
+
+  const handleApprovalStep = useCallback(async () => {
+    try {
+      await checkAllowance(amountSource)
+      setStepStatus('approval', 'success')
+      handleBuyOrderStep()
+    } catch (err) {
+      setStepStatus('approval', 'error')
+      console.log(err)
+    }
+  }, [amountSource, checkAllowance, setStepStatus, handleBuyOrderStep])
+
+  useEffect(() => {
+    if (toAnj) {
+      handleApprovalStep()
+    } else {
+      handleBuyOrderStep()
+    }
+  }, [amountSource, handleApprovalStep, handleBuyOrderStep, toAnj])
+
   return (
     <StepperLayout
       antCount="323424"
       anjCount="54235"
-      stage="success"
+      stage="working"
       toAnj={true}
     >
-      <div
-        css={`
-          display: flex;
-        `}
-      >
-        <Step
-          title="Claim order"
-          number="1"
-          status="waiting"
-          css={`
-            width: ${STEP_WIDTH}px;
-          `}
-        />
-        <Divider />
-        <Step
-          title="Approve ANT"
-          number="2"
-          dormant
-          status="waiting"
-          css={`
-            width: ${STEP_WIDTH}px;
-          `}
-        />
-        <Divider />
-        <Step
-          title="Create buy order"
-          number="3"
-          status="working"
-          transactionHash="34dfsdsf35dsf"
-          css={`
-            width: ${STEP_WIDTH}px;
-          `}
-        />
-        <Divider />
-        <Step
-          title="Claim order"
-          number="4"
-          status="success"
-          transactionHash="34dfsdsf35dsf"
-          css={`
-            width: ${STEP_WIDTH}px;
-          `}
-        />
-        <Divider />
-        <Step
-          title="Transaction failed"
-          number="5"
-          status="error"
-          transactionHash="34dfsdsf35dsf"
-          css={`
-            width: ${STEP_WIDTH}px;
-          `}
-        />
-      </div>
+      {toAnj && (
+        <>
+          <Step
+            title="Approve ANT"
+            number="1"
+            active={stepperState.approval.active}
+            status={stepperState.approval.status}
+          />
+          <Divider />
+        </>
+      )}
+
+      <Step
+        title="Create buy order"
+        number={toAnj ? '2' : '1'}
+        active={stepperState.buyOrder.active}
+        status={stepperState.buyOrder.status}
+      />
+      <Divider />
+      <Step
+        title="Claim order"
+        number={toAnj ? '3' : '2'}
+        active={stepperState.claimOrder.active}
+        status={stepperState.claimOrder.status}
+      />
     </StepperLayout>
   )
+}
+
+ConvertStepper.propTypes = {
+  toAnj: PropTypes.bool,
 }
 
 export default ConvertStepper

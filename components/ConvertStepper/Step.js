@@ -52,7 +52,7 @@ function getBorderColor(status) {
   }
 }
 
-function Step({ title, status, dormant, number, className, transactionHash }) {
+function Step({ title, status, active, number, className, transactionHash }) {
   const desc = useMemo(() => STATUS_DESC[status], [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
@@ -63,6 +63,8 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        width: 180px;
       `}
     >
       <div
@@ -118,7 +120,7 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
 
                 border-radius: 100%;
 
-                border: 2px solid ${dormant ? 'transparent' : borderColor};
+                border: 2px solid ${active ? borderColor : 'transparent'};
 
                 ${status === 'waiting' && pulseAnimation}
                 ${status === 'working' && spinAnimation}
@@ -136,7 +138,7 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
           font-weight: 500;
         `}
       >
-        {title}
+        {status === 'error' ? 'Transaction failed' : title}
       </h2>
 
       <p
@@ -185,7 +187,7 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
 Step.propTypes = {
   title: PropTypes.string,
   transactionHash: PropTypes.string,
-  dormant: PropTypes.bool,
+  active: PropTypes.bool,
   status: PropTypes.oneOf(['waiting', 'working', 'success', 'error']),
 }
 

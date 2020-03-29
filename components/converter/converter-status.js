@@ -5,13 +5,11 @@ import { bigNum } from 'lib/utils'
 
 export const CONVERTER_STATUSES = {
   FORM: Symbol('STATE_FORM'),
-  SIGNING_STAGE_1: Symbol('STATE_SIGNING_STAGE_1'),
-  SIGNING_STATE_2: Symbol('STATE_SIGNING_STAGE_2'),
-  SIGNING_SUCCESS: Symbol('STATE_SIGNING_SUCCESS'),
   PENDING: Symbol('STATE_PENDING'),
   ERROR: Symbol('STATE_ERROR'),
   LEGAL: Symbol('STATE_LEGAL'),
   SUCCESS: Symbol('STATE_SUCCESS'),
+  SIGNING: Symbol('SIGNING'),
 }
 
 const ConverterContext = React.createContext()
