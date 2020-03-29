@@ -13,7 +13,7 @@ function ConvertStepper({ toAnj, amountSource }) {
   const checkAllowance = useAllowance()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
-  const [stepperState, setStepperState] = useState({
+  const [stepState, setStepState] = useState({
     approval: {
       status: 'waiting',
       active: true,
@@ -29,9 +29,10 @@ function ConvertStepper({ toAnj, amountSource }) {
       hash: '',
     },
   })
+  const [stepperStage, setStepperStage] = useState('working')
 
-  const setStepStatus = useCallback((step, status, hash) => {
-    setStepperState(prevState => {
+  const applyStepState = useCallback((step, status, hash) => {
+    setStepState(prevState => {
       return {
         ...prevState,
         [step]: {
@@ -46,43 +47,48 @@ function ConvertStepper({ toAnj, amountSource }) {
   const handleClaimOrderStep = useCallback(
     async hash => {
       try {
-        setStepStatus('claimOrder', 'waiting')
+        applyStepState('claimOrder', 'waiting')
         const transaction = await claimOrder(hash, toAnj)
-        setStepStatus('claimOrder', 'working', transaction.hash)
+        applyStepState('claimOrder', 'working', transaction.hash)
         await transaction.wait()
-        setStepStatus('claimOrder', 'success')
+        applyStepState('claimOrder', 'success')
+        setStepperStage('success')
       } catch (err) {
-        setStepStatus('claimOrder', 'error')
+        applyStepState('claimOrder', 'error')
+        setStepperStage('error')
         console.log(err)
       }
     },
-    [claimOrder, setStepStatus, toAnj]
+    [claimOrder, applyStepState, toAnj]
   )
 
   const handleBuyOrderStep = useCallback(async () => {
     try {
-      setStepStatus('buyOrder', 'waiting')
+      applyStepState('buyOrder', 'waiting')
       const transaction = await openOrder(amountSource, toAnj)
-      setStepStatus('buyOrder', 'working', transaction.hash)
+      applyStepState('buyOrder', 'working', transaction.hash)
       await transaction.wait()
-      setStepStatus('buyOrder', 'success')
+      applyStepState('buyOrder', 'success')
       handleClaimOrderStep(transaction.hash)
     } catch (err) {
-      setStepStatus('buyOrder', 'error')
+      applyStepState('buyOrder', 'error')
+      setStepperStage('error')
       console.log(err)
     }
-  }, [amountSource, openOrder, setStepStatus, toAnj, handleClaimOrderStep])
+  }, [amountSource, openOrder, applyStepState, toAnj, handleClaimOrderStep])
 
   const handleApprovalStep = useCallback(async () => {
     try {
       await checkAllowance(amountSource)
-      setStepStatus('approval', 'success')
+      applyStepState('approval', 'success')
+      setStepperStage('success')
       handleBuyOrderStep()
     } catch (err) {
-      setStepStatus('approval', 'error')
+      applyStepState('approval', 'error')
+      setStepperStage('error')
       console.log(err)
     }
-  }, [amountSource, checkAllowance, setStepStatus, handleBuyOrderStep])
+  }, [amountSource, checkAllowance, applyStepState, handleBuyOrderStep])
 
   useEffect(() => {
     if (toAnj) {
@@ -96,16 +102,16 @@ function ConvertStepper({ toAnj, amountSource }) {
     <StepperLayout
       antCount="323424"
       anjCount="54235"
-      stage="working"
-      toAnj={true}
+      stage={stepperStage}
+      toAnj={toAnj}
     >
       {toAnj && (
         <>
           <Step
             title="Approve ANT"
             number="1"
-            active={stepperState.approval.active}
-            status={stepperState.approval.status}
+            active={stepState.approval.active}
+            status={stepState.approval.status}
           />
           <Divider />
         </>
@@ -114,17 +120,17 @@ function ConvertStepper({ toAnj, amountSource }) {
       <Step
         title="Create buy order"
         number={toAnj ? '2' : '1'}
-        active={stepperState.buyOrder.active}
-        status={stepperState.buyOrder.status}
-        transactionHash={stepperState.buyOrder.hash}
+        active={stepState.buyOrder.active}
+        status={stepState.buyOrder.status}
+        transactionHash={stepState.buyOrder.hash}
       />
       <Divider />
       <Step
         title="Claim order"
         number={toAnj ? '3' : '2'}
-        active={stepperState.claimOrder.active}
-        status={stepperState.claimOrder.status}
-        transactionHash={stepperState.claimOrder.hash}
+        active={stepState.claimOrder.active}
+        status={stepState.claimOrder.status}
+        transactionHash={stepState.claimOrder.hash}
       />
     </StepperLayout>
   )
