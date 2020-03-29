@@ -3,12 +3,12 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
-import Converter from 'components/Converter/Converter'
-import LegalScreen from 'components/Converter/Legal'
+import Converter from 'components/ConvertSteps/Converter'
+import LegalScreen from 'components/ConvertSteps/Legal'
 import {
   useConverterStatus,
   CONVERTER_STATUSES,
-} from 'components/Converter/converter-status'
+} from 'components/ConvertSteps/converter-status'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'

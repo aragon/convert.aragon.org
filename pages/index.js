@@ -1,5 +1,5 @@
 import React from 'react'
-import { ConverterProvider } from 'components/Converter/converter-status'
+import { ConverterProvider } from 'components/ConvertSteps/converter-status'
 import ConversionForm from 'components/ConversionForm/ConversionForm'
 
 export default () => {
