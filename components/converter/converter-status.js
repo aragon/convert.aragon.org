@@ -5,11 +5,8 @@ import { bigNum } from 'lib/utils'
 
 export const CONVERTER_STATUSES = {
   FORM: Symbol('STATE_FORM'),
-  PENDING: Symbol('STATE_PENDING'),
-  ERROR: Symbol('STATE_ERROR'),
   LEGAL: Symbol('STATE_LEGAL'),
-  SUCCESS: Symbol('STATE_SUCCESS'),
-  STEPPER: Symbol('STATS_STEPPER'),
+  STEPPER: Symbol('STATE_STEPPER'),
 }
 
 const ConverterContext = React.createContext()
@@ -33,7 +30,6 @@ export function ConverterProvider({ children }) {
     const onBought = (from, to, value) => {
       if (from === account) {
         setLastAnjBought(value)
-        setStatus(CONVERTER_STATUSES.SUCCESS)
       }
     }
 

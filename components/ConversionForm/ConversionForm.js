@@ -3,13 +3,12 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
-import Converter from 'components/converter/Converter'
-import ConvertStepper from 'components/ConvertStepper/ConvertStepper'
-import LegalScreen from 'components/converter/Legal'
+import Converter from 'components/Converter/Converter'
+import LegalScreen from 'components/Converter/Legal'
 import {
   useConverterStatus,
   CONVERTER_STATUSES,
-} from 'components/converter/converter-status'
+} from 'components/Converter/converter-status'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
@@ -19,12 +18,10 @@ import {
   useBondingCurvePrice,
   useTokenBalance,
   useTokenDecimals,
-  useOpenOrder,
-  useClaimOrder,
 } from 'lib/web3-contracts'
 import { formatUnits, parseUnits } from 'lib/web3-utils'
 
-import question from '../converter/assets/question.svg'
+import question from '../Converter/assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 
@@ -216,11 +213,7 @@ function useConvertInputs(otherSymbol, toAnj = true) {
 function ConversionForm() {
   const [selectedOption, setSelectedOption] = useState(1)
   const [inverted, setInverted] = useState(true)
-  const [isFinal, setIsFinal] = useState(false)
-  const [transactionHash, setTransactionHash] = useState(null)
   const toAnj = useMemo(() => !inverted, [inverted])
-  const openOrder = useOpenOrder()
-  const claimOrder = useClaimOrder()
   const {
     amountSource,
     amountRecipient,
@@ -253,29 +246,11 @@ function ConversionForm() {
     )
   }, [handleManualInputChange, toAnj, tokenBalance])
 
-  const handleConvert = useCallback(async () => {
-    setIsFinal(false)
-    setTransactionHash(null)
-    try {
-      converterStatus.setStatus(CONVERTER_STATUSES.STEPPER)
-      // const tx = await openOrder(amountSource, toAnj)
-      // setTransactionHash(tx.hash)
-      // converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
-      // await tx.wait()
-      // converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
-      // const finalTx = await claimOrder(tx.hash, toAnj)
-      // setIsFinal(true)
-      // setTransactionHash(finalTx.hash)
-      // converterStatus.setStatus(CONVERTER_STATUSES.SIGNING)
-      // await finalTx.wait()
-      // converterStatus.setStatus(CONVERTER_STATUSES.SUCCESS)
-    } catch (err) {
-      console.log(err)
-      converterStatus.setStatus(CONVERTER_STATUSES.ERROR)
-    }
-  }, [amountSource, claimOrder, converterStatus, toAnj, openOrder])
+  const handleConvert = useCallback(() => {
+    converterStatus.setStatus(CONVERTER_STATUSES.STEPPER)
+  }, [converterStatus])
 
-  const handleLegalTerms = useCallback(async () => {
+  const handleLegalTerms = useCallback(() => {
     converterStatus.setStatus(CONVERTER_STATUSES.LEGAL)
   }, [converterStatus])
 
@@ -303,7 +278,6 @@ function ConversionForm() {
       <NavBar logoMode={navbarLogoMode} />
       <SplitScreen
         inverted={inverted}
-        onConvert={handleConvert}
         onInvert={handleInvert}
         primary={
           <div
@@ -388,18 +362,11 @@ function ConversionForm() {
         }
         reveal={
           converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
-            // <Converter
-            //   handleConvert={handleConvert}
-            //   amountRequested={amountRecipient}
-            //   toAnj={toAnj}
-            //   transactionHash={transactionHash}
-            //   isFinal={isFinal}
-            // />
             <>
               {converterStatus.status === CONVERTER_STATUSES.LEGAL ? (
                 <LegalScreen handleConvert={handleConvert} />
               ) : (
-                <ConvertStepper
+                <Converter
                   toAnj={toAnj}
                   amountSource={amountSource}
                   amountRecipient={amountRecipient}

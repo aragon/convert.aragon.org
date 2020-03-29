@@ -3,37 +3,42 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Anchor from '../Anchor/Anchor'
 import processing from './assets/loader.gif'
+import { breakpoint } from 'lib/microsite-logic'
+
+const large = css => breakpoint('large', css)
 
 function Legal({ handleConvert }) {
   const [legalChecked, setLegalChecked] = useState(false)
   return (
-    <PendingIn>
-      <div>
-        <img src={processing} alt="" />
-        <p className="black">These actions require multiple transactions</p>
-        <p>
-          Please sign them one after another and do not close this window until
-          the process is finished.
-        </p>
-        <Button onClick={handleConvert} disabled={!legalChecked}>
-          Create transaction
-        </Button>
-        <Conditions>
-          <label>
-            <input
-              type="checkbox"
-              onChange={() => setLegalChecked(legalChecked => !legalChecked)}
-              checked={legalChecked}
-            />
-            By clicking on “Create transaction” you are accepting our{' '}
-            <Anchor href="https://anj.aragon.org/legal/terms-general.pdf">
-              legal terms
-            </Anchor>
-            .
-          </label>
-        </Conditions>
-      </div>
-    </PendingIn>
+    <ConverterSection>
+      <PendingIn>
+        <div>
+          <img src={processing} alt="" />
+          <p className="black">These actions require multiple transactions</p>
+          <p>
+            Please sign them one after another and do not close this window
+            until the process is finished.
+          </p>
+          <Button onClick={handleConvert} disabled={!legalChecked}>
+            Create transaction
+          </Button>
+          <Conditions>
+            <label>
+              <input
+                type="checkbox"
+                onChange={() => setLegalChecked(legalChecked => !legalChecked)}
+                checked={legalChecked}
+              />
+              By clicking on “Create transaction” you are accepting our{' '}
+              <Anchor href="https://anj.aragon.org/legal/terms-general.pdf">
+                legal terms
+              </Anchor>
+              .
+            </label>
+          </Conditions>
+        </div>
+      </PendingIn>
+    </ConverterSection>
   )
 }
 
@@ -96,6 +101,31 @@ const Conditions = styled.p`
   input {
     margin-right: 8px;
     vertical-align: text-top;
+  }
+`
+
+const ConverterSection = styled.div`
+  margin-top: 52px;
+  background: transparent;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 1180px;
+  max-width: 95%;
+
+  p {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 32px;
+    color: #8a96a0;
+  }
+
+  ${large('max-width: 1180px;')};
+
+  @media screen and (max-width: 414px) {
+    margin-top: 20px;
+    p {
+      font-size: 20px;
+    }
   }
 `
 

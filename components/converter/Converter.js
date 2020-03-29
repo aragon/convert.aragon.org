@@ -1,116 +1,195 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import Divider from './Divider'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import ErrorScreen from './Error'
-import LegalScreen from './Legal'
-import PendingScreen from './Pending'
-import ProcessingScreen from './Processing'
-import SuccessScreen from './Success'
-import { CONVERTER_STATUSES, useConverterStatus } from './converter-status'
-import { breakpoint } from 'lib/microsite-logic'
+import StepperLayout from './StepperLayout'
+import { useAllowance, useOpenOrder, useClaimOrder } from 'lib/web3-contracts'
+import Step from './Step'
+import { formatUnits } from 'lib/web3-utils'
+import { useTokenDecimals } from 'lib/web3-contracts'
 
-const large = css => breakpoint('large', css)
+function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
+  const checkAllowance = useAllowance()
+  const openOrder = useOpenOrder()
+  const claimOrder = useClaimOrder()
+  const antDecimals = useTokenDecimals('ANT')
+  const anjDecimals = useTokenDecimals('ANJ')
 
-function Converter({
-  amountRequested,
-  handleConvert,
-  isFinal,
-  toAnj,
-  transactionHash,
-}) {
+  const [stepperStage, setStepperStage] = useState('working')
+  const [currentStep, setCurrentStep] = useState(
+    toAnj ? 'approval' : 'buyOrder'
+  )
+  const [stepState, setStepState] = useState({
+    approval: {
+      status: 'waiting',
+      active: true,
+    },
+    buyOrder: {
+      status: 'waiting',
+      active: toAnj ? false : true,
+      hash: '',
+    },
+    claimOrder: {
+      status: 'waiting',
+      active: false,
+      hash: '',
+    },
+  })
+
+  const formattedFromAmount = formatUnits(amountSource, {
+    digits: toAnj ? antDecimals : anjDecimals,
+    truncateToDecimalPlace: 8,
+    commas: true,
+  })
+
+  const formattedToAmount = formatUnits(amountRecipient, {
+    digits: toAnj ? anjDecimals : antDecimals,
+    truncateToDecimalPlace: 8,
+    commas: true,
+  })
+
+  const applyStepState = useCallback((step, status, hash) => {
+    setStepState(prevState => {
+      return {
+        ...prevState,
+        [step]: {
+          status: status,
+          active: true,
+          hash: hash ? hash : prevState[step].hash,
+        },
+      }
+    })
+  }, [])
+
+  const handleClaimOrderStep = useCallback(
+    async buyOrderHash => {
+      const stepType = 'claimOrder'
+
+      setCurrentStep(stepType)
+
+      try {
+        // Awaiting confirmation
+        applyStepState(stepType, 'waiting')
+        const transaction = await claimOrder(buyOrderHash, toAnj)
+
+        // Mining transaction
+        applyStepState(stepType, 'working', transaction.hash)
+        await transaction.wait()
+
+        // Success
+        applyStepState(stepType, 'success')
+        setStepperStage('success')
+      } catch (err) {
+        applyStepState(stepType, 'error')
+        setStepperStage('error')
+        console.log(err)
+      }
+    },
+    [claimOrder, applyStepState, toAnj]
+  )
+
+  const handleBuyOrderStep = useCallback(async () => {
+    const stepType = 'buyOrder'
+
+    setCurrentStep(stepType)
+
+    try {
+      // Awaiting confirmation
+      applyStepState(stepType, 'waiting')
+      const transaction = await openOrder(amountSource, toAnj)
+
+      // Mining transaction
+      applyStepState(stepType, 'working', transaction.hash)
+      await transaction.wait()
+
+      // Success
+      applyStepState(stepType, 'success')
+      handleClaimOrderStep(transaction.hash)
+    } catch (err) {
+      applyStepState(stepType, 'error')
+      setStepperStage('error')
+      console.log(err)
+    }
+  }, [amountSource, openOrder, applyStepState, toAnj, handleClaimOrderStep])
+
+  const handleApprovalStep = useCallback(async () => {
+    const stepType = 'approval'
+
+    setCurrentStep(stepType)
+
+    try {
+      // Awaiting approval
+      applyStepState(stepType, 'waiting')
+      await checkAllowance(amountSource)
+
+      // Success
+      applyStepState(stepType, 'success')
+      handleBuyOrderStep()
+    } catch (err) {
+      applyStepState(stepType, 'error')
+      setStepperStage('error')
+      console.log(err)
+    }
+  }, [amountSource, checkAllowance, applyStepState, handleBuyOrderStep])
+
+  function handleRepeatTransaction() {
+    if (currentStep === 'approval') {
+      handleApprovalStep()
+    } else if (currentStep === 'buyOrder') {
+      handleBuyOrderStep()
+    } else if (currentStep === 'claimOrder') {
+      handleClaimOrderStep(stepState.buyOrder.hash)
+    }
+  }
+
+  useEffect(() => {
+    if (amountSource) {
+      toAnj ? handleApprovalStep() : handleBuyOrderStep()
+    }
+  }, [amountSource, handleApprovalStep, handleBuyOrderStep, toAnj])
+
   return (
-    <div
-      css={`
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        padding-bottom: 30px;
-        width: 100vw;
-        height: 100vh;
-      `}
+    <StepperLayout
+      fromAmount={formattedFromAmount}
+      toAmount={formattedToAmount}
+      stage={stepperStage}
+      toAnj={toAnj}
+      onRepeatTransaction={handleRepeatTransaction}
+      onReturnHome={handleReturnHome}
     >
-      <ConverterSection>
-        <ConverterIn
-          amountRequested={amountRequested}
-          handleConvert={handleConvert}
-          isFinal={isFinal}
-          toAnj={toAnj}
-          transactionHash={transactionHash}
-        />
-      </ConverterSection>
-    </div>
+      {toAnj && (
+        <>
+          <Step
+            title="Approve ANT"
+            number="1"
+            active={stepState.approval.active}
+            status={stepState.approval.status}
+          />
+          <Divider />
+        </>
+      )}
+
+      <Step
+        title="Create buy order"
+        number={toAnj ? '2' : '1'}
+        active={stepState.buyOrder.active}
+        status={stepState.buyOrder.status}
+        transactionHash={stepState.buyOrder.hash}
+      />
+      <Divider />
+      <Step
+        title="Claim order"
+        number={toAnj ? '3' : '2'}
+        active={stepState.claimOrder.active}
+        status={stepState.claimOrder.status}
+        transactionHash={stepState.claimOrder.hash}
+      />
+    </StepperLayout>
   )
 }
 
 Converter.propTypes = {
-  handleConvert: PropTypes.func,
-  isFinal: PropTypes.bool,
   toAnj: PropTypes.bool,
-  transactionHash: PropTypes.string,
+  handleReturnHome: PropTypes.func,
 }
-
-function ConverterIn({
-  amountRequested,
-  handleConvert,
-  isFinal,
-  toAnj,
-  transactionHash,
-}) {
-  const { status, setStatus } = useConverterStatus()
-  const handleBackToForm = useCallback(() => {
-    setStatus(CONVERTER_STATUSES.FORM)
-  }, [setStatus])
-
-  if (status === CONVERTER_STATUSES.SUCCESS) {
-    return (
-      <SuccessScreen
-        amountRequested={amountRequested}
-        final={isFinal}
-        onDone={handleBackToForm}
-        toAnj={toAnj}
-        transactionHash={transactionHash}
-      />
-    )
-  }
-  if (status === CONVERTER_STATUSES.ERROR) {
-    return <ErrorScreen onDone={handleBackToForm} />
-  }
-  if (status === CONVERTER_STATUSES.PENDING) {
-    return <PendingScreen final={isFinal} />
-  }
-  if (status === CONVERTER_STATUSES.SIGNING) {
-    return (
-      <ProcessingScreen isFinal={isFinal} transactionHash={transactionHash} />
-    )
-  }
-  if (status === CONVERTER_STATUSES.LEGAL) {
-    return <LegalScreen handleConvert={handleConvert} />
-  }
-  return null
-}
-
-const ConverterSection = styled.div`
-  margin-top: 52px;
-  background: transparent;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 1180px;
-  max-width: 95%;
-  p {
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 32px;
-    color: #8a96a0;
-  }
-  ${large('max-width: 1180px;')};
-  @media screen and (max-width: 414px) {
-    margin-top: 20px;
-    p {
-      font-size: 20px;
-    }
-  }
-`
 
 export default Converter
