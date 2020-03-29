@@ -3,12 +3,12 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
-import Converter from 'components/converter/Converter'
-import LegalScreen from 'components/converter/Legal'
+import Converter from 'components/Converter/Converter'
+import LegalScreen from 'components/Converter/Legal'
 import {
   useConverterStatus,
   CONVERTER_STATUSES,
-} from 'components/converter/converter-status'
+} from 'components/Converter/converter-status'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
@@ -21,7 +21,7 @@ import {
 } from 'lib/web3-contracts'
 import { formatUnits, parseUnits } from 'lib/web3-utils'
 
-import question from './assets/question.svg'
+import question from '../Converter/assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 

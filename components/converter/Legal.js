@@ -1,6 +1,6 @@
-import React, { useState } from 'components/converter/node_modules/react'
-import PropTypes from 'components/converter/node_modules/prop-types'
-import styled from 'components/converter/node_modules/styled-components'
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import styled from 'styled-components'
 import Anchor from '../Anchor/Anchor'
 import processing from './assets/loader.gif'
 

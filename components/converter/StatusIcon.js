@@ -1,5 +1,5 @@
-import React from 'components/converter/node_modules/react'
-import PropTypes from 'components/converter/node_modules/prop-types'
+import React from 'react'
+import PropTypes from 'prop-types'
 import successIcon from './assets/success.svg'
 import waitingIcon from './assets/waiting.svg'
 import workingIcon from './assets/working.svg'

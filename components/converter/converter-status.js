@@ -1,11 +1,7 @@
-import React, {
-  useEffect,
-  useContext,
-  useState,
-} from 'components/converter/node_modules/react'
-import { useKnownContract } from 'components/converter/node_modules/lib/web3-contracts'
-import { useWeb3Connect } from 'components/converter/node_modules/lib/web3-connect'
-import { bigNum } from 'components/converter/node_modules/lib/utils'
+import React, { useEffect, useContext, useState } from 'react'
+import { useKnownContract } from 'lib/web3-contracts'
+import { useWeb3Connect } from 'lib/web3-connect'
+import { bigNum } from 'lib/utils'
 
 export const CONVERTER_STATUSES = {
   FORM: Symbol('STATE_FORM'),

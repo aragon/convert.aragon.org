@@ -1,7 +1,7 @@
-import React, { useMemo } from 'components/converter/node_modules/react'
+import React, { useMemo } from 'react'
 import Button from './Button'
-import PropTypes from 'components/converter/node_modules/prop-types'
-import { css } from 'components/converter/node_modules/styled-components'
+import PropTypes from 'prop-types'
+import { css } from 'styled-components'
 import repeat from './assets/repeat.svg'
 
 const smallCaps = css`

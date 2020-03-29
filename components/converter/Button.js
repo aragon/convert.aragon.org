@@ -1,6 +1,6 @@
-import React from 'components/converter/node_modules/react'
-import PropTypes from 'components/converter/node_modules/prop-types'
-import { css } from 'components/converter/node_modules/styled-components'
+import React from 'react'
+import PropTypes from 'prop-types'
+import { css } from 'styled-components'
 
 const MODE_STYLE = {
   primary: css`

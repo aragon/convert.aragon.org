@@ -1,12 +1,9 @@
-import React, { useMemo } from 'components/converter/node_modules/react'
-import PropTypes from 'components/converter/node_modules/prop-types'
+import React, { useMemo } from 'react'
+import PropTypes from 'prop-types'
 import StatusIcon from './StatusIcon'
-import {
-  keyframes,
-  css,
-} from 'components/converter/node_modules/styled-components'
+import { keyframes, css } from 'styled-components'
 import TransactionBadge from './TransactionBadge'
-import { ABSOLUTE_FILL } from 'components/converter/node_modules/lib/css-utils'
+import { ABSOLUTE_FILL } from 'lib/css-utils'
 
 const STATUS_DESC = {
   waiting: 'Waiting for signature',
