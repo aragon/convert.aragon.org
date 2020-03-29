@@ -21,7 +21,7 @@ import {
 } from 'lib/web3-contracts'
 import { formatUnits, parseUnits } from 'lib/web3-utils'
 
-import question from '../Converter/assets/question.svg'
+import question from './assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 
