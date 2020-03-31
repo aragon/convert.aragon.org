@@ -1,6 +1,5 @@
 import React from 'react'
 import * as Sentry from '@sentry/browser'
-import NextApp from 'next/app'
 import NextHead from 'next/head'
 import { useSpring, animated } from 'react-spring'
 import { createGlobalStyle } from 'styled-components'
@@ -12,7 +11,7 @@ if (env('SENTRY_DSN')) {
   Sentry.init({
     dsn: env('SENTRY_DSN'),
     environment: env('NODE_ENV'),
-    release: 'anj.aragon.org@' + env('BUILD'),
+    release: 'convert.aragon.org@' + env('BUILD'),
   })
 }
 
