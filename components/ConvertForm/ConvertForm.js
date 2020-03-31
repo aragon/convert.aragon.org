@@ -5,10 +5,6 @@ import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
 import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
 import LegalScreen from 'components/ConvertSteps/Legal'
-import {
-  useConverterStatus,
-  CONVERTER_STATUSES,
-} from 'components/ConvertSteps/converter-status'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
@@ -21,8 +17,14 @@ import question from './assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 
+const CONVERTER_STATUSES = {
+  FORM: Symbol('STATE_FORM'),
+  LEGAL: Symbol('STATE_LEGAL'),
+  STEPPER: Symbol('STATE_STEPPER'),
+}
+
 function ConvertForm() {
-  // const [formStatus, setFormStatus] = useState("1")
+  const [formStatus, setFormStatus] = useState(CONVERTER_STATUSES.FORM)
   const [selectedOption, setSelectedOption] = useState(1)
   const [inverted, setInverted] = useState(true)
   const toAnj = useMemo(() => !inverted, [inverted])
@@ -45,8 +47,6 @@ function ConvertForm() {
     tokenBalance,
   ])
 
-  const converterStatus = useConverterStatus()
-
   const handleInvert = useCallback(() => {
     setInverted(inverted => !inverted)
     setSelectedOption(option => (option + 1) % 2)
@@ -59,26 +59,26 @@ function ConvertForm() {
   }, [handleManualInputChange, toAnj, tokenBalance])
 
   const handleConvert = useCallback(() => {
-    converterStatus.setStatus(CONVERTER_STATUSES.STEPPER)
-  }, [converterStatus])
+    setFormStatus(CONVERTER_STATUSES.STEPPER)
+  }, [])
 
   const handleLegalTerms = useCallback(() => {
-    converterStatus.setStatus(CONVERTER_STATUSES.LEGAL)
-  }, [converterStatus])
+    setFormStatus(CONVERTER_STATUSES.LEGAL)
+  }, [])
 
   const handleReturnHome = useCallback(() => {
     resetInputs()
-    converterStatus.setStatus(CONVERTER_STATUSES.FORM)
-  }, [converterStatus, resetInputs])
+    setFormStatus(CONVERTER_STATUSES.FORM)
+  }, [resetInputs])
 
   const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
 
   const navbarLogoMode = useMemo(() => {
-    if (converterStatus.status !== CONVERTER_STATUSES.FORM) {
+    if (formStatus !== CONVERTER_STATUSES.FORM) {
       return 'normal'
     }
     return inverted ? 'anj' : 'ant'
-  }, [converterStatus, inverted])
+  }, [formStatus, inverted])
 
   return (
     <div
@@ -173,9 +173,9 @@ function ConvertForm() {
           </div>
         }
         reveal={
-          converterStatus.status === CONVERTER_STATUSES.FORM ? null : (
+          formStatus === CONVERTER_STATUSES.FORM ? null : (
             <>
-              {converterStatus.status === CONVERTER_STATUSES.LEGAL ? (
+              {formStatus === CONVERTER_STATUSES.LEGAL ? (
                 <LegalScreen handleConvert={handleConvert} />
               ) : (
                 <ConvertSteps
