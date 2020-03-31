@@ -433,19 +433,15 @@ function Docs() {
       `}
     >
       <li>
-        <Anchor href="https://anj.aragon.org/">
-          About
+        <Anchor href="https://anj.aragon.org/">About</Anchor>
+      </li>
+      <li>
+        <Anchor href="https://help.aragon.org/article/48-aragon-court-faq">
+          Help
         </Anchor>
       </li>
       <li>
-        <Anchor href="https://help.aragon.org/article/41-aragon-court">
-          Docs
-        </Anchor>
-      </li>
-      <li>
-        <Anchor href="https://court.aragon.org/dashboard">
-          Court
-        </Anchor>
+        <Anchor href="https://court.aragon.org/dashboard">Court</Anchor>
       </li>
     </ul>
   )
