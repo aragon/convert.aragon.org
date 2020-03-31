@@ -2,21 +2,14 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Divider from './Divider'
 import PropTypes from 'prop-types'
 import StepperLayout from './StepperLayout'
-import {
-  useAllowance,
-  useOpenOrder,
-  useClaimOrder,
-  useTokenDecimals,
-} from 'lib/web3-contracts'
+import { useAllowance, useOpenOrder, useClaimOrder } from 'lib/web3-contracts'
 import Step from './Step'
-import { formatUnits } from 'lib/web3-utils'
+import StepperTitle from './StepperTitle'
 
 function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
   const changeAllowance = useAllowance()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
-  const antDecimals = useTokenDecimals('ANT')
-  const anjDecimals = useTokenDecimals('ANJ')
 
   const [stepperStage, setStepperStage] = useState('working')
   const [currentStep, setCurrentStep] = useState(
@@ -37,18 +30,6 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
       active: false,
       hash: '',
     },
-  })
-
-  const formattedFromAmount = formatUnits(amountSource, {
-    digits: toAnj ? antDecimals : anjDecimals,
-    truncateToDecimalPlace: 8,
-    commas: true,
-  })
-
-  const formattedToAmount = formatUnits(amountRecipient, {
-    digits: toAnj ? anjDecimals : antDecimals,
-    truncateToDecimalPlace: 8,
-    commas: true,
   })
 
   const applyStepState = useCallback((step, status, hash) => {
@@ -153,12 +134,17 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
 
   return (
     <StepperLayout
-      fromAmount={formattedFromAmount}
-      toAmount={formattedToAmount}
       stage={stepperStage}
-      toAnj={toAnj}
       onRepeatTransaction={handleRepeatTransaction}
       onReturnHome={onReturnHome}
+      title={
+        <StepperTitle
+          fromAmount={amountSource}
+          toAmount={amountRecipient}
+          toAnj={toAnj}
+          stage={stepperStage}
+        />
+      }
     >
       {toAnj && (
         <>

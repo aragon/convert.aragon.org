@@ -1,52 +1,15 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import Button from './Button'
 import PropTypes from 'prop-types'
-import { css } from 'styled-components'
 import repeat from './assets/repeat.svg'
-
-const smallCaps = css`
-  font-size: 32px;
-`
-
-function getTitle(fromAmount, toAmount, stage, toAnj) {
-  const convertTitle = (
-    <>
-      Convert {fromAmount} <span css={smallCaps}>{toAnj ? 'ANT' : 'ANJ'}</span>{' '}
-      to <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
-    </>
-  )
-
-  const successTitle = (
-    <>
-      You successfully converted <br />
-      {fromAmount} <span css={smallCaps}>{toAnj ? 'ANT' : 'ANJ'}</span> to{' '}
-      {toAmount} <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
-    </>
-  )
-
-  if (stage === 'working' || stage === 'error') {
-    return convertTitle
-  } else if (stage === 'success') {
-    return successTitle
-  }
-}
 
 function StepperLayout({
   children,
-  fromAmount,
-  toAmount,
   stage,
-  toAnj,
   onRepeatTransaction,
   onReturnHome,
+  title,
 }) {
-  const title = useMemo(() => getTitle(fromAmount, toAmount, stage, toAnj), [
-    fromAmount,
-    toAmount,
-    stage,
-    toAnj,
-  ])
-
   return (
     <div
       css={`
@@ -158,11 +121,8 @@ function StepperLayout({
   )
 }
 
-Button.propTypes = {
+StepperLayout.propTypes = {
   children: PropTypes.node,
-  anjCount: PropTypes.number,
-  antCount: PropTypes.number,
-  toAnj: PropTypes.bool,
   stage: PropTypes.oneOf(['working', 'success', 'error']),
   onRepeatTransaction: PropTypes.func,
   onReturnHome: PropTypes.func,
