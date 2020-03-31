@@ -3,7 +3,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
-import Converter from 'components/ConvertSteps/Converter'
+import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
 import LegalScreen from 'components/ConvertSteps/Legal'
 import {
   useConverterStatus,
@@ -60,17 +60,17 @@ function useConvertInputs(otherSymbol, toAnj = true) {
   // convertFromAnj is used as a toggle to execute a conversion to or from ANJ.
   const [convertFromAnj, setConvertFromAnj] = useState(false)
 
-  function resetInputs() {
+  const resetInputs = useCallback(() => {
     setInputValueSource('')
     setInputValueRecipient('')
     setAmountRecipient(bigNum(0))
     setAmountSource(bigNum(0))
-  }
+  }, [])
 
   // Reset the inputs anytime the selected token changes
   useEffect(() => {
     resetInputs()
-  }, [otherSymbol])
+  }, [otherSymbol, resetInputs])
 
   // Calculate the ANJ amount from the other amount
   useEffect(() => {
@@ -210,7 +210,7 @@ function useConvertInputs(otherSymbol, toAnj = true) {
   }
 }
 
-function ConversionForm() {
+function ConvertForm() {
   const [selectedOption, setSelectedOption] = useState(1)
   const [inverted, setInverted] = useState(true)
   const toAnj = useMemo(() => !inverted, [inverted])
@@ -366,11 +366,11 @@ function ConversionForm() {
               {converterStatus.status === CONVERTER_STATUSES.LEGAL ? (
                 <LegalScreen handleConvert={handleConvert} />
               ) : (
-                <Converter
+                <ConvertSteps
                   toAnj={toAnj}
                   amountSource={amountSource}
                   amountRecipient={amountRecipient}
-                  handleReturnHome={handleReturnHome}
+                  onReturnHome={handleReturnHome}
                 />
               )}
             </>
@@ -505,4 +505,4 @@ const MaxButton = styled.button`
   }
 `
 
-export default ConversionForm
+export default ConvertForm

@@ -2,13 +2,17 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Divider from './Divider'
 import PropTypes from 'prop-types'
 import StepperLayout from './StepperLayout'
-import { useAllowance, useOpenOrder, useClaimOrder } from 'lib/web3-contracts'
+import {
+  useAllowance,
+  useOpenOrder,
+  useClaimOrder,
+  useTokenDecimals,
+} from 'lib/web3-contracts'
 import Step from './Step'
 import { formatUnits } from 'lib/web3-utils'
-import { useTokenDecimals } from 'lib/web3-contracts'
 
-function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
-  const checkAllowance = useAllowance()
+function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
+  const changeAllowance = useAllowance()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
   const antDecimals = useTokenDecimals('ANT')
@@ -119,7 +123,7 @@ function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
     try {
       // Awaiting approval
       applyStepState(stepType, 'waiting')
-      await checkAllowance(amountSource)
+      await changeAllowance(amountSource)
 
       // Success
       applyStepState(stepType, 'success')
@@ -129,7 +133,7 @@ function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
       setStepperStage('error')
       console.log(err)
     }
-  }, [amountSource, checkAllowance, applyStepState, handleBuyOrderStep])
+  }, [amountSource, changeAllowance, applyStepState, handleBuyOrderStep])
 
   function handleRepeatTransaction() {
     if (currentStep === 'approval') {
@@ -154,7 +158,7 @@ function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
       stage={stepperStage}
       toAnj={toAnj}
       onRepeatTransaction={handleRepeatTransaction}
-      onReturnHome={handleReturnHome}
+      onReturnHome={onReturnHome}
     >
       {toAnj && (
         <>
@@ -187,9 +191,9 @@ function Converter({ toAnj, amountSource, amountRecipient, handleReturnHome }) {
   )
 }
 
-Converter.propTypes = {
+ConvertSteps.propTypes = {
   toAnj: PropTypes.bool,
   handleReturnHome: PropTypes.func,
 }
 
-export default Converter
+export default ConvertSteps

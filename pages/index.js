@@ -1,11 +1,11 @@
 import React from 'react'
 import { ConverterProvider } from 'components/ConvertSteps/converter-status'
-import ConversionForm from 'components/ConversionForm/ConversionForm'
+import ConvertForm from 'components/ConvertForm/ConvertForm'
 
 export default () => {
   return (
     <ConverterProvider>
-      <ConversionForm />
+      <ConvertForm />
     </ConverterProvider>
   )
 }
