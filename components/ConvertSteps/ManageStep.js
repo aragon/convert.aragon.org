@@ -10,42 +10,56 @@ function ManageStep({
   onSuccess,
   onError,
   onHashCreation,
+  retry,
 }) {
   const [stepStatus, setStepStatus] = useState('waiting')
-  const [isActive, setIsActive] = useState(false)
+  const [hasBeenActivated, setHasBeenActivated] = useState(false)
+  const [retrying, setRetrying] = useState(false)
 
-  const handleStepStatus = useCallback(async () => {
-    if (active && !isActive) {
-      setIsActive(true)
+  const handleStepSigning = useCallback(async () => {
+    setHasBeenActivated(true)
 
-      try {
-        // Awaiting confirmation
-        const transaction = await handleTx()
+    try {
+      setStepStatus('waiting')
 
-        onHashCreation && onHashCreation(transaction.hash)
+      // Awaiting confirmation
+      const transaction = await handleTx()
 
-        // Mining transaction
-        setStepStatus('working')
-        await transaction.wait()
+      onHashCreation && onHashCreation(transaction.hash)
 
-        // Success
-        setStepStatus('success')
+      // Mining transaction
+      setStepStatus('working')
+      await transaction.wait()
 
-        onSuccess()
-      } catch (err) {
-        setStepStatus('error')
-        onError()
-        console.log(err)
-      }
+      // Success
+      setStepStatus('success')
+
+      onSuccess()
+    } catch (err) {
+      setStepStatus('error')
+      onError()
+      console.log(err)
     }
-  }, [handleTx, active, onSuccess, onError, onHashCreation, isActive])
+
+    setRetrying(false)
+  }, [handleTx, onSuccess, onError, onHashCreation])
 
   useEffect(() => {
-    handleStepStatus()
-  }, [handleStepStatus])
+    if (active && !hasBeenActivated) {
+      handleStepSigning()
+    } else if (active && retry && !retrying) {
+      setRetrying(true)
+      handleStepSigning()
+    }
+  }, [handleStepSigning, hasBeenActivated, active, retry, retrying])
 
   return (
-    <Step title={title} number={number} active={isActive} status={stepStatus} />
+    <Step
+      title={title}
+      number={number}
+      active={hasBeenActivated}
+      status={stepStatus}
+    />
   )
 }
 

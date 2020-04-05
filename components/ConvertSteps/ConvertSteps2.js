@@ -8,19 +8,24 @@ import StepperTitle from './StepperTitle'
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const [stepperStatus, setStepperStatus] = useState('working')
   const [stepperStage, setStepperStage] = useState(0)
+  const [retryStep, setRetryStep] = useState(null)
 
-  function handleRepeatTransaction() {
-    console.log('handle repeat tx')
+  function handleRetry() {
+    setStepperStatus('working')
+    setRetryStep(stepperStage)
   }
 
-  function handleError() {
-    console.log('handle error')
+  const clearRetry = () => setRetryStep(null)
+
+  const handleError = () => {
+    clearRetry()
     setStepperStatus('error')
   }
 
   const handleSuccess = useCallback(
     optionalCb => {
       return () => {
+        clearRetry()
         optionalCb && optionalCb()
 
         // Activate next step if not last
@@ -28,7 +33,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
           setStepperStage(stepperStage + 1)
         }
 
-        // Show overall stepper success if last step succeeds
+        // Show overall stepper success if final step succeeds
         if (stepperStage === steps.length - 1) {
           setStepperStatus('success')
         }
@@ -43,6 +48,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         <ManageStep
           title={step[0]}
           number={index + 1}
+          retry={retryStep === index}
           handleTx={step[1].createTx}
           active={stepperStage === steps.indexOf(step)}
           onHashCreation={step[1].hashCreated}
@@ -60,7 +66,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   return (
     <StepperLayout
       status={stepperStatus}
-      onRepeatTransaction={handleRepeatTransaction}
+      onRepeatTransaction={handleRetry}
       onReturnHome={onReturnHome}
       title={
         <StepperTitle
