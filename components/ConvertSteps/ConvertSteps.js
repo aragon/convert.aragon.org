@@ -2,12 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Divider from './Divider'
 import PropTypes from 'prop-types'
 import StepperLayout from './StepperLayout'
-import { useAllowance, useOpenOrder, useClaimOrder } from 'lib/web3-contracts'
+import {
+  useAllowance,
+  useOpenOrder,
+  useClaimOrder,
+  useApprove,
+} from 'lib/web3-contracts'
 import Step from './Step'
 import StepperTitle from './StepperTitle'
+import { bigNum } from 'lib/utils'
 
 function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
-  const changeAllowance = useAllowance()
+  const getAllowance = useAllowance()
+  const changeAllowance = useApprove()
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
 
@@ -104,7 +111,21 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
     try {
       // Awaiting approval
       applyStepState(stepType, 'waiting')
-      await changeAllowance(amountSource)
+
+      const allowance = await getAllowance()
+
+      applyStepState(stepType, 'working')
+
+      if (allowance.lt(bigNum(amountSource))) {
+        console.log('needs allowance reset')
+        const resetAllownaceTx = await changeAllowance(0)
+
+        await resetAllownaceTx.wait()
+      }
+
+      const changeAllowanceToProvidedTx = await changeAllowance(amountSource)
+
+      await changeAllowanceToProvidedTx.wait()
 
       // Success
       applyStepState(stepType, 'success')
@@ -114,7 +135,13 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
       setStepperStage('error')
       console.log(err)
     }
-  }, [amountSource, changeAllowance, applyStepState, handleBuyOrderStep])
+  }, [
+    amountSource,
+    applyStepState,
+    handleBuyOrderStep,
+    changeAllowance,
+    getAllowance,
+  ])
 
   function handleRepeatTransaction() {
     if (currentStep === 'approval') {
