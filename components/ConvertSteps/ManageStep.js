@@ -36,10 +36,10 @@ function ManageStep({
       // Success
       setStepStatus('success')
 
-      onSuccess()
+      onSuccess && onSuccess()
     } catch (err) {
       setStepStatus('error')
-      onError()
+      onError && onError()
       console.log(err)
     }
 

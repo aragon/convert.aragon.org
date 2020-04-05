@@ -92,25 +92,7 @@ function ConvertForm() {
   const [buyOrderHash, setBuyOrderHash] = useState()
 
   const conversionSteps = useMemo(() => {
-    return [
-      [
-        'Reset approval',
-        {
-          createTx: () => changeAllowance(0),
-          success: () => {
-            console.log('1 success')
-          },
-        },
-      ],
-      [
-        'Raise approval',
-        {
-          createTx: () => changeAllowance(amountSource),
-          success: () => {
-            console.log('2 success')
-          },
-        },
-      ],
+    const steps = [
       [
         'Create buy order',
         {
@@ -133,6 +115,31 @@ function ConvertForm() {
         },
       ],
     ]
+
+    if (toAnj) {
+      steps.unshift(
+        [
+          'Reset approval',
+          {
+            createTx: () => changeAllowance(0),
+            success: () => {
+              console.log('1 success')
+            },
+          },
+        ],
+        [
+          'Raise approval',
+          {
+            createTx: () => changeAllowance(amountSource),
+            success: () => {
+              console.log('2 success')
+            },
+          },
+        ]
+      )
+    }
+
+    return steps
   }, [
     amountSource,
     toAnj,
