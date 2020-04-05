@@ -47,6 +47,58 @@ function ConvertForm() {
   const tokenBalance = useTokenBalance(options[selectedOption])
 
   const { account } = useWeb3Connect()
+
+  const openOrder = useOpenOrder()
+  const claimOrder = useClaimOrder()
+  const changeAllowance = useApprove()
+  const [buyOrderHash, setBuyOrderHash] = useState()
+
+  const conversionSteps = useMemo(() => {
+    const steps = [
+      [
+        'Create buy order',
+        {
+          createTx: () => openOrder(amountSource, toAnj),
+          hashCreated: hash => {
+            setBuyOrderHash(hash)
+          },
+        },
+      ],
+      [
+        'Claim order',
+        {
+          createTx: () => claimOrder(buyOrderHash, toAnj),
+        },
+      ],
+    ]
+
+    if (toAnj) {
+      steps.unshift(
+        [
+          'Reset approval',
+          {
+            createTx: () => changeAllowance(0),
+          },
+        ],
+        [
+          'Raise approval',
+          {
+            createTx: () => changeAllowance(amountSource),
+          },
+        ]
+      )
+    }
+
+    return steps
+  }, [
+    amountSource,
+    toAnj,
+    openOrder,
+    claimOrder,
+    changeAllowance,
+    buyOrderHash,
+  ])
+
   const inputDisabled = useMemo(() => !Boolean(account), [account])
   const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)), [
     amountSource,
@@ -85,69 +137,6 @@ function ConvertForm() {
     }
     return inverted ? 'anj' : 'ant'
   }, [formStatus, inverted])
-
-  const openOrder = useOpenOrder()
-  const claimOrder = useClaimOrder()
-  const changeAllowance = useApprove()
-  const [buyOrderHash, setBuyOrderHash] = useState()
-
-  const conversionSteps = useMemo(() => {
-    const steps = [
-      [
-        'Create buy order',
-        {
-          createTx: () => openOrder(amountSource, toAnj),
-          hashCreated: hash => {
-            setBuyOrderHash(hash)
-          },
-          success: () => {
-            console.log('Buy success')
-          },
-        },
-      ],
-      [
-        'Claim order',
-        {
-          createTx: () => claimOrder(buyOrderHash, toAnj),
-          success: () => {
-            console.log('Claim success')
-          },
-        },
-      ],
-    ]
-
-    if (toAnj) {
-      steps.unshift(
-        [
-          'Reset approval',
-          {
-            createTx: () => changeAllowance(0),
-            success: () => {
-              console.log('1 success')
-            },
-          },
-        ],
-        [
-          'Raise approval',
-          {
-            createTx: () => changeAllowance(amountSource),
-            success: () => {
-              console.log('2 success')
-            },
-          },
-        ]
-      )
-    }
-
-    return steps
-  }, [
-    amountSource,
-    toAnj,
-    openOrder,
-    claimOrder,
-    changeAllowance,
-    buyOrderHash,
-  ])
 
   return (
     <div
