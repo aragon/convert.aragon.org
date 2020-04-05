@@ -3,7 +3,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
-import ConvertSteps from 'components/ConvertSteps/ConvertSteps2'
+import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
 import LegalScreen from 'components/ConvertSteps/Legal'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
@@ -12,12 +12,7 @@ import { useWeb3Connect } from 'lib/web3-connect'
 import { useTokenBalance } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
 import { useConvertInputs } from './useConvertInputs'
-import {
-  useAllowance,
-  useOpenOrder,
-  useClaimOrder,
-  useApprove,
-} from 'lib/web3-contracts'
+import { useOpenOrder, useClaimOrder, useApprove } from 'lib/web3-contracts'
 
 import question from './assets/question.svg'
 

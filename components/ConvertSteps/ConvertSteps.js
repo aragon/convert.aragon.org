@@ -2,204 +2,82 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Divider from './Divider'
 import PropTypes from 'prop-types'
 import StepperLayout from './StepperLayout'
-import {
-  useAllowance,
-  useOpenOrder,
-  useClaimOrder,
-  useApprove,
-} from 'lib/web3-contracts'
-import Step from './Step'
+import ManageStep from './ManageStep'
 import StepperTitle from './StepperTitle'
-import { bigNum } from 'lib/utils'
 
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
-  const getAllowance = useAllowance()
-  const changeAllowance = useApprove()
-  const openOrder = useOpenOrder()
-  const claimOrder = useClaimOrder()
+  const [stepperStatus, setStepperStatus] = useState('working')
+  const [stepperStage, setStepperStage] = useState(0)
+  const [retryStep, setRetryStep] = useState(null)
 
-  const [stepperStage, setStepperStage] = useState('working')
-  const [currentStep, setCurrentStep] = useState(
-    toAnj ? 'approval' : 'buyOrder'
-  )
-  const [stepState, setStepState] = useState({
-    approval: {
-      status: 'waiting',
-      active: true,
-    },
-    buyOrder: {
-      status: 'waiting',
-      active: toAnj ? false : true,
-      hash: '',
-    },
-    claimOrder: {
-      status: 'waiting',
-      active: false,
-      hash: '',
-    },
-  })
-
-  const applyStepState = useCallback((step, status, hash) => {
-    setStepState(prevState => {
-      return {
-        ...prevState,
-        [step]: {
-          status: status,
-          active: true,
-          hash: hash ? hash : prevState[step].hash,
-        },
-      }
-    })
-  }, [])
-
-  const handleClaimOrderStep = useCallback(
-    async buyOrderHash => {
-      const stepType = 'claimOrder'
-
-      setCurrentStep(stepType)
-
-      try {
-        // Awaiting confirmation
-        applyStepState(stepType, 'waiting')
-        const transaction = await claimOrder(buyOrderHash, toAnj)
-
-        // Mining transaction
-        applyStepState(stepType, 'working', transaction.hash)
-        await transaction.wait()
-
-        // Success
-        applyStepState(stepType, 'success')
-        setStepperStage('success')
-      } catch (err) {
-        applyStepState(stepType, 'error')
-        setStepperStage('error')
-        console.log(err)
-      }
-    },
-    [claimOrder, applyStepState, toAnj]
-  )
-
-  const handleBuyOrderStep = useCallback(async () => {
-    const stepType = 'buyOrder'
-
-    setCurrentStep(stepType)
-
-    try {
-      // Awaiting confirmation
-      applyStepState(stepType, 'waiting')
-      const transaction = await openOrder(fromAmount, toAnj)
-
-      // Mining transaction
-      applyStepState(stepType, 'working', transaction.hash)
-      await transaction.wait()
-
-      // Success
-      applyStepState(stepType, 'success')
-      handleClaimOrderStep(transaction.hash)
-    } catch (err) {
-      applyStepState(stepType, 'error')
-      setStepperStage('error')
-      console.log(err)
-    }
-  }, [fromAmount, openOrder, applyStepState, toAnj, handleClaimOrderStep])
-
-  const handleApprovalStep = useCallback(async () => {
-    const stepType = 'approval'
-
-    setCurrentStep(stepType)
-
-    try {
-      // Awaiting approval
-      applyStepState(stepType, 'waiting')
-
-      const allowance = await getAllowance()
-
-      applyStepState(stepType, 'working')
-
-      if (allowance.lt(bigNum(fromAmount))) {
-        console.log('needs allowance reset')
-        const resetAllownaceTx = await changeAllowance(0)
-
-        await resetAllownaceTx.wait()
-      }
-
-      const changeAllowanceToProvidedTx = await changeAllowance(fromAmount)
-
-      await changeAllowanceToProvidedTx.wait()
-
-      // Success
-      applyStepState(stepType, 'success')
-      handleBuyOrderStep()
-    } catch (err) {
-      applyStepState(stepType, 'error')
-      setStepperStage('error')
-      console.log(err)
-    }
-  }, [
-    fromAmount,
-    applyStepState,
-    handleBuyOrderStep,
-    changeAllowance,
-    getAllowance,
-  ])
-
-  function handleRepeatTransaction() {
-    if (currentStep === 'approval') {
-      handleApprovalStep()
-    } else if (currentStep === 'buyOrder') {
-      handleBuyOrderStep()
-    } else if (currentStep === 'claimOrder') {
-      handleClaimOrderStep(stepState.buyOrder.hash)
-    }
+  function handleRetry() {
+    setStepperStatus('working')
+    setRetryStep(stepperStage)
   }
 
-  useEffect(() => {
-    if (fromAmount) {
-      toAnj ? handleApprovalStep() : handleBuyOrderStep()
-    }
-  }, [fromAmount, handleApprovalStep, handleBuyOrderStep, toAnj])
+  const clearRetry = () => setRetryStep(null)
+
+  const handleError = () => {
+    clearRetry()
+    setStepperStatus('error')
+  }
+
+  const handleSuccess = useCallback(
+    optionalCb => {
+      return () => {
+        clearRetry()
+        optionalCb && optionalCb()
+
+        // Activate next step if not last
+        if (stepperStage <= steps.length - 1) {
+          setStepperStage(stepperStage + 1)
+        }
+
+        // Show overall stepper success if final step succeeds
+        if (stepperStage === steps.length - 1) {
+          setStepperStatus('success')
+        }
+      }
+    },
+    [stepperStage, steps]
+  )
+
+  const renderSteps = () => {
+    return steps.map((step, index) => (
+      <>
+        <ManageStep
+          title={step[0]}
+          number={index + 1}
+          retry={retryStep === index}
+          handleTx={step[1].createTx}
+          active={stepperStage === steps.indexOf(step)}
+          onHashCreation={step[1].hashCreated}
+          onSuccess={handleSuccess(step[1].success)}
+          onError={handleError}
+        />
+
+        {index !== steps.length - 1 && <Divider />}
+      </>
+    ))
+  }
+
+  useEffect(() => {})
 
   return (
     <StepperLayout
-      stage={stepperStage}
-      onRepeatTransaction={handleRepeatTransaction}
+      status={stepperStatus}
+      onRepeatTransaction={handleRetry}
       onReturnHome={onReturnHome}
       title={
         <StepperTitle
           fromAmount={fromAmount}
           toAmount={toAmount}
           toAnj={toAnj}
-          stage={stepperStage}
+          status={stepperStatus}
         />
       }
     >
-      {toAnj && (
-        <>
-          <Step
-            title="Approve ANT"
-            number="1"
-            active={stepState.approval.active}
-            status={stepState.approval.status}
-          />
-          <Divider />
-        </>
-      )}
-
-      <Step
-        title="Create buy order"
-        number={toAnj ? '2' : '1'}
-        active={stepState.buyOrder.active}
-        status={stepState.buyOrder.status}
-        transactionHash={stepState.buyOrder.hash}
-      />
-      <Divider />
-      <Step
-        title="Claim order"
-        number={toAnj ? '3' : '2'}
-        active={stepState.claimOrder.active}
-        status={stepState.claimOrder.status}
-        transactionHash={stepState.claimOrder.hash}
-      />
+      {renderSteps()}
     </StepperLayout>
   )
 }

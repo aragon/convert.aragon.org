@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
-import Step from './step'
+import Step from './Step'
 
 function ManageStep({
   title,
