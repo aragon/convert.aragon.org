@@ -15,6 +15,7 @@ function ManageStep({
   const [stepStatus, setStepStatus] = useState('waiting')
   const [hasBeenActivated, setHasBeenActivated] = useState(false)
   const [retrying, setRetrying] = useState(false)
+  const [hash, setHash] = useState()
 
   const handleStepSigning = useCallback(async () => {
     setHasBeenActivated(true)
@@ -26,6 +27,7 @@ function ManageStep({
       const transaction = await handleTx()
 
       onHashCreation && onHashCreation(transaction.hash)
+      setHash(transaction.hash)
 
       // Mining transaction
       setStepStatus('working')
@@ -59,6 +61,7 @@ function ManageStep({
       number={number}
       active={hasBeenActivated}
       status={stepStatus}
+      transactionHash={hash}
     />
   )
 }
