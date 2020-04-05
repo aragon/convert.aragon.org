@@ -5,7 +5,7 @@ import repeat from './assets/repeat.svg'
 
 function StepperLayout({
   children,
-  stage,
+  status,
   onRepeatTransaction,
   onReturnHome,
   title,
@@ -59,7 +59,7 @@ function StepperLayout({
             padding-top: 100px;
           `}
         >
-          {stage === 'working' && (
+          {status === 'working' && (
             <p
               css={`
                 color: #6d7693;
@@ -71,7 +71,7 @@ function StepperLayout({
             </p>
           )}
 
-          {stage === 'error' && (
+          {status === 'error' && (
             <div
               css={`
                 display: grid;
@@ -105,7 +105,7 @@ function StepperLayout({
             </div>
           )}
 
-          {stage === 'success' && (
+          {status === 'success' && (
             <div
               css={`
                 display: flex;
@@ -123,7 +123,7 @@ function StepperLayout({
 
 StepperLayout.propTypes = {
   children: PropTypes.node,
-  stage: PropTypes.oneOf(['working', 'success', 'error']),
+  status: PropTypes.oneOf(['working', 'success', 'error']),
   onRepeatTransaction: PropTypes.func,
   onReturnHome: PropTypes.func,
 }

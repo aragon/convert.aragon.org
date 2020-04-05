@@ -8,7 +8,7 @@ const smallCaps = css`
   font-size: 32px;
 `
 
-function StepperTitle({ fromAmount, toAmount, stage, toAnj }) {
+function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
   const antDecimals = useTokenDecimals('ANT')
   const anjDecimals = useTokenDecimals('ANJ')
 
@@ -24,7 +24,7 @@ function StepperTitle({ fromAmount, toAmount, stage, toAnj }) {
     commas: true,
   })
 
-  if (stage === 'working' || stage === 'error') {
+  if (status === 'working' || status === 'error') {
     return (
       <>
         Convert {formattedFromAmount}{' '}
@@ -32,7 +32,7 @@ function StepperTitle({ fromAmount, toAmount, stage, toAnj }) {
         <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
       </>
     )
-  } else if (stage === 'success') {
+  } else if (status === 'success') {
     return (
       <>
         You successfully converted <br />
@@ -48,7 +48,7 @@ StepperTitle.propTypes = {
   fromAmount: PropTypes.object,
   toAmount: PropTypes.object,
   toAnj: PropTypes.bool,
-  stage: PropTypes.oneOf(['working', 'success', 'error']),
+  status: PropTypes.oneOf(['working', 'success', 'error']),
 }
 
 export default StepperTitle
