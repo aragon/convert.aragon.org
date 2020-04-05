@@ -180,8 +180,8 @@ function ConvertForm() {
               ) : (
                 <ConvertSteps
                   toAnj={toAnj}
-                  amountSource={amountSource}
-                  amountRecipient={amountRecipient}
+                  fromAmount={amountSource}
+                  toAmount={amountRecipient}
                   onReturnHome={handleReturnHome}
                 />
               )}

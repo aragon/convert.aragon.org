@@ -12,7 +12,7 @@ import Step from './Step'
 import StepperTitle from './StepperTitle'
 import { bigNum } from 'lib/utils'
 
-function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
+function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const getAllowance = useAllowance()
   const changeAllowance = useApprove()
   const openOrder = useOpenOrder()
@@ -87,7 +87,7 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
     try {
       // Awaiting confirmation
       applyStepState(stepType, 'waiting')
-      const transaction = await openOrder(amountSource, toAnj)
+      const transaction = await openOrder(fromAmount, toAnj)
 
       // Mining transaction
       applyStepState(stepType, 'working', transaction.hash)
@@ -101,7 +101,7 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
       setStepperStage('error')
       console.log(err)
     }
-  }, [amountSource, openOrder, applyStepState, toAnj, handleClaimOrderStep])
+  }, [fromAmount, openOrder, applyStepState, toAnj, handleClaimOrderStep])
 
   const handleApprovalStep = useCallback(async () => {
     const stepType = 'approval'
@@ -116,14 +116,14 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
 
       applyStepState(stepType, 'working')
 
-      if (allowance.lt(bigNum(amountSource))) {
+      if (allowance.lt(bigNum(fromAmount))) {
         console.log('needs allowance reset')
         const resetAllownaceTx = await changeAllowance(0)
 
         await resetAllownaceTx.wait()
       }
 
-      const changeAllowanceToProvidedTx = await changeAllowance(amountSource)
+      const changeAllowanceToProvidedTx = await changeAllowance(fromAmount)
 
       await changeAllowanceToProvidedTx.wait()
 
@@ -136,7 +136,7 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
       console.log(err)
     }
   }, [
-    amountSource,
+    fromAmount,
     applyStepState,
     handleBuyOrderStep,
     changeAllowance,
@@ -154,10 +154,10 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
   }
 
   useEffect(() => {
-    if (amountSource) {
+    if (fromAmount) {
       toAnj ? handleApprovalStep() : handleBuyOrderStep()
     }
-  }, [amountSource, handleApprovalStep, handleBuyOrderStep, toAnj])
+  }, [fromAmount, handleApprovalStep, handleBuyOrderStep, toAnj])
 
   return (
     <StepperLayout
@@ -166,8 +166,8 @@ function ConvertSteps({ toAnj, amountSource, amountRecipient, onReturnHome }) {
       onReturnHome={onReturnHome}
       title={
         <StepperTitle
-          fromAmount={amountSource}
-          toAmount={amountRecipient}
+          fromAmount={fromAmount}
+          toAmount={toAmount}
           toAnj={toAnj}
           stage={stepperStage}
         />
