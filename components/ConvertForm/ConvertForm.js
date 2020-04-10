@@ -3,7 +3,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
-import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
+import ManageConversion from './ManageConversion'
 import LegalScreen from 'components/ConvertSteps/Legal'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
@@ -12,7 +12,6 @@ import { useWeb3Connect } from 'lib/web3-connect'
 import { useTokenBalance } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
 import { useConvertInputs } from './useConvertInputs'
-import { useOpenOrder, useClaimOrder, useApprove } from 'lib/web3-contracts'
 
 import question from './assets/question.svg'
 
@@ -42,57 +41,6 @@ function ConvertForm() {
   const tokenBalance = useTokenBalance(options[selectedOption])
 
   const { account } = useWeb3Connect()
-
-  const openOrder = useOpenOrder()
-  const claimOrder = useClaimOrder()
-  const changeAllowance = useApprove()
-  const [buyOrderHash, setBuyOrderHash] = useState()
-
-  const conversionSteps = useMemo(() => {
-    const steps = [
-      [
-        'Create buy order',
-        {
-          createTx: () => openOrder(amountSource, toAnj),
-          hashCreated: hash => {
-            setBuyOrderHash(hash)
-          },
-        },
-      ],
-      [
-        'Claim order',
-        {
-          createTx: () => claimOrder(buyOrderHash, toAnj),
-        },
-      ],
-    ]
-
-    if (toAnj) {
-      steps.unshift(
-        [
-          'Reset approval',
-          {
-            createTx: () => changeAllowance(0),
-          },
-        ],
-        [
-          'Raise approval',
-          {
-            createTx: () => changeAllowance(amountSource),
-          },
-        ]
-      )
-    }
-
-    return steps
-  }, [
-    amountSource,
-    toAnj,
-    openOrder,
-    claimOrder,
-    changeAllowance,
-    buyOrderHash,
-  ])
 
   const inputDisabled = useMemo(() => !Boolean(account), [account])
   const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)), [
@@ -231,12 +179,11 @@ function ConvertForm() {
               {formStatus === CONVERTER_STATUSES.LEGAL ? (
                 <LegalScreen handleConvert={handleConvert} />
               ) : (
-                <ConvertSteps
-                  steps={conversionSteps}
+                <ManageConversion
                   toAnj={toAnj}
                   fromAmount={amountSource}
                   toAmount={amountRecipient}
-                  onReturnHome={handleReturnHome}
+                  handleReturnHome={handleReturnHome}
                 />
               )}
             </>

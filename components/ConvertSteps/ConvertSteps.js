@@ -56,6 +56,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
           onError={handleError}
         />
 
+        {/* Show a divider between every step except the last */}
         {index !== steps.length - 1 && <Divider />}
       </>
     ))
