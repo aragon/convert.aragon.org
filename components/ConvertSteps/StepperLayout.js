@@ -40,13 +40,7 @@ function StepperLayout({
         </h1>
       </div>
 
-      <div
-        css={`
-          display: flex;
-        `}
-      >
-        {children}
-      </div>
+      {children}
 
       <div
         css={`

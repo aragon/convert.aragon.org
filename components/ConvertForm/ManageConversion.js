@@ -16,8 +16,8 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
   const [conversionSteps, setConversionSteps] = useState()
 
   // Interacting with the bonding curve involves 2, 3 or 4 transactions (depending on the direction and state of allowance):
-  // 1. Reset approval (If we're converting ANT -> ANJ, an allowance exists but there's not enough allowance and allowance is not already 0)
-  // 2. Raise approval (If we're converting ANT -> ANJ and there's not enough allowance)
+  // 1. Reset approval (If we're converting ANT -> ANJ, an allowance already exists but it's not high enough)
+  // 2. Raise approval (If we're converting ANT -> ANJ and no allowance has been set)
   // 3. Open a buy order
   // 4. Claim the order
   const createConvertSteps = useCallback(async () => {

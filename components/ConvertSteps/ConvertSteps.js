@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Divider from './Divider'
 import PropTypes from 'prop-types'
 import StepperLayout from './StepperLayout'
@@ -44,8 +44,14 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
 
   const renderSteps = () => {
     return steps.map((step, index) => (
-      <>
+      <li
+        css={`
+          display: flex;
+        `}
+        key={index}
+      >
         <ManageStep
+          key={index}
           title={step[0]}
           number={index + 1}
           retry={retryStep === index}
@@ -58,11 +64,9 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
 
         {/* Show a divider between every step except the last */}
         {index !== steps.length - 1 && <Divider />}
-      </>
+      </li>
     ))
   }
-
-  useEffect(() => {})
 
   return (
     <StepperLayout
@@ -78,7 +82,14 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         />
       }
     >
-      {renderSteps()}
+      <ul
+        css={`
+          padding: 0;
+          display: flex;
+        `}
+      >
+        {renderSteps()}
+      </ul>
     </StepperLayout>
   )
 }
