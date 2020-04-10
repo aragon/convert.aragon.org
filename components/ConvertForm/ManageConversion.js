@@ -7,6 +7,7 @@ import {
 } from 'lib/web3-contracts'
 import { bigNum } from 'lib/utils'
 import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
+import processing from './assets/loader.gif'
 
 function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
   const openOrder = useOpenOrder()
@@ -16,8 +17,8 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
   const [conversionSteps, setConversionSteps] = useState()
 
   // Interacting with the bonding curve involves 2, 3 or 4 transactions (depending on the direction and state of allowance):
-  // 1. Reset approval (If we're converting ANT -> ANJ, an allowance already exists but it's not high enough)
-  // 2. Raise approval (If we're converting ANT -> ANJ and no allowance has been set)
+  // 1. Reset approval (If we're converting ANT -> ANJ, an allowance was previously set but abandoned)
+  // 2. Raise approval (If we're converting ANT -> ANJ, the current allowance is not high enough)
   // 3. Open a buy order
   // 4. Claim the order
   const createConvertSteps = useCallback(async () => {
@@ -80,7 +81,10 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
     ]
 
     // Update state to reflect the correct amount of steps
-    setConversionSteps(steps)
+    // Show loader for a small amount of time to provide a smooth visual experience
+    setTimeout(() => {
+      setConversionSteps(steps)
+    }, 900)
   }, [claimOrder, fromAmount, getAllowance, openOrder, toAnj, changeAllowance])
 
   useEffect(() => {
@@ -89,7 +93,7 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
 
   return (
     <>
-      {conversionSteps && (
+      {conversionSteps ? (
         <ConvertSteps
           steps={conversionSteps}
           toAnj={toAnj}
@@ -97,6 +101,24 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
           toAmount={toAmount}
           onReturnHome={handleReturnHome}
         />
+      ) : (
+        <div
+          css={`
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+          `}
+        >
+          <img
+            css={`
+              max-width: 125px;
+            `}
+            src={processing}
+            alt=""
+          />
+        </div>
       )}
     </>
   )

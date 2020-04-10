@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import AmountInput from 'components/AmountInput/AmountInput'
 import Anchor from 'components/Anchor/Anchor'
 import ManageConversion from './ManageConversion'
-import LegalScreen from 'components/ConvertSteps/Legal'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
@@ -19,7 +18,6 @@ const options = ['ANT', 'ANJ']
 
 const CONVERTER_STATUSES = {
   FORM: Symbol('STATE_FORM'),
-  LEGAL: Symbol('STATE_LEGAL'),
   STEPPER: Symbol('STATE_STEPPER'),
 }
 
@@ -28,6 +26,7 @@ function ConvertForm() {
   const [selectedOption, setSelectedOption] = useState(1)
   const [inverted, setInverted] = useState(true)
   const toAnj = useMemo(() => !inverted, [inverted])
+  const [legalChecked, setLegalChecked] = useState(false)
   const {
     amountSource,
     amountRecipient,
@@ -52,6 +51,7 @@ function ConvertForm() {
     setInverted(inverted => !inverted)
     setSelectedOption(option => (option + 1) % 2)
   }, [])
+
   const handleConvertMax = useCallback(() => {
     handleManualInputChange(
       formatUnits(tokenBalance, { truncateToDecimalPlace: 3 }),
@@ -63,16 +63,18 @@ function ConvertForm() {
     setFormStatus(CONVERTER_STATUSES.STEPPER)
   }, [])
 
-  const handleLegalTerms = useCallback(() => {
-    setFormStatus(CONVERTER_STATUSES.LEGAL)
-  }, [])
-
   const handleReturnHome = useCallback(() => {
     resetInputs()
     setFormStatus(CONVERTER_STATUSES.FORM)
   }, [resetInputs])
 
-  const submitButtonDisabled = Boolean(!account || bondingPriceLoading)
+  const submitButtonDisabled = Boolean(
+    !account ||
+      bondingPriceLoading ||
+      !legalChecked ||
+      !parseFloat(inputValueSource) > 0 ||
+      inputError
+  )
 
   const navbarLogoMode = useMemo(() => {
     if (formStatus !== CONVERTER_STATUSES.FORM) {
@@ -158,35 +160,45 @@ function ConvertForm() {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                padding-left: 30px;
+                padding-right: 30px;
               `}
             >
-              <Button
-                disabled={submitButtonDisabled}
-                onClick={handleLegalTerms}
-                css={`
-                  width: 90%;
-                `}
-              >
+              <Button disabled={submitButtonDisabled} onClick={handleConvert}>
                 Convert
               </Button>
+              <Conditions>
+                <input
+                  id="legalCheckbox"
+                  type="checkbox"
+                  onChange={() =>
+                    setLegalChecked(legalChecked => !legalChecked)
+                  }
+                  checked={legalChecked}
+                />
+                <label htmlFor="legalCheckbox">
+                  By clicking on “Convert” you are accepting our{' '}
+                  <Anchor
+                    href="https://anj.aragon.org/legal/terms-general.pdf"
+                    target="_blank"
+                  >
+                    legal terms
+                  </Anchor>
+                  .
+                </label>
+              </Conditions>
               <Docs />
             </div>
           </div>
         }
         reveal={
-          formStatus === CONVERTER_STATUSES.FORM ? null : (
-            <>
-              {formStatus === CONVERTER_STATUSES.LEGAL ? (
-                <LegalScreen handleConvert={handleConvert} />
-              ) : (
-                <ManageConversion
-                  toAnj={toAnj}
-                  fromAmount={amountSource}
-                  toAmount={amountRecipient}
-                  handleReturnHome={handleReturnHome}
-                />
-              )}
-            </>
+          formStatus === CONVERTER_STATUSES.STEPPER && (
+            <ManageConversion
+              toAnj={toAnj}
+              fromAmount={amountSource}
+              toAmount={amountRecipient}
+              handleReturnHome={handleReturnHome}
+            />
           )
         }
       />
@@ -259,7 +271,6 @@ const Button = styled.button`
   border-radius: 6px;
   color: white;
   width: 100%;
-  min-width: 330px;
   max-width: 470px;
   height: 52px;
   font-size: 20px;
@@ -315,6 +326,24 @@ const MaxButton = styled.button`
     padding: 0;
     transform: translateY(0.5px);
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
+  }
+`
+
+const Conditions = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
+
+  label {
+    font-size: 16px;
+    line-height: 1.3;
+    margin-bottom: 0;
+    color: #9096b6;
+  }
+
+  input {
+    cursor: pointer;
+    margin-right: 8px;
   }
 `
 
