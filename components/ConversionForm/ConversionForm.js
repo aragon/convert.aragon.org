@@ -26,8 +26,8 @@ import question from '../converter/assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 
-// Filters and parse the input value of a token amount.
-// Returns a BN.js instance and the filtered value.
+// Filters and parse the input value of a token amount and
+// returns a BN.js instance and the filtered value.
 function parseInputValue(inputValue, decimals) {
   if (decimals === -1) {
     return null
