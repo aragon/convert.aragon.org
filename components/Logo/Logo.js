@@ -6,13 +6,11 @@ import logo from './logo.svg'
 import logoAnt from './logo-ant.svg'
 import logoAnj from './logo-anj.svg'
 
-const SPRING_CONFIG = { tension: 210, friction: 20 }
-
 function getImage(mode) {
-  if (mode == 'ant') {
+  if (mode === 'ant') {
     return logoAnt
   }
-  if (mode == 'anj') {
+  if (mode === 'anj') {
     return logoAnj
   }
   return logo
