@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import { useKnownContract } from 'lib/web3-contracts'
-import { useWeb3Connect } from 'lib/wallet'
+import { useWalletAugmented } from 'lib/wallet'
 import { bigNum } from 'lib/utils'
 
 export const CONVERTER_STATUSES = {
@@ -24,7 +24,7 @@ export function ConverterProvider({ children }) {
   const [status, setStatus] = useState(CONVERTER_STATUSES.FORM)
   const [lastAnjBought, setLastAnjBought] = useState(bigNum(-1))
 
-  const { account } = useWeb3Connect()
+  const { account } = useWalletAugmented()
   const wrapperContract = useKnownContract('WRAPPER')
 
   useEffect(() => {

@@ -12,7 +12,7 @@ import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
 import { bigNum } from 'lib/utils'
-import { useWeb3Connect } from 'lib/wallet'
+import { useWalletAugmented } from 'lib/wallet'
 import {
   useBondingCurvePrice,
   useTokenBalance,
@@ -225,7 +225,7 @@ function ConversionForm() {
   } = useConvertInputs(options[selectedOption], forwards)
   const tokenBalance = useTokenBalance(options[selectedOption])
 
-  const { account } = useWeb3Connect()
+  const { account } = useWalletAugmented()
   const inputDisabled = useMemo(() => !Boolean(account), [account])
   const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)), [
     amountSource,
