@@ -4,7 +4,7 @@ import NextHead from 'next/head'
 import { useSpring, animated } from 'react-spring'
 import { createGlobalStyle } from 'styled-components'
 import { ViewportProvider } from 'use-viewport'
-import { Web3ConnectProvider } from 'lib/web3-connect'
+import { Web3ConnectProvider } from 'lib/wallet'
 import env from 'lib/environment'
 
 if (env('SENTRY_DSN')) {

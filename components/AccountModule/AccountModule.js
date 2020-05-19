@@ -4,7 +4,7 @@ import { OverlayTrigger, Popover } from 'react-bootstrap'
 import styled from 'styled-components'
 import EthIdenticon from 'components/EthIdenticon/EthIdenticon'
 import { trackEvent } from 'lib/analytics'
-import { useWeb3Connect } from 'lib/web3-connect'
+import { useWeb3Connect } from 'lib/wallet'
 import { shortenAddress } from 'lib/web3-utils'
 
 import fortmatic from './provider-icons/fortmatic.svg'

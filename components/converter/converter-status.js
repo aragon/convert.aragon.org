@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import { useKnownContract } from 'lib/web3-contracts'
-import { useWeb3Connect } from 'lib/web3-connect'
+import { useWeb3Connect } from 'lib/wallet'
 import { bigNum } from 'lib/utils'
 
 export const CONVERTER_STATUSES = {

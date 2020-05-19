@@ -12,7 +12,7 @@ import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
 import { bigNum } from 'lib/utils'
-import { useWeb3Connect } from 'lib/web3-connect'
+import { useWeb3Connect } from 'lib/wallet'
 import {
   useBondingCurvePrice,
   useTokenBalance,
