@@ -1,8 +1,15 @@
 {
-  "extends": "react-app",
+  "extends": ["react-app", "plugin:import/recommended"],
   "plugins": ["react-hooks"],
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["."]
+      }
+    }
   }
 }

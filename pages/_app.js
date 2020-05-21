@@ -1,18 +1,17 @@
 import React from 'react'
 import * as Sentry from '@sentry/browser'
-import NextApp from 'next/app'
 import NextHead from 'next/head'
 import { useSpring, animated } from 'react-spring'
 import { createGlobalStyle } from 'styled-components'
 import { ViewportProvider } from 'use-viewport'
-import { Web3ConnectProvider } from 'lib/web3-connect'
+import { WalletProvider } from 'lib/wallet'
 import env from 'lib/environment'
 
 if (env('SENTRY_DSN')) {
   Sentry.init({
     dsn: env('SENTRY_DSN'),
     environment: env('NODE_ENV'),
-    release: 'anj.aragon.org@' + env('BUILD'),
+    release: 'convert.aragon.org@' + env('BUILD'),
   })
 }
 
@@ -47,9 +46,9 @@ export default function App({ Component, pageProps }) {
           <title>Aragon Converter</title>
         </NextHead>
         <GlobalStyles />
-        <Web3ConnectProvider>
+        <WalletProvider>
           <Component {...pageProps} />
-        </Web3ConnectProvider>
+        </WalletProvider>
       </animated.div>
     </ViewportProvider>
   )

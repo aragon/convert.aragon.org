@@ -7,7 +7,7 @@ import ManageConversion from './ManageConversion'
 import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
-import { useWeb3Connect } from 'lib/web3-connect'
+import { useWalletAugmented } from 'lib/wallet'
 import { useTokenBalance } from 'lib/web3-contracts'
 import { formatUnits } from 'lib/web3-utils'
 import { useConvertInputs } from './useConvertInputs'
@@ -39,7 +39,7 @@ function ConvertForm() {
   } = useConvertInputs(options[selectedOption], toAnj)
   const tokenBalance = useTokenBalance(options[selectedOption])
 
-  const { account } = useWeb3Connect()
+  const { account } = useWalletAugmented()
 
   const inputDisabled = useMemo(() => !Boolean(account), [account])
   const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)), [

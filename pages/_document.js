@@ -3,6 +3,32 @@ import NextDocument, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
 import env from 'lib/environment'
 
+const ANALYTICS_CODE = `
+  var Countly = Countly || {};
+  Countly.q = Countly.q || [];
+  //provide countly initialization parameters
+  Countly.app_key = 'a7fe75391dc47a886ddb981e06f2fa8b9a7f1a7b';
+  Countly.url = 'https://analytics.aragon.org/';
+  Countly.inactivity_time = 10;
+  Countly.q.push(['track_sessions']);
+  Countly.q.push(['track_pageview']);
+  Countly.q.push(['track_clicks']);
+  Countly.q.push(['track_errors']);
+  (function() {
+    var cly = document.createElement('script'); cly.type = 'text/javascript';
+    cly.async = true;
+    cly.src = 'https://analytics.aragon.org/sdk/web/countly.min.js';
+    cly.onload = function(){Countly.init()};
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
+  })();
+`
+
+function AnalyticsScript() {
+  return process.env.NODE_ENV !== 'production' ? null : (
+    <script dangerouslySetInnerHTML={{ __html: ANALYTICS_CODE }} />
+  )
+}
+
 export default class Document extends NextDocument {
   static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet()
@@ -73,6 +99,7 @@ export default class Document extends NextDocument {
         <body>
           <Main />
           <NextScript />
+          <AnalyticsScript />
         </body>
       </Html>
     )
