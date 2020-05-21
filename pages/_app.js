@@ -4,7 +4,7 @@ import NextHead from 'next/head'
 import { useSpring, animated } from 'react-spring'
 import { createGlobalStyle } from 'styled-components'
 import { ViewportProvider } from 'use-viewport'
-import { Web3ConnectProvider } from 'lib/web3-connect'
+import { WalletProvider } from 'lib/wallet'
 import env from 'lib/environment'
 
 if (env('SENTRY_DSN')) {
@@ -46,9 +46,9 @@ export default function App({ Component, pageProps }) {
           <title>Aragon Converter</title>
         </NextHead>
         <GlobalStyles />
-        <Web3ConnectProvider>
+        <WalletProvider>
           <Component {...pageProps} />
-        </Web3ConnectProvider>
+        </WalletProvider>
       </animated.div>
     </ViewportProvider>
   )

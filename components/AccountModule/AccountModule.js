@@ -4,7 +4,7 @@ import { OverlayTrigger, Popover } from 'react-bootstrap'
 import styled from 'styled-components'
 import EthIdenticon from 'components/EthIdenticon/EthIdenticon'
 import { trackEvent } from 'lib/analytics'
-import { useWeb3Connect } from 'lib/web3-connect'
+import { useWalletAugmented } from 'lib/wallet'
 import { shortenAddress } from 'lib/web3-utils'
 
 import fortmatic from './provider-icons/fortmatic.svg'
@@ -14,7 +14,7 @@ import portis from './provider-icons/portis.svg'
 import lightning from './lightning.svg'
 
 function AccountModule() {
-  const { account } = useWeb3Connect()
+  const { account } = useWalletAugmented()
   return account ? <ConnectedMode /> : <DisconnectedMode />
 }
 
@@ -23,7 +23,7 @@ AccountModule.propTypes = {
 }
 
 function DisconnectedMode() {
-  const { activate } = useWeb3Connect()
+  const { activate } = useWalletAugmented()
 
   const activateAndTrack = useCallback(
     async providerId => {
@@ -190,7 +190,7 @@ ProviderButton.propTypes = {
 }
 
 function ConnectedMode() {
-  const { account, deactivate } = useWeb3Connect()
+  const { account, deactivate } = useWalletAugmented()
   const containerRef = useRef()
 
   return (
