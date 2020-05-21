@@ -12,7 +12,7 @@ import NavBar from 'components/NavBar/NavBar'
 import Balance from 'components/SplitScreen/Balance'
 import SplitScreen from 'components/SplitScreen/SplitScreen'
 import { bigNum } from 'lib/utils'
-import { useWeb3Connect } from 'lib/web3-connect'
+import { useWalletAugmented } from 'lib/wallet'
 import {
   useBondingCurvePrice,
   useTokenBalance,
@@ -26,8 +26,8 @@ import question from '../converter/assets/question.svg'
 
 const options = ['ANT', 'ANJ']
 
-// Filters and parse the input value of a token amount.
-// Returns a BN.js instance and the filtered value.
+// Filters and parse the input value of a token amount and
+// returns a BN.js instance and the filtered value.
 function parseInputValue(inputValue, decimals) {
   if (decimals === -1) {
     return null
@@ -225,7 +225,7 @@ function ConversionForm() {
   } = useConvertInputs(options[selectedOption], forwards)
   const tokenBalance = useTokenBalance(options[selectedOption])
 
-  const { account } = useWeb3Connect()
+  const { account } = useWalletAugmented()
   const inputDisabled = useMemo(() => !Boolean(account), [account])
   const inputError = useMemo(() => Boolean(tokenBalance.lt(amountSource)), [
     amountSource,
@@ -433,19 +433,15 @@ function Docs() {
       `}
     >
       <li>
-        <Anchor href="https://anj.aragon.org/">
-          About
+        <Anchor href="https://anj.aragon.org/">About</Anchor>
+      </li>
+      <li>
+        <Anchor href="https://help.aragon.org/article/48-aragon-court-faq">
+          Help
         </Anchor>
       </li>
       <li>
-        <Anchor href="https://help.aragon.org/article/41-aragon-court">
-          Docs
-        </Anchor>
-      </li>
-      <li>
-        <Anchor href="https://court.aragon.org/dashboard">
-          Court
-        </Anchor>
+        <Anchor href="https://court.aragon.org/dashboard">Court</Anchor>
       </li>
     </ul>
   )
