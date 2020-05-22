@@ -47,6 +47,10 @@ function ConvertForm() {
     tokenBalance,
   ])
 
+  const handleLegalToggle = useCallback(() => {
+    setLegalChecked(legalChecked => !legalChecked)
+  }, [])
+
   const handleInvert = useCallback(() => {
     setInverted(inverted => !inverted)
     setSelectedOption(option => (option + 1) % 2)
@@ -167,16 +171,30 @@ function ConvertForm() {
               <Button disabled={submitButtonDisabled} onClick={handleConvert}>
                 Convert
               </Button>
-              <Conditions>
-                <input
-                  id="legalCheckbox"
-                  type="checkbox"
-                  onChange={() =>
-                    setLegalChecked(legalChecked => !legalChecked)
-                  }
-                  checked={legalChecked}
-                />
-                <label htmlFor="legalCheckbox">
+              <div
+                css={`
+                  display: flex;
+                  align-items: center;
+                  margin-top: 24px;
+                `}
+              >
+                <label
+                  css={`
+                    font-size: 16px;
+                    line-height: 1.3;
+                    margin-bottom: 0;
+                    color: #9096b6;
+                  `}
+                >
+                  <input
+                    css={`
+                      cursor: pointer;
+                      margin-right: 8px;
+                    `}
+                    type="checkbox"
+                    onChange={handleLegalToggle}
+                    checked={legalChecked}
+                  />
                   By clicking on “Convert” you are accepting our{' '}
                   <Anchor
                     href="https://anj.aragon.org/legal/terms-general.pdf"
@@ -186,7 +204,7 @@ function ConvertForm() {
                   </Anchor>
                   .
                 </label>
-              </Conditions>
+              </div>
               <Docs />
             </div>
           </div>
@@ -326,24 +344,6 @@ const MaxButton = styled.button`
     padding: 0;
     transform: translateY(0.5px);
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05);
-  }
-`
-
-const Conditions = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 24px;
-
-  label {
-    font-size: 16px;
-    line-height: 1.3;
-    margin-bottom: 0;
-    color: #9096b6;
-  }
-
-  input {
-    cursor: pointer;
-    margin-right: 8px;
   }
 `
 
