@@ -1,23 +1,28 @@
 import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
+import {
+  STEPPER_IN_PROGRESS,
+  STEPPER_SUCCESS,
+  STEPPER_ERROR,
+} from './stepper-statuses'
 import Divider from './Divider'
 import ManageStep from './ManageStep'
 import StepperLayout from './StepperLayout'
 import StepperTitle from './StepperTitle'
 
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
-  const [stepperStatus, setStepperStatus] = useState('working')
+  const [stepperStatus, setStepperStatus] = useState(STEPPER_IN_PROGRESS)
   const [stepperStage, setStepperStage] = useState(0)
   const [retryingStep, setRetryingStep] = useState(null)
 
   const handleRetry = useCallback(() => {
-    setStepperStatus('working')
+    setStepperStatus(STEPPER_IN_PROGRESS)
     setRetryingStep(stepperStage)
   }, [stepperStage])
 
   const handleError = useCallback(() => {
     setRetryingStep(null)
-    setStepperStatus('error')
+    setStepperStatus(STEPPER_ERROR)
   }, [])
 
   const handleSuccess = useCallback(
@@ -33,7 +38,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
 
         // Show overall stepper success if final step succeeds
         if (stepperStage === steps.length - 1) {
-          setStepperStatus('success')
+          setStepperStatus(STEPPER_SUCCESS)
         }
       }
     },

@@ -1,6 +1,11 @@
 import React from 'react'
-import Button from './Button'
 import PropTypes from 'prop-types'
+import Button from './Button'
+import {
+  STEPPER_IN_PROGRESS,
+  STEPPER_SUCCESS,
+  STEPPER_ERROR,
+} from './stepper-statuses'
 import repeat from './assets/repeat.svg'
 
 function StepperLayout({
@@ -53,7 +58,7 @@ function StepperLayout({
             padding-top: 100px;
           `}
         >
-          {status === 'working' && (
+          {status === STEPPER_IN_PROGRESS && (
             <p
               css={`
                 color: #6d7693;
@@ -65,7 +70,7 @@ function StepperLayout({
             </p>
           )}
 
-          {status === 'error' && (
+          {status === STEPPER_ERROR && (
             <div
               css={`
                 display: grid;
@@ -99,7 +104,7 @@ function StepperLayout({
             </div>
           )}
 
-          {status === 'success' && (
+          {status === STEPPER_SUCCESS && (
             <div
               css={`
                 display: flex;
@@ -117,7 +122,11 @@ function StepperLayout({
 
 StepperLayout.propTypes = {
   children: PropTypes.node,
-  status: PropTypes.oneOf(['working', 'success', 'error']),
+  status: PropTypes.oneOf([
+    STEPPER_IN_PROGRESS,
+    STEPPER_SUCCESS,
+    STEPPER_ERROR,
+  ]),
   onRepeatTransaction: PropTypes.func,
   onReturnHome: PropTypes.func,
 }

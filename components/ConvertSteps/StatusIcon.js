@@ -6,12 +6,18 @@ import workingIcon from './assets/working.svg'
 import errorIcon from './assets/error.svg'
 import errorPip from './assets/error-pip.svg'
 import successPip from './assets/success-pip.svg'
+import {
+  STEP_WAITING,
+  STEP_WORKING,
+  STEP_SUCCESS,
+  STEP_ERROR,
+} from './stepper-statuses'
 
 const STATUS_ICONS = {
-  waiting: waitingIcon,
-  working: workingIcon,
-  success: successIcon,
-  error: errorIcon,
+  [STEP_WAITING]: waitingIcon,
+  [STEP_WORKING]: workingIcon,
+  [STEP_SUCCESS]: successIcon,
+  [STEP_ERROR]: errorIcon,
 }
 
 const PIP_ICONS = {
@@ -57,7 +63,12 @@ function StatusIcon({ status }) {
 
 StatusIcon.propTypes = {
   title: PropTypes.string,
-  status: PropTypes.oneOf(['waiting', 'working', 'success', 'error']),
+  status: PropTypes.oneOf([
+    STEP_WAITING,
+    STEP_WORKING,
+    STEP_SUCCESS,
+    STEP_ERROR,
+  ]),
 }
 
 export default StatusIcon

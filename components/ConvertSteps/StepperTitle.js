@@ -1,6 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { css } from 'styled-components'
+import {
+  STEPPER_IN_PROGRESS,
+  STEPPER_SUCCESS,
+  STEPPER_ERROR,
+} from './stepper-statuses'
 import { formatUnits } from 'lib/web3-utils'
 import { useTokenDecimals } from 'lib/web3-contracts'
 
@@ -24,7 +29,7 @@ function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
     commas: true,
   })
 
-  if (status === 'working' || status === 'error') {
+  if (status === STEPPER_IN_PROGRESS || status === STEPPER_ERROR) {
     return (
       <>
         Convert {formattedFromAmount}{' '}
@@ -32,7 +37,7 @@ function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
         <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
       </>
     )
-  } else if (status === 'success') {
+  } else if (status === STEPPER_SUCCESS) {
     return (
       <>
         You successfully converted <br />
@@ -48,7 +53,11 @@ StepperTitle.propTypes = {
   fromAmount: PropTypes.object,
   toAmount: PropTypes.object,
   toAnj: PropTypes.bool,
-  status: PropTypes.oneOf(['working', 'success', 'error']),
+  status: PropTypes.oneOf([
+    STEPPER_IN_PROGRESS,
+    STEPPER_SUCCESS,
+    STEPPER_ERROR,
+  ]),
 }
 
 export default StepperTitle

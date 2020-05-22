@@ -1,5 +1,11 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
+import {
+  STEP_WAITING,
+  STEP_WORKING,
+  STEP_SUCCESS,
+  STEP_ERROR,
+} from './stepper-statuses'
 import Step from './Step'
 
 function ManageStep({
@@ -12,7 +18,7 @@ function ManageStep({
   onHashCreation,
   canRetry,
 }) {
-  const [stepStatus, setStepStatus] = useState('waiting')
+  const [stepStatus, setStepStatus] = useState(STEP_WAITING)
   const [hasBeenActivated, setHasBeenActivated] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const [hash, setHash] = useState()
@@ -21,7 +27,7 @@ function ManageStep({
     setHasBeenActivated(true)
 
     try {
-      setStepStatus('waiting')
+      setStepStatus(STEP_WAITING)
 
       // Awaiting confirmation
       const transaction = await handleTx()
@@ -30,17 +36,17 @@ function ManageStep({
       setHash(transaction.hash)
 
       // Mining transaction
-      setStepStatus('working')
+      setStepStatus(STEP_WORKING)
       await transaction.wait()
 
       // Success
-      setStepStatus('success')
+      setStepStatus(STEP_SUCCESS)
 
       onSuccess && onSuccess()
     } catch (err) {
       // If there's a problem mining the transaction we catch it
       // and visually feedback to the user
-      setStepStatus('error')
+      setStepStatus(STEP_ERROR)
       onError && onError()
       console.error(err)
     }
