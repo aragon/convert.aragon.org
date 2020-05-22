@@ -22,63 +22,57 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
   // 3. Open a buy order
   // 4. Claim the order
   const createConvertSteps = useCallback(async () => {
-    let buyOrderHash
+    let openOrderHash
     let steps = []
 
-    // We first check for allowance if the direction is correct
+    // First we check for allowance if the direction is ANT -> ANJ
     if (toAnj) {
       const allowance = await getAllowance()
 
-      // and if we need more, add a step to ask to approve more
+      // and if we need more, add a step to ask for an approval
       if (allowance.lt(bigNum(fromAmount))) {
-        steps = [
-          [
-            'Raise approval',
-            {
-              createTx: () => changeAllowance(fromAmount),
-            },
-          ],
-          ...steps,
-        ]
-      }
+        steps.unshift([
+          'Raise approval',
+          {
+            createTx: () => changeAllowance(fromAmount),
+          },
+        ])
 
-      // Then there's the case when an user has an allowance set to the market maker contract
-      // but wants to convert even more tokens this time. When dealing with this case,
-      // we want to reset the allowance back to zero, and then raise it.
-      if (!allowance.isZero() && allowance.lt(bigNum(fromAmount))) {
-        steps = [
-          [
+        // Then there's the case when a user has an allowance set to the market maker contract
+        // but wants to convert even more tokens this time. When dealing with this case
+        // we want to first prepend a transaction to reset the allowance back to zero
+        // (before raising it in the next transaction from above).
+        if (!allowance.isZero()) {
+          steps.unshift([
             'Reset approval',
             {
               createTx: () => changeAllowance(0),
             },
-          ],
-          ...steps,
-        ]
+          ])
+        }
       }
     }
 
-    // Next add the buy and claim order steps which are needed for either direction
-    steps = [
-      ...steps,
-      [
-        'Create buy order',
-        {
-          createTx: () => openOrder(fromAmount, toAnj),
+    // Next add the open order
+    steps.push([
+      `Create ${toAnj ? 'buy' : 'sell'} order`,
+      {
+        createTx: () => openOrder(fromAmount, toAnj),
 
-          // We need to store a reference to the "Buy order" hash so we can use it in the following "Claim order" step
-          hashCreated: hash => {
-            buyOrderHash = hash
-          },
+        // We need to store a reference to the hash so we can use it in the following step
+        hashCreated: hash => {
+          openOrderHash = hash
         },
-      ],
-      [
-        'Claim order',
-        {
-          createTx: () => claimOrder(buyOrderHash, toAnj),
-        },
-      ],
-    ]
+      },
+    ])
+
+    // And finally the claim order
+    steps.push([
+      'Claim order',
+      {
+        createTx: () => claimOrder(openOrderHash, toAnj),
+      },
+    ])
 
     // Update state to reflect the correct amount of steps
     // Show loader for a small amount of time to provide a smooth visual experience
