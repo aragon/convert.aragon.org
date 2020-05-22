@@ -10,7 +10,7 @@ function ManageStep({
   onSuccess,
   onError,
   onHashCreation,
-  retry,
+  canRetry,
 }) {
   const [stepStatus, setStepStatus] = useState('waiting')
   const [hasBeenActivated, setHasBeenActivated] = useState(false)
@@ -38,9 +38,11 @@ function ManageStep({
 
       onSuccess && onSuccess()
     } catch (err) {
+      // If there's a problem mining the transaction we catch it
+      // and visually feedback to the user
       setStepStatus('error')
       onError && onError()
-      console.log(err)
+      console.error(err)
     }
 
     setRetrying(false)
@@ -49,11 +51,11 @@ function ManageStep({
   useEffect(() => {
     if (active && !hasBeenActivated) {
       handleStepSigning()
-    } else if (active && retry && !retrying) {
+    } else if (active && canRetry && !retrying) {
       setRetrying(true)
       handleStepSigning()
     }
-  }, [handleStepSigning, hasBeenActivated, active, retry, retrying])
+  }, [handleStepSigning, hasBeenActivated, active, canRetry, retrying])
 
   return (
     <Step
@@ -69,6 +71,12 @@ function ManageStep({
 Step.propTypes = {
   title: PropTypes.string,
   number: PropTypes.number,
+  handleTx: PropTypes.func,
+  active: PropTypes.bool,
+  canRetry: PropTypes.bool,
+  onSuccess: PropTypes.func,
+  onError: PropTypes.func,
+  onHashCreation: PropTypes.func,
 }
 
 export default ManageStep
