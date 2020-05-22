@@ -1,35 +1,33 @@
 import React, { useCallback, useState } from 'react'
-import Divider from './Divider'
 import PropTypes from 'prop-types'
-import StepperLayout from './StepperLayout'
+import Divider from './Divider'
 import ManageStep from './ManageStep'
+import StepperLayout from './StepperLayout'
 import StepperTitle from './StepperTitle'
 
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const [stepperStatus, setStepperStatus] = useState('working')
   const [stepperStage, setStepperStage] = useState(0)
-  const [retryStep, setRetryStep] = useState(null)
+  const [retryingStep, setRetryingStep] = useState(null)
 
-  function handleRetry() {
+  const handleRetry = useCallback(() => {
     setStepperStatus('working')
-    setRetryStep(stepperStage)
-  }
+    setRetryingStep(stepperStage)
+  }, [stepperStage])
 
-  const clearRetry = () => setRetryStep(null)
-
-  const handleError = () => {
-    clearRetry()
+  const handleError = useCallback(() => {
+    setRetryingStep(null)
     setStepperStatus('error')
-  }
+  }, [])
 
   const handleSuccess = useCallback(
     optionalCb => {
       return () => {
-        clearRetry()
+        setRetryingStep(null)
         optionalCb && optionalCb()
 
         // Activate next step if not last
-        if (stepperStage <= steps.length - 1) {
+        if (stepperStage < steps.length - 1) {
           setStepperStage(stepperStage + 1)
         }
 
@@ -54,7 +52,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
           key={index}
           title={step[0]}
           number={index + 1}
-          retry={retryStep === index}
+          canRetry={retryingStep === index}
           handleTx={step[1].createTx}
           active={stepperStage === steps.indexOf(step)}
           onHashCreation={step[1].hashCreated}
@@ -95,8 +93,11 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
 }
 
 ConvertSteps.propTypes = {
+  steps: PropTypes.arrayOf(PropTypes.array),
+  fromAmount: PropTypes.object,
+  toAmount: PropTypes.object,
   toAnj: PropTypes.bool,
-  handleReturnHome: PropTypes.func,
+  onReturnHome: PropTypes.func,
 }
 
 export default ConvertSteps
