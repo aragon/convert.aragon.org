@@ -1,56 +1,20 @@
-import React, { useMemo } from 'react'
-import Button from './Button'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { css } from 'styled-components'
+import Button from './Button'
+import {
+  STEPPER_IN_PROGRESS,
+  STEPPER_SUCCESS,
+  STEPPER_ERROR,
+} from './stepper-statuses'
 import repeat from './assets/repeat.svg'
 
-const smallCaps = css`
-  font-size: 32px;
-`
-
-function getTitle(anjCount, antCount, stage, toAnj) {
-  const anjToAntTitle = (
-    <>
-      Convert {anjCount} <span css={smallCaps}>ANJ</span> to{' '}
-      <span css={smallCaps}>ANT</span>
-    </>
-  )
-  const antToAnjTitle = (
-    <>
-      Convert {antCount} <span css={smallCaps}>ANT</span> to{' '}
-      <span css={smallCaps}>ANJ</span>
-    </>
-  )
-  const antToAnjSuccessTitle = (
-    <>
-      You successfully converted <br />
-      {antCount} <span css={smallCaps}>ANT</span> to {anjCount}{' '}
-      <span css={smallCaps}>ANJ</span>
-    </>
-  )
-  const anjToAntSuccessTitle = (
-    <>
-      You successfully converted <br />
-      {anjCount} <span css={smallCaps}>ANJ</span> to {antCount}{' '}
-      <span css={smallCaps}>ANT</span>
-    </>
-  )
-
-  if (stage === 'working' || stage === 'error') {
-    return <>{toAnj ? antToAnjTitle : anjToAntTitle}</>
-  } else if (stage === 'success') {
-    return <>{toAnj ? antToAnjSuccessTitle : anjToAntSuccessTitle}</>
-  }
-}
-
-function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
-  const title = useMemo(() => getTitle(anjCount, antCount, stage, toAnj), [
-    anjCount,
-    antCount,
-    stage,
-    toAnj,
-  ])
-
+function StepperLayout({
+  children,
+  status,
+  onRepeatTransaction,
+  onReturnHome,
+  title,
+}) {
   return (
     <div
       css={`
@@ -81,7 +45,7 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
         </h1>
       </div>
 
-      <div>{children}</div>
+      {children}
 
       <div
         css={`
@@ -91,10 +55,10 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
       >
         <div
           css={`
-            padding-top: 90px;
+            padding-top: 100px;
           `}
         >
-          {stage === 'working' && (
+          {status === STEPPER_IN_PROGRESS && (
             <p
               css={`
                 color: #6d7693;
@@ -106,7 +70,7 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
             </p>
           )}
 
-          {stage === 'error' && (
+          {status === STEPPER_ERROR && (
             <div
               css={`
                 display: grid;
@@ -120,11 +84,13 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
                   justify-content: flex-end;
                 `}
               >
-                <Button mode="secondary">Abandon process</Button>
+                <Button mode="secondary" onClick={onReturnHome}>
+                  Abandon process
+                </Button>
               </div>
 
               <div>
-                <Button>
+                <Button onClick={onRepeatTransaction}>
                   <img
                     src={repeat}
                     alt=""
@@ -138,14 +104,14 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
             </div>
           )}
 
-          {stage === 'success' && (
+          {status === STEPPER_SUCCESS && (
             <div
               css={`
                 display: flex;
                 justify-content: center;
               `}
             >
-              <Button>Start new conversion</Button>
+              <Button onClick={onReturnHome}>Start new conversion</Button>
             </div>
           )}
         </div>
@@ -154,12 +120,15 @@ function StepperLayout({ children, anjCount, antCount, stage, toAnj }) {
   )
 }
 
-Button.propTypes = {
+StepperLayout.propTypes = {
   children: PropTypes.node,
-  anjCount: PropTypes.number,
-  antCount: PropTypes.number,
-  toAnj: PropTypes.bool,
-  stage: PropTypes.oneOf(['working', 'success', 'error']),
+  status: PropTypes.oneOf([
+    STEPPER_IN_PROGRESS,
+    STEPPER_SUCCESS,
+    STEPPER_ERROR,
+  ]),
+  onRepeatTransaction: PropTypes.func,
+  onReturnHome: PropTypes.func,
 }
 
 export default StepperLayout

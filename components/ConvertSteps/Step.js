@@ -1,15 +1,22 @@
 import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
-import StatusIcon from './StatusIcon'
 import { keyframes, css } from 'styled-components'
+import {
+  STEP_WAITING,
+  STEP_WORKING,
+  STEP_SUCCESS,
+  STEP_ERROR,
+} from './stepper-statuses'
+import StatusIcon from './StatusIcon'
+
 import TransactionBadge from './TransactionBadge'
 import { ABSOLUTE_FILL } from 'lib/css-utils'
 
 const STATUS_DESC = {
-  waiting: 'Waiting for signature',
-  working: 'Transaction being mined',
-  success: 'Transaction confirmed',
-  error: 'An error occurred with the transaction',
+  [STEP_WAITING]: 'Waiting for signature',
+  [STEP_WORKING]: 'Transaction being mined',
+  [STEP_SUCCESS]: 'Transaction confirmed',
+  [STEP_ERROR]: 'An error occurred with the transaction',
 }
 
 const spinAnimation = css`
@@ -39,20 +46,21 @@ const pulseAnimation = css`
 
 function getBorderColor(status) {
   switch (status) {
-    case 'success':
+    case STEP_WAITING:
+      return '#FFAA75'
+    case STEP_WORKING:
+      return '#FFAA75'
+    case STEP_SUCCESS:
       return '#2CC68F'
-    case 'error':
+    case STEP_ERROR:
       return '#FF7163'
-    case 'working':
-      return '#FFAA75'
-    case 'waiting':
-      return '#FFAA75'
+
     default:
       return 'transparent'
   }
 }
 
-function Step({ title, status, dormant, number, className, transactionHash }) {
+function Step({ title, status, active, number, className, transactionHash }) {
   const desc = useMemo(() => STATUS_DESC[status], [status])
   const borderColor = useMemo(() => getBorderColor(status), [status])
 
@@ -63,6 +71,8 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        width: 180px;
       `}
     >
       <div
@@ -88,7 +98,7 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
               justify-content: center;
             `}
           >
-            {status === 'waiting' && (
+            {status === STEP_WAITING && (
               <span
                 css={`
                   position: absolute;
@@ -118,10 +128,10 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
 
                 border-radius: 100%;
 
-                border: 2px solid ${dormant ? 'transparent' : borderColor};
+                border: 2px solid ${active ? borderColor : 'transparent'};
 
-                ${status === 'waiting' && pulseAnimation}
-                ${status === 'working' && spinAnimation}
+                ${status === STEP_WAITING && pulseAnimation}
+                ${status === STEP_WORKING && spinAnimation}
               `}
             ></div>
           </div>
@@ -132,11 +142,11 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
           text-align: center;
           margin-bottom: 7px;
           font-size: 20px;
-          color: ${status === 'error' ? '#FF7C7C' : '#4A5165'};
+          color: ${status === STEP_ERROR ? '#FF7C7C' : '#4A5165'};
           font-weight: 500;
         `}
       >
-        {title}
+        {status === STEP_ERROR ? 'Transaction failed' : title}
       </h2>
 
       <p
@@ -144,7 +154,7 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
           text-align: center;
           margin-bottom: 0;
           font-size: 14px;
-          color: ${status === 'success' ? '#2CC68F' : '#637381'};
+          color: ${status === STEP_SUCCESS ? '#2CC68F' : '#637381'};
         `}
       >
         {desc}
@@ -185,8 +195,13 @@ function Step({ title, status, dormant, number, className, transactionHash }) {
 Step.propTypes = {
   title: PropTypes.string,
   transactionHash: PropTypes.string,
-  dormant: PropTypes.bool,
-  status: PropTypes.oneOf(['waiting', 'working', 'success', 'error']),
+  active: PropTypes.bool,
+  status: PropTypes.oneOf([
+    STEP_WAITING,
+    STEP_WORKING,
+    STEP_SUCCESS,
+    STEP_ERROR,
+  ]),
 }
 
 export default Step

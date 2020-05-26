@@ -105,6 +105,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
         ({ item, key, props }) =>
           item && (
             <div
+              key={key}
               css={`
                 ${ABSOLUTE_FILL};
                 z-index: 1;
