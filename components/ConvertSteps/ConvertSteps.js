@@ -1,4 +1,6 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useEffect, useRef } from 'react'
+import useMeasure from 'react-use-measure'
+import { ResizeObserver as Polyfill } from '@juggle/resize-observer'
 import PropTypes from 'prop-types'
 import {
   STEPPER_IN_PROGRESS,
@@ -14,6 +16,10 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const [stepperStatus, setStepperStatus] = useState(STEPPER_IN_PROGRESS)
   const [stepperStage, setStepperStage] = useState(0)
   const [retryingStep, setRetryingStep] = useState(null)
+  const [stepperDisplayMode, setStepperDisplayMode] = useState('large')
+  const [innerBoundsWidth, setInnerBoundsWidth] = useState()
+  const [outerBoundsRef, outerBounds] = useMeasure({ scroll: true, Polyfill })
+  const innerBoundsRef = useRef(null)
 
   const handleRetry = useCallback(() => {
     setStepperStatus(STEPPER_IN_PROGRESS)
@@ -24,6 +30,26 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     setRetryingStep(null)
     setStepperStatus(STEPPER_ERROR)
   }, [])
+
+  useEffect(() => {
+    if (!innerBoundsWidth) {
+      setInnerBoundsWidth(innerBoundsRef.current.offsetWidth)
+    }
+
+    if (
+      outerBounds.width - 200 < innerBoundsWidth &&
+      stepperDisplayMode === 'large'
+    ) {
+      setStepperDisplayMode('small')
+    }
+
+    if (
+      outerBounds.width - 200 > innerBoundsWidth &&
+      stepperDisplayMode === 'small'
+    ) {
+      setStepperDisplayMode('large')
+    }
+  }, [outerBounds.width, innerBoundsWidth, stepperDisplayMode])
 
   const handleSuccess = useCallback(
     optionalCb => {
@@ -45,30 +71,42 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     [stepperStage, steps]
   )
 
-  const renderSteps = () => {
-    return steps.map((step, index) => (
-      <li
-        css={`
-          display: flex;
-        `}
-        key={index}
-      >
+  const renderSteps = mode => {
+    return steps.map((step, index) => {
+      const stepCurrentlyActive = stepperStage === steps.indexOf(step)
+
+      const stepToRender = (
         <ManageStep
-          key={index}
           title={step[0]}
           number={index + 1}
           canRetry={retryingStep === index}
           handleTx={step[1].createTx}
-          active={stepperStage === steps.indexOf(step)}
+          active={stepCurrentlyActive}
           onHashCreation={step[1].hashCreated}
           onSuccess={handleSuccess(step[1].success)}
           onError={handleError}
         />
+      )
 
-        {/* Show a divider between every step except the last */}
-        {index !== steps.length - 1 && <Divider />}
-      </li>
-    ))
+      return (
+        <li
+          key={index}
+          css={`
+            display: flex;
+          `}
+        >
+          {mode === 'small' && stepCurrentlyActive && <>{stepToRender}</>}
+          {mode === 'large' && (
+            <>
+              {stepToRender}
+
+              {/* Show a divider between every step except the last */}
+              {index !== steps.length - 1 && <Divider />}
+            </>
+          )}
+        </li>
+      )
+    })
   }
 
   return (
@@ -85,14 +123,24 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         />
       }
     >
-      <ul
+      <div
+        ref={outerBoundsRef}
         css={`
-          padding: 0;
           display: flex;
+          justify-content: center;
+          width: 100%;
         `}
       >
-        {renderSteps()}
-      </ul>
+        <ul
+          ref={innerBoundsRef}
+          css={`
+            padding: 0;
+            display: flex;
+          `}
+        >
+          {renderSteps(stepperDisplayMode)}
+        </ul>
+      </div>
     </StepperLayout>
   )
 }

@@ -32,11 +32,6 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
       if (toAnj) {
         const allowance = await getAllowance()
 
-        // Bail out early if component is unmounted before resolving
-        if (cancelled) {
-          return
-        }
-
         // and if we need more, add a step to ask for an approval
         if (allowance.lt(bigNum(fromAmount))) {
           steps.unshift([
@@ -85,7 +80,9 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
       // Update state to reflect the correct amount of steps
       // Show loader for a small amount of time to provide a smooth visual experience
       setTimeout(() => {
-        setConversionSteps(steps)
+        if (!cancelled) {
+          setConversionSteps(steps)
+        }
       }, 900)
     }
 

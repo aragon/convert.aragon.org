@@ -20,6 +20,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@juggle/resize-observer": "^3.2.0",
     "@sentry/browser": "^5.11.1",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.19.0",
@@ -37,6 +38,7 @@
     "react-dom": "^16.13.0",
     "react-reveal": "^1.2.2",
     "react-spring": "^8.0.27",
+    "react-use-measure": "^2.0.0",
     "styled-components": "^5.0.1",
     "use-viewport": "^0.2.0",
     "use-wallet": "^0.5.0",
