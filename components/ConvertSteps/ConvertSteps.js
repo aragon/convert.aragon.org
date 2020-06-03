@@ -1,12 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  useReducer,
-} from 'react'
-import useMeasure from 'react-use-measure'
-import { ResizeObserver as Polyfill } from '@juggle/resize-observer'
+import React, { useCallback, useState, useEffect, useReducer } from 'react'
 import PropTypes from 'prop-types'
 import {
   STEPPER_IN_PROGRESS,
@@ -21,8 +13,9 @@ import Divider from './Divider'
 import Step from './Step'
 import StepperLayout from './StepperLayout'
 import StepperTitle from './StepperTitle'
+import useStepLayout from './useStepLayout'
 
-function buildInitialStepState(steps) {
+function initialStepState(steps) {
   return steps.map(() => {
     return {
       status: STEP_WAITING,
@@ -35,10 +28,7 @@ function buildInitialStepState(steps) {
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const [stepperStatus, setStepperStatus] = useState(STEPPER_IN_PROGRESS)
   const [stepperStage, setStepperStage] = useState(0)
-  const [stepperDisplayMode, setStepperDisplayMode] = useState('large')
-  const [innerBoundsWidth, setInnerBoundsWidth] = useState()
-  const [outerBoundsRef, outerBounds] = useMeasure({ scroll: true, Polyfill })
-  const innerBoundsRef = useRef(null)
+  const [outerBoundsRef, innerBoundsRef, layoutName] = useStepLayout(100)
 
   function reduceSteps(steps, [action, stepIndex, value]) {
     if (action === 'setActive') {
@@ -56,9 +46,9 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     return steps
   }
 
-  const [stepsState, updateStep] = useReducer(
+  const [stepState, updateStep] = useReducer(
     reduceSteps,
-    buildInitialStepState(steps)
+    initialStepState(steps)
   )
 
   const attemptStepSigning = useCallback(
@@ -83,13 +73,10 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         // Success
         updateStep(['setStatus', stepIndex, STEP_SUCCESS])
 
-        // Activate next step if not last
+        // Activate next step or show as completed
         if (stepperStage < steps.length - 1) {
           setStepperStage(stepperStage + 1)
-        }
-
-        // Show overall stepper success if final step succeeds
-        if (stepperStage === steps.length - 1) {
+        } else {
           setStepperStatus(STEPPER_SUCCESS)
         }
       } catch (err) {
@@ -103,9 +90,8 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     [steps, stepperStage]
   )
 
-  const handleRetry = useCallback(() => {
+  const handleRetrySigning = useCallback(() => {
     setStepperStatus(STEPPER_IN_PROGRESS)
-
     attemptStepSigning(stepperStage)
   }, [attemptStepSigning, stepperStage])
 
@@ -113,27 +99,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     attemptStepSigning(stepperStage)
   }, [stepperStage, attemptStepSigning])
 
-  useEffect(() => {
-    if (!innerBoundsWidth) {
-      setInnerBoundsWidth(innerBoundsRef.current.offsetWidth)
-    }
-
-    if (
-      outerBounds.width - 200 < innerBoundsWidth &&
-      stepperDisplayMode === 'large'
-    ) {
-      setStepperDisplayMode('small')
-    }
-
-    if (
-      outerBounds.width - 200 > innerBoundsWidth &&
-      stepperDisplayMode === 'small'
-    ) {
-      setStepperDisplayMode('large')
-    }
-  }, [outerBounds.width, innerBoundsWidth, stepperDisplayMode])
-
-  const renderSteps = mode => {
+  const renderSteps = () => {
     return steps.map((step, index) => {
       const stepCurrentlyActive = stepperStage === steps.indexOf(step)
 
@@ -141,9 +107,9 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         <Step
           title={step[0]}
           number={index + 1}
-          active={stepsState[index].active}
-          status={stepsState[index].status}
-          transactionHash={stepsState[index].hash}
+          active={stepState[index].active}
+          status={stepState[index].status}
+          transactionHash={stepState[index].hash}
         />
       )
 
@@ -154,8 +120,8 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
             display: flex;
           `}
         >
-          {mode === 'small' && stepCurrentlyActive && <>{stepToRender}</>}
-          {mode === 'large' && (
+          {layoutName === 'small' && stepCurrentlyActive && <>{stepToRender}</>}
+          {layoutName === 'large' && (
             <>
               {stepToRender}
 
@@ -171,7 +137,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   return (
     <StepperLayout
       status={stepperStatus}
-      onRepeatTransaction={handleRetry}
+      onRepeatTransaction={handleRetrySigning}
       onReturnHome={onReturnHome}
       title={
         <StepperTitle
@@ -197,7 +163,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
             display: flex;
           `}
         >
-          {renderSteps(stepperDisplayMode)}
+          {renderSteps()}
         </ul>
       </div>
     </StepperLayout>
