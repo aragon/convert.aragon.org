@@ -99,41 +99,30 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     attemptStepSigning(stepperStage)
   }, [stepperStage, attemptStepSigning])
 
+  const renderStep = (stepIndex, renderDivider) => (
+    <li
+      key={stepIndex}
+      css={`
+        display: flex;
+      `}
+    >
+      <Step
+        title={steps[stepIndex][0]}
+        number={stepIndex + 1}
+        active={stepState[stepIndex].active}
+        status={stepState[stepIndex].status}
+        transactionHash={stepState[stepIndex].hash}
+      />
+
+      {renderDivider && <Divider />}
+    </li>
+  )
+
   const renderSteps = () => {
-    return steps.map((step, index) => {
-      const stepCurrentlyActive = stepperStage === steps.indexOf(step)
+    return steps.map((_, index) => {
+      const renderDivider = index !== steps.length - 1
 
-      const renderStep = (
-        <Step
-          title={step[0]}
-          number={index + 1}
-          active={stepState[index].active}
-          status={stepState[index].status}
-          transactionHash={stepState[index].hash}
-        />
-      )
-
-      return (
-        <li
-          key={index}
-          css={`
-            display: flex;
-          `}
-        >
-          {/* Only render currently active step without divider on small screens */}
-          {layoutName === 'small' && stepCurrentlyActive && <>{renderStep}</>}
-
-          {/* Render all steps with divider on large screens */}
-          {layoutName === 'large' && (
-            <>
-              {renderStep}
-
-              {/* Show a divider between every step except the last */}
-              {index !== steps.length - 1 && <Divider />}
-            </>
-          )}
-        </li>
-      )
+      return renderStep(index, renderDivider)
     })
   }
 
@@ -142,7 +131,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
       status={stepperStatus}
       onRepeatTransaction={handleRetrySigning}
       onReturnHome={onReturnHome}
-      title={
+      titleArea={
         <div
           css={`
             text-align: center;
@@ -194,7 +183,8 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
             display: flex;
           `}
         >
-          {renderSteps()}
+          {layoutName === 'small' && renderStep(stepperStage)}
+          {layoutName === 'large' && renderSteps()}
         </ul>
       </div>
     </StepperLayout>
