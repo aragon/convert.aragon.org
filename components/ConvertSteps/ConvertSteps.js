@@ -25,26 +25,26 @@ function initialStepState(steps) {
   })
 }
 
+function reduceSteps(steps, [action, stepIndex, value]) {
+  if (action === 'setActive') {
+    steps[stepIndex].active = true
+    return [...steps]
+  }
+  if (action === 'setHash') {
+    steps[stepIndex].hash = value
+    return [...steps]
+  }
+  if (action === 'setStatus') {
+    steps[stepIndex].status = value
+    return [...steps]
+  }
+  return steps
+}
+
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const [stepperStatus, setStepperStatus] = useState(STEPPER_IN_PROGRESS)
   const [stepperStage, setStepperStage] = useState(0)
   const [outerBoundsRef, innerBoundsRef, layoutName] = useStepLayout(100)
-
-  function reduceSteps(steps, [action, stepIndex, value]) {
-    if (action === 'setActive') {
-      steps[stepIndex].active = true
-      return [...steps]
-    }
-    if (action === 'setHash') {
-      steps[stepIndex].hash = value
-      return [...steps]
-    }
-    if (action === 'setStatus') {
-      steps[stepIndex].status = value
-      return [...steps]
-    }
-    return steps
-  }
 
   const [stepState, updateStep] = useReducer(
     reduceSteps,
