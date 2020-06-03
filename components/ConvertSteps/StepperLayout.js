@@ -13,7 +13,7 @@ function StepperLayout({
   status,
   onRepeatTransaction,
   onReturnHome,
-  title,
+  titleArea,
 }) {
   return (
     <div
@@ -34,7 +34,7 @@ function StepperLayout({
           align-items: flex-end;
         `}
       >
-        <div>{title}</div>
+        {titleArea}
       </div>
 
       {children}
