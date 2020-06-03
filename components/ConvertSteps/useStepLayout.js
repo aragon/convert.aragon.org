@@ -2,8 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import useMeasure from 'react-use-measure'
 import { ResizeObserver as Polyfill } from '@juggle/resize-observer'
 
+// It's important to default to the large layout
+// so that the inner bounds max size can be calculated on first render
+const INITIAL_LAYOUT = 'large'
+
 function useStepLayout(boundsOffset = 0) {
-  const [layoutName, setLayoutName] = useState('large')
+  const [layoutName, setLayoutName] = useState(INITIAL_LAYOUT)
   const [innerBoundsWidth, setInnerBoundsWidth] = useState()
   const [outerBoundsRef, outerBounds] = useMeasure({ Polyfill })
   const innerBoundsRef = useRef(null)
