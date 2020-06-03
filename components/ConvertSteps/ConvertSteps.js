@@ -103,7 +103,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
     return steps.map((step, index) => {
       const stepCurrentlyActive = stepperStage === steps.indexOf(step)
 
-      const stepToRender = (
+      const renderStep = (
         <Step
           title={step[0]}
           number={index + 1}
@@ -120,10 +120,13 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
             display: flex;
           `}
         >
-          {layoutName === 'small' && stepCurrentlyActive && <>{stepToRender}</>}
+          {/* Only render currently active step without divider on small screens */}
+          {layoutName === 'small' && stepCurrentlyActive && <>{renderStep}</>}
+
+          {/* Render all steps with divider on large screens */}
           {layoutName === 'large' && (
             <>
-              {stepToRender}
+              {renderStep}
 
               {/* Show a divider between every step except the last */}
               {index !== steps.length - 1 && <Divider />}
@@ -140,12 +143,40 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
       onRepeatTransaction={handleRetrySigning}
       onReturnHome={onReturnHome}
       title={
-        <StepperTitle
-          fromAmount={fromAmount}
-          toAmount={toAmount}
-          toAnj={toAnj}
-          status={stepperStatus}
-        />
+        <div
+          css={`
+            text-align: center;
+          `}
+        >
+          <h1
+            css={`
+              ${layoutName === 'large' && 'margin-bottom: 80px'};
+              color: #20232c;
+              text-align: center;
+              padding-left: 40px;
+              padding-right: 40px;
+            `}
+          >
+            <StepperTitle
+              fromAmount={fromAmount}
+              toAmount={toAmount}
+              toAnj={toAnj}
+              status={stepperStatus}
+            />
+          </h1>
+
+          {layoutName === 'small' && (
+            <p
+              css={`
+                margin-top: 5px;
+                margin-bottom: 50px;
+                color: #6d7693;
+              `}
+            >
+              {stepperStage + 1} out of {steps.length} Transactions
+            </p>
+          )}
+        </div>
       }
     >
       <div
