@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useViewport } from 'use-viewport'
 import Button from './Button'
 import {
   STEPPER_IN_PROGRESS,
@@ -15,6 +16,9 @@ function StepperLayout({
   onReturnHome,
   titleArea,
 }) {
+  const { above } = useViewport()
+  const largeLayout = above(600)
+
   return (
     <div
       css={`
@@ -53,9 +57,7 @@ function StepperLayout({
 
             padding-top: 50px;
 
-            @media screen and (min-width: 600px) {
-              padding-top: 90px;
-            }
+            ${largeLayout && 'padding-top: 90px;'};
           `}
         >
           {status === STEPPER_IN_PROGRESS && (
@@ -77,19 +79,16 @@ function StepperLayout({
               css={`
                 display: inline-grid;
                 grid-gap: 12px;
-                grid-template-columns: 1fr;
-
-                @media screen and (min-width: 600px) {
-                  grid-template-columns: repeat(2, 1fr);
-                }
+                grid-template-columns: ${largeLayout
+                  ? 'repeat(2, 1fr)'
+                  : '1fr'};
               `}
             >
               <div
                 css={`
-                  @media screen and (min-width: 600px) {
-                    display: flex;
-                    justify-content: flex-end;
-                  }
+                  ${largeLayout &&
+                    `display: flex;
+                    justify-content: flex-end;`};
                 `}
               >
                 <Button mode="secondary" onClick={onReturnHome}>

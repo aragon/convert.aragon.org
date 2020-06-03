@@ -44,7 +44,9 @@ function reduceSteps(steps, [action, stepIndex, value]) {
 function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
   const [stepperStatus, setStepperStatus] = useState(STEPPER_IN_PROGRESS)
   const [stepperStage, setStepperStage] = useState(0)
-  const [outerBoundsRef, innerBoundsRef, layoutName] = useStepLayout(100)
+  const [stepperBoundsRef, stepLayoutName] = useStepLayout({
+    boundsOffset: 100,
+  })
 
   const [stepState, updateStep] = useReducer(
     reduceSteps,
@@ -139,7 +141,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         >
           <h1
             css={`
-              ${layoutName === 'large' && 'margin-bottom: 80px'};
+              ${stepLayoutName === 'large' && 'margin-bottom: 80px'};
               color: #20232c;
               text-align: center;
               padding-left: 40px;
@@ -154,7 +156,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
             />
           </h1>
 
-          {layoutName === 'small' && (
+          {stepLayoutName === 'small' && (
             <p
               css={`
                 margin-top: 5px;
@@ -169,7 +171,6 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
       }
     >
       <div
-        ref={outerBoundsRef}
         css={`
           display: flex;
           justify-content: center;
@@ -177,14 +178,14 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
         `}
       >
         <ul
-          ref={innerBoundsRef}
+          ref={stepperBoundsRef}
           css={`
             padding: 0;
             display: flex;
           `}
         >
-          {layoutName === 'small' && renderStep(stepperStage)}
-          {layoutName === 'large' && renderSteps()}
+          {stepLayoutName === 'small' && renderStep(stepperStage)}
+          {stepLayoutName === 'large' && renderSteps()}
         </ul>
       </div>
     </StepperLayout>

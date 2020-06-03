@@ -1,39 +1,32 @@
 import { useState, useEffect, useRef } from 'react'
-import useMeasure from 'react-use-measure'
-import { ResizeObserver as Polyfill } from '@juggle/resize-observer'
+import { useViewport } from 'use-viewport'
 
 // It's important to default to the large layout
 // so that the inner bounds max size can be calculated on first render
 const INITIAL_LAYOUT = 'large'
 
-function useStepLayout(boundsOffset = 0) {
-  const [layoutName, setLayoutName] = useState(INITIAL_LAYOUT)
+function useStepLayout({ boundsOffset = 0 }) {
+  const { width } = useViewport()
+  const [stepLayoutName, setStepLayoutName] = useState(INITIAL_LAYOUT)
   const [innerBoundsWidth, setInnerBoundsWidth] = useState()
-  const [outerBoundsRef, outerBounds] = useMeasure({ Polyfill })
-  const innerBoundsRef = useRef(null)
+  const stepperBoundsRef = useRef(null)
 
   useEffect(() => {
-    // Only query for inner bounds width when needed
+    // Only query DOM for offsetWidth once
     if (!innerBoundsWidth) {
-      setInnerBoundsWidth(innerBoundsRef.current.offsetWidth)
+      setInnerBoundsWidth(stepperBoundsRef.current.offsetWidth)
     }
 
-    if (
-      outerBounds.width - boundsOffset < innerBoundsWidth &&
-      layoutName !== 'small'
-    ) {
-      setLayoutName('small')
+    if (width - boundsOffset < innerBoundsWidth && stepLayoutName !== 'small') {
+      setStepLayoutName('small')
     }
 
-    if (
-      outerBounds.width - boundsOffset > innerBoundsWidth &&
-      layoutName !== 'large'
-    ) {
-      setLayoutName('large')
+    if (width - boundsOffset > innerBoundsWidth && stepLayoutName !== 'large') {
+      setStepLayoutName('large')
     }
-  }, [outerBounds.width, innerBoundsWidth, layoutName, boundsOffset])
+  }, [width, innerBoundsWidth, stepLayoutName, boundsOffset])
 
-  return [outerBoundsRef, innerBoundsRef, layoutName]
+  return [stepperBoundsRef, stepLayoutName]
 }
 
 export default useStepLayout
