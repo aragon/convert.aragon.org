@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { useViewport } from 'use-viewport'
 import Button from './Button'
 import {
   STEPPER_IN_PROGRESS,
@@ -13,8 +14,11 @@ function StepperLayout({
   status,
   onRepeatTransaction,
   onReturnHome,
-  title,
+  titleArea,
 }) {
+  const { above } = useViewport()
+  const largeLayout = above(600)
+
   return (
     <div
       css={`
@@ -34,15 +38,7 @@ function StepperLayout({
           align-items: flex-end;
         `}
       >
-        <h1
-          css={`
-            margin-bottom: 80px;
-            color: #20232c;
-            text-align: center;
-          `}
-        >
-          {title}
-        </h1>
+        {titleArea}
       </div>
 
       {children}
@@ -55,7 +51,13 @@ function StepperLayout({
       >
         <div
           css={`
-            padding-top: 100px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+
+            padding-top: 50px;
+
+            ${largeLayout && 'padding-top: 90px;'};
           `}
         >
           {status === STEPPER_IN_PROGRESS && (
@@ -63,6 +65,8 @@ function StepperLayout({
               css={`
                 color: #6d7693;
                 text-align: center;
+                padding-left: 40px;
+                padding-right: 40px;
               `}
             >
               This process might take up to a few minutes. Do not close this
@@ -73,15 +77,18 @@ function StepperLayout({
           {status === STEPPER_ERROR && (
             <div
               css={`
-                display: grid;
+                display: inline-grid;
                 grid-gap: 12px;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: ${largeLayout
+                  ? 'repeat(2, 1fr)'
+                  : '1fr'};
               `}
             >
               <div
                 css={`
-                  display: flex;
-                  justify-content: flex-end;
+                  ${largeLayout &&
+                    `display: flex;
+                    justify-content: flex-end;`};
                 `}
               >
                 <Button mode="secondary" onClick={onReturnHome}>

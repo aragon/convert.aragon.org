@@ -31,6 +31,8 @@ function Button({ className, children, mode, disabled, onClick }) {
 
         border-radius: 6px;
 
+        padding-left: 30px;
+        padding-right: 30px;
         width: 100%;
         max-width: 272px;
         height: 52px;
