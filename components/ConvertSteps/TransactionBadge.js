@@ -11,7 +11,6 @@ function TransactionBadge({ transactionHash, className }) {
       css={`
         display: inline;
         background: #ebfafd;
-        color: black;
         border-radius: 4px;
         padding: 6px 12px;
         font-size: 16px;
@@ -22,6 +21,11 @@ function TransactionBadge({ transactionHash, className }) {
         href={getEtherscanHref(transactionHash)}
         css={`
           color: #20232c;
+
+          &:hover {
+            text-decoration: initial;
+            color: inherit;
+          }
         `}
       >
         {shortenAddress(transactionHash)}
