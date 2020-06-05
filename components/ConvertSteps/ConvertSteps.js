@@ -164,7 +164,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
                 color: #6d7693;
               `}
             >
-              {stepperStage + 1} out of {steps.length} Transactions
+              {stepperStage + 1} out of {steps.length} transactions
             </p>
           )}
         </div>
