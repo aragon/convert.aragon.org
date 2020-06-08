@@ -4,7 +4,7 @@ import {
   useClaimOrder,
   useApprove,
   useAllowance,
-  useTransactonReceipt,
+  useTransactionReceipt,
 } from 'lib/web3-contracts'
 import { bigNum } from 'lib/utils'
 import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
@@ -13,7 +13,7 @@ import processing from './assets/loader.gif'
 function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
-  const transactionReceipt = useTransactonReceipt()
+  const transactionReceipt = useTransactionReceipt()
   const changeAllowance = useApprove()
   const getAllowance = useAllowance()
   const [conversionSteps, setConversionSteps] = useState()
