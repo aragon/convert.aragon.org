@@ -16,7 +16,7 @@ function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
   const transactionReceipt = useTransactionReceipt()
   const changeAllowance = useApprove()
   const getAllowance = useAllowance()
-  const [conversionSteps, setConversionSteps] = useState()
+  const [conversionSteps, setConversionSteps] = useState([])
   const [convertedTotal, setConvertedTotal] = useState(bigNum(0))
 
   const updateConvertedValue = useCallback(
@@ -121,7 +121,7 @@ function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
 
   return (
     <>
-      {conversionSteps ? (
+      {conversionSteps.length > 0 ? (
         <ConvertSteps
           steps={conversionSteps}
           toAnj={toAnj}
