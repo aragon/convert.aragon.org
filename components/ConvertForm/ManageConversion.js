@@ -1,20 +1,37 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   useOpenOrder,
   useClaimOrder,
   useApprove,
   useAllowance,
+  useTransactonReceipt,
 } from 'lib/web3-contracts'
 import { bigNum } from 'lib/utils'
 import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
 import processing from './assets/loader.gif'
 
-function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
+function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
+  const transactionReceipt = useTransactonReceipt()
   const changeAllowance = useApprove()
   const getAllowance = useAllowance()
   const [conversionSteps, setConversionSteps] = useState()
+  const [convertedTotal, setConvertedTotal] = useState(bigNum(0))
+
+  const updateConvertedValue = useCallback(
+    async hash => {
+      try {
+        const receipt = await transactionReceipt(hash)
+        const receiptValue = bigNum(receipt.logs[0].data)
+
+        setConvertedTotal(receiptValue)
+      } catch (err) {
+        throw new Error(err)
+      }
+    },
+    [transactionReceipt]
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -74,6 +91,7 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
         'Claim order',
         {
           createTx: () => claimOrder(openOrderHash, toAnj),
+          transactionComplete: hash => updateConvertedValue(hash),
         },
       ])
 
@@ -91,7 +109,15 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
     return () => {
       cancelled = true
     }
-  }, [changeAllowance, claimOrder, fromAmount, getAllowance, openOrder, toAnj])
+  }, [
+    changeAllowance,
+    claimOrder,
+    fromAmount,
+    getAllowance,
+    openOrder,
+    toAnj,
+    updateConvertedValue,
+  ])
 
   return (
     <>
@@ -100,7 +126,7 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
           steps={conversionSteps}
           toAnj={toAnj}
           fromAmount={fromAmount}
-          toAmount={toAmount}
+          convertedTotal={convertedTotal}
           onReturnHome={handleReturnHome}
         />
       ) : (

@@ -29,7 +29,6 @@ function ConvertForm() {
   const [legalChecked, setLegalChecked] = useState(false)
   const {
     amountSource,
-    amountRecipient,
     bindOtherInput,
     bondingPriceLoading,
     handleManualInputChange,
@@ -214,7 +213,6 @@ function ConvertForm() {
             <ManageConversion
               toAnj={toAnj}
               fromAmount={amountSource}
-              toAmount={amountRecipient}
               handleReturnHome={handleReturnHome}
             />
           )
