@@ -61,18 +61,16 @@ function ConvertSteps({
 
   const attemptStepSigning = useCallback(
     async stepIndex => {
-      const hashCreated = steps[stepIndex][1].hashCreated
-      const createTx = steps[stepIndex][1].createTx
-      const transactionComplete = steps[stepIndex][1].transactionComplete
+      const { onHashCreated, onTxCreated, onTxMined } = steps[stepIndex][1]
 
       try {
         updateStep(['setActive', stepIndex])
         updateStep(['setStatus', stepIndex, STEP_WAITING])
 
         // Awaiting confirmation
-        const transaction = await createTx()
+        const transaction = await onTxCreated()
 
-        hashCreated && hashCreated(transaction.hash)
+        onHashCreated && onHashCreated(transaction.hash)
         updateStep(['setHash', stepIndex, transaction.hash])
 
         // Mining transaction
@@ -80,7 +78,7 @@ function ConvertSteps({
 
         await transaction.wait()
 
-        transactionComplete && (await transactionComplete(transaction.hash))
+        onTxMined && (await onTxMined(transaction.hash))
 
         // Success
         updateStep(['setStatus', stepIndex, STEP_SUCCESS])

@@ -54,7 +54,7 @@ function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
           steps.unshift([
             'Raise approval',
             {
-              createTx: () => changeAllowance(fromAmount),
+              onTxCreated: () => changeAllowance(fromAmount),
             },
           ])
 
@@ -66,7 +66,7 @@ function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
             steps.unshift([
               'Reset approval',
               {
-                createTx: () => changeAllowance(0),
+                onTxCreated: () => changeAllowance(0),
               },
             ])
           }
@@ -77,10 +77,10 @@ function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
       steps.push([
         `Create ${toAnj ? 'buy' : 'sell'} order`,
         {
-          createTx: () => openOrder(fromAmount, toAnj),
+          onTxCreated: () => openOrder(fromAmount, toAnj),
 
           // We need to store a reference to the hash so we can use it in the following step
-          hashCreated: hash => {
+          onHashCreated: hash => {
             openOrderHash = hash
           },
         },
@@ -90,8 +90,8 @@ function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
       steps.push([
         'Claim order',
         {
-          createTx: () => claimOrder(openOrderHash, toAnj),
-          transactionComplete: hash => updateConvertedValue(hash),
+          onTxCreated: () => claimOrder(openOrderHash, toAnj),
+          onTxMined: hash => updateConvertedValue(hash),
         },
       ])
 
