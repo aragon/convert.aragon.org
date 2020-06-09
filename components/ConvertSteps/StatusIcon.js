@@ -21,8 +21,8 @@ const STATUS_ICONS = {
 }
 
 const PIP_ICONS = {
-  error: errorPip,
-  success: successPip,
+  [STEP_ERROR]: errorPip,
+  [STEP_SUCCESS]: successPip,
 }
 
 function renderPipIfErrorOrSuccess(status) {
