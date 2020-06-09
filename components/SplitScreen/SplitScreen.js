@@ -171,7 +171,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
             }
           )}
         </div>
-        <animated.div
+        <div
           css={`
             ${ABSOLUTE_FILL};
             display: flex;
@@ -180,10 +180,11 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
             pointer-events: none;
             z-index: 3;
           `}
-          style={buttonTransition}
         >
-          <InvertButton ref={invertButtonRef} onClick={onInvert} />
-        </animated.div>
+          <animated.div style={buttonTransition}>
+            <InvertButton ref={invertButtonRef} onClick={onInvert} />
+          </animated.div>
+        </div>
         <div
           css={`
             position: relative;
