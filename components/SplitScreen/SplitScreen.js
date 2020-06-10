@@ -181,7 +181,12 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
             z-index: 3;
           `}
         >
-          <animated.div style={buttonTransition}>
+          <animated.div
+            style={buttonTransition}
+            css={`
+              visibility: ${opened ? 'hidden' : 'auto'};
+            `}
+          >
             <InvertButton ref={invertButtonRef} onClick={onInvert} />
           </animated.div>
         </div>
