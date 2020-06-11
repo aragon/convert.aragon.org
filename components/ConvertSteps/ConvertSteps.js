@@ -41,7 +41,13 @@ function reduceSteps(steps, [action, stepIndex, value]) {
   return steps
 }
 
-function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
+function ConvertSteps({
+  toAnj,
+  fromAmount,
+  convertedTotal,
+  onReturnHome,
+  steps,
+}) {
   const [stepperStatus, setStepperStatus] = useState(STEPPER_IN_PROGRESS)
   const [stepperStage, setStepperStage] = useState(0)
   const [stepperBoundsRef, stepLayoutName] = useStepLayout({
@@ -55,22 +61,24 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
 
   const attemptStepSigning = useCallback(
     async stepIndex => {
-      const onHashCreated = steps[stepIndex][1].hashCreated
-      const createTx = steps[stepIndex][1].createTx
+      const { onHashCreated, onTxCreated, onTxMined } = steps[stepIndex][1]
 
       try {
         updateStep(['setActive', stepIndex])
         updateStep(['setStatus', stepIndex, STEP_WAITING])
 
         // Awaiting confirmation
-        const transaction = await createTx()
+        const transaction = await onTxCreated()
 
         onHashCreated && onHashCreated(transaction.hash)
         updateStep(['setHash', stepIndex, transaction.hash])
 
         // Mining transaction
         updateStep(['setStatus', stepIndex, STEP_WORKING])
+
         await transaction.wait()
+
+        onTxMined && (await onTxMined(transaction.hash))
 
         // Success
         updateStep(['setStatus', stepIndex, STEP_SUCCESS])
@@ -150,7 +158,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
           >
             <StepperTitle
               fromAmount={fromAmount}
-              toAmount={toAmount}
+              convertedTotal={convertedTotal}
               toAnj={toAnj}
               status={stepperStatus}
             />
@@ -195,7 +203,7 @@ function ConvertSteps({ toAnj, fromAmount, toAmount, onReturnHome, steps }) {
 ConvertSteps.propTypes = {
   steps: PropTypes.arrayOf(PropTypes.array),
   fromAmount: PropTypes.object,
-  toAmount: PropTypes.object,
+  convertedTotal: PropTypes.object,
   toAnj: PropTypes.bool,
   onReturnHome: PropTypes.func,
 }

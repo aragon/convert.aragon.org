@@ -1,10 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useSpring, useTransition, animated } from 'react-spring'
-import {
-  useAnimateWhenMounted,
-  SPRING_FAST,
-  SPRING_SLOW,
-} from 'lib/animation-utils'
+import { useAnimateWhenMounted, SPRING_FAST } from 'lib/animation-utils'
 import { ABSOLUTE_FILL } from 'lib/css-utils'
 import InvertButton from './InvertButton'
 
@@ -26,7 +22,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   const statusTransitionKey = status => Object.values(status).join('')
 
   const primaryTransitions = useTransition(status, statusTransitionKey, {
-    config: opened ? SPRING_SLOW : SPRING_FAST,
+    config: SPRING_FAST,
     immediate: !animate,
     from: {
       transform: `
@@ -44,7 +40,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   })
 
   const secondaryTransitions = useTransition(status, statusTransitionKey, {
-    config: opened ? SPRING_SLOW : SPRING_FAST,
+    config: SPRING_FAST,
     immediate: !animate,
     from: {
       transform: 'translate3d(0, 100%, 0)',
@@ -58,7 +54,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   })
 
   const revealTransition = useTransition(reveal, null, {
-    config: SPRING_SLOW,
+    config: SPRING_FAST,
     from: {
       transform: `scale3d(${REVEAL_SCALE_FROM}, ${REVEAL_SCALE_FROM}, 1)`,
       overlayOpacity: 1,
@@ -77,14 +73,8 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
     config: SPRING_FAST,
     to: {
       transform: `
-        translate3d(
-          0,
-          calc(
-            ${Number(opened) * -50}%
-            - ${(InvertButton.HEIGHT / 2) * Number(opened)}px
-          ),
-          0
-        )`,
+        scale(${opened ? 2 : 1})`,
+      opacity: opened ? 0 : 1,
     },
   })
 
@@ -181,7 +171,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
             }
           )}
         </div>
-        <animated.div
+        <div
           css={`
             ${ABSOLUTE_FILL};
             display: flex;
@@ -190,10 +180,16 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
             pointer-events: none;
             z-index: 3;
           `}
-          style={buttonTransition}
         >
-          <InvertButton ref={invertButtonRef} onClick={onInvert} />
-        </animated.div>
+          <animated.div
+            style={buttonTransition}
+            css={`
+              visibility: ${opened ? 'hidden' : 'auto'};
+            `}
+          >
+            <InvertButton ref={invertButtonRef} onClick={onInvert} />
+          </animated.div>
+        </div>
         <div
           css={`
             position: relative;

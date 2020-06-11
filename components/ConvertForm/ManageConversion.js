@@ -1,20 +1,37 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   useOpenOrder,
   useClaimOrder,
   useApprove,
   useAllowance,
+  useTransactionReceipt,
 } from 'lib/web3-contracts'
 import { bigNum } from 'lib/utils'
 import ConvertSteps from 'components/ConvertSteps/ConvertSteps'
 import processing from './assets/loader.gif'
 
-function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
+function ManageConversion({ toAnj, fromAmount, handleReturnHome }) {
   const openOrder = useOpenOrder()
   const claimOrder = useClaimOrder()
+  const transactionReceipt = useTransactionReceipt()
   const changeAllowance = useApprove()
   const getAllowance = useAllowance()
-  const [conversionSteps, setConversionSteps] = useState()
+  const [conversionSteps, setConversionSteps] = useState([])
+  const [convertedTotal, setConvertedTotal] = useState(bigNum(0))
+
+  const updateConvertedValue = useCallback(
+    async hash => {
+      try {
+        const receipt = await transactionReceipt(hash)
+        const receiptValue = bigNum(receipt.logs[0].data)
+
+        setConvertedTotal(receiptValue)
+      } catch (err) {
+        throw new Error(err)
+      }
+    },
+    [transactionReceipt]
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -37,7 +54,7 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
           steps.unshift([
             'Raise approval',
             {
-              createTx: () => changeAllowance(fromAmount),
+              onTxCreated: () => changeAllowance(fromAmount),
             },
           ])
 
@@ -49,7 +66,7 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
             steps.unshift([
               'Reset approval',
               {
-                createTx: () => changeAllowance(0),
+                onTxCreated: () => changeAllowance(0),
               },
             ])
           }
@@ -60,10 +77,10 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
       steps.push([
         `Create ${toAnj ? 'buy' : 'sell'} order`,
         {
-          createTx: () => openOrder(fromAmount, toAnj),
+          onTxCreated: () => openOrder(fromAmount, toAnj),
 
           // We need to store a reference to the hash so we can use it in the following step
-          hashCreated: hash => {
+          onHashCreated: hash => {
             openOrderHash = hash
           },
         },
@@ -73,7 +90,8 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
       steps.push([
         'Claim order',
         {
-          createTx: () => claimOrder(openOrderHash, toAnj),
+          onTxCreated: () => claimOrder(openOrderHash, toAnj),
+          onTxMined: hash => updateConvertedValue(hash),
         },
       ])
 
@@ -91,16 +109,24 @@ function ManageConversion({ toAnj, fromAmount, toAmount, handleReturnHome }) {
     return () => {
       cancelled = true
     }
-  }, [changeAllowance, claimOrder, fromAmount, getAllowance, openOrder, toAnj])
+  }, [
+    changeAllowance,
+    claimOrder,
+    fromAmount,
+    getAllowance,
+    openOrder,
+    toAnj,
+    updateConvertedValue,
+  ])
 
   return (
     <>
-      {conversionSteps ? (
+      {conversionSteps.length > 0 ? (
         <ConvertSteps
           steps={conversionSteps}
           toAnj={toAnj}
           fromAmount={fromAmount}
-          toAmount={toAmount}
+          convertedTotal={convertedTotal}
           onReturnHome={handleReturnHome}
         />
       ) : (

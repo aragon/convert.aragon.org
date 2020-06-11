@@ -13,7 +13,7 @@ const smallCaps = css`
   font-size: 32px;
 `
 
-function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
+function StepperTitle({ fromAmount, convertedTotal, status, toAnj }) {
   const antDecimals = useTokenDecimals('ANT')
   const anjDecimals = useTokenDecimals('ANJ')
 
@@ -23,7 +23,7 @@ function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
     commas: true,
   })
 
-  const formattedToAmount = formatUnits(toAmount, {
+  const formattedTotal = formatUnits(convertedTotal, {
     digits: toAnj ? anjDecimals : antDecimals,
     truncateToDecimalPlace: 8,
     commas: true,
@@ -42,8 +42,8 @@ function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
       <>
         You successfully converted <br />
         {formattedFromAmount}{' '}
-        <span css={smallCaps}>{toAnj ? 'ANT' : 'ANJ'}</span> to{' '}
-        {formattedToAmount} <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
+        <span css={smallCaps}>{toAnj ? 'ANT' : 'ANJ'}</span> to {formattedTotal}{' '}
+        <span css={smallCaps}>{toAnj ? 'ANJ' : 'ANT'}</span>
       </>
     )
   }
@@ -51,7 +51,7 @@ function StepperTitle({ fromAmount, toAmount, status, toAnj }) {
 
 StepperTitle.propTypes = {
   fromAmount: PropTypes.object,
-  toAmount: PropTypes.object,
+  convertedTotal: PropTypes.object,
   toAnj: PropTypes.bool,
   status: PropTypes.oneOf([
     STEPPER_IN_PROGRESS,
