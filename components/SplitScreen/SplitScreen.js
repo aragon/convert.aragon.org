@@ -1,11 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useSpring, useTransition, animated } from 'react-spring'
-import {
-  useAnimateWhenMounted,
-  SPRING_FAST,
-  SPRING_SLOW,
-} from 'lib/animation-utils'
-import { ABSOLUTE_FULL } from 'lib/css-utils'
+import { useAnimateWhenMounted, SPRING_FAST } from 'lib/animation-utils'
+import { ABSOLUTE_FILL } from 'lib/css-utils'
 import InvertButton from './InvertButton'
 
 import illustrationAnt from './banner-illustration-ant.svg'
@@ -26,7 +22,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   const statusTransitionKey = status => Object.values(status).join('')
 
   const primaryTransitions = useTransition(status, statusTransitionKey, {
-    config: opened ? SPRING_SLOW : SPRING_FAST,
+    config: SPRING_FAST,
     immediate: !animate,
     from: {
       transform: `
@@ -44,7 +40,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   })
 
   const secondaryTransitions = useTransition(status, statusTransitionKey, {
-    config: opened ? SPRING_SLOW : SPRING_FAST,
+    config: SPRING_FAST,
     immediate: !animate,
     from: {
       transform: 'translate3d(0, 100%, 0)',
@@ -58,7 +54,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   })
 
   const revealTransition = useTransition(reveal, null, {
-    config: SPRING_SLOW,
+    config: SPRING_FAST,
     from: {
       transform: `scale3d(${REVEAL_SCALE_FROM}, ${REVEAL_SCALE_FROM}, 1)`,
       overlayOpacity: 1,
@@ -77,14 +73,8 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
     config: SPRING_FAST,
     to: {
       transform: `
-        translate3d(
-          0,
-          calc(
-            ${Number(opened) * -50}%
-            - ${(InvertButton.HEIGHT / 2) * Number(opened)}px
-          ),
-          0
-        )`,
+        scale(${opened ? 2 : 1})`,
+      opacity: opened ? 0 : 1,
     },
   })
 
@@ -97,7 +87,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
   return (
     <div
       css={`
-        ${ABSOLUTE_FULL};
+        ${ABSOLUTE_FILL};
         background: #f9fafc;
       `}
     >
@@ -105,8 +95,9 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
         ({ item, key, props }) =>
           item && (
             <div
+              key={key}
               css={`
-                ${ABSOLUTE_FULL};
+                ${ABSOLUTE_FILL};
                 z-index: 1;
                 display: flex;
                 align-items: center;
@@ -121,7 +112,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
                   opacity: props.overlayOpacity,
                 }}
                 css={`
-                  ${ABSOLUTE_FULL};
+                  ${ABSOLUTE_FILL};
                   z-index: 2;
                   background: rgba(0, 0, 0, ${REVEAL_OVERLAY_OPACITY});
                   pointer-events: none;
@@ -130,7 +121,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
               <animated.div
                 style={{ transform: props.transform }}
                 css={`
-                  ${ABSOLUTE_FULL};
+                  ${ABSOLUTE_FILL};
                   z-index: 1;
                 `}
               >
@@ -141,7 +132,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
       )}
       <div
         css={`
-          ${ABSOLUTE_FULL};
+          ${ABSOLUTE_FILL};
           z-index: 2;
           display: flex;
           align-items: center;
@@ -164,7 +155,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
                   key={key}
                   style={props}
                   css={`
-                    ${ABSOLUTE_FULL};
+                    ${ABSOLUTE_FILL};
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -180,19 +171,25 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
             }
           )}
         </div>
-        <animated.div
+        <div
           css={`
-            ${ABSOLUTE_FULL};
+            ${ABSOLUTE_FILL};
             display: flex;
             justify-content: center;
             align-items: center;
             pointer-events: none;
             z-index: 3;
           `}
-          style={buttonTransition}
         >
-          <InvertButton ref={invertButtonRef} onClick={onInvert} />
-        </animated.div>
+          <animated.div
+            style={buttonTransition}
+            css={`
+              visibility: ${opened ? 'hidden' : 'auto'};
+            `}
+          >
+            <InvertButton ref={invertButtonRef} onClick={onInvert} />
+          </animated.div>
+        </div>
         <div
           css={`
             position: relative;
@@ -207,7 +204,7 @@ function SplitScreen({ inverted, onInvert, reveal, primary, secondary }) {
                   key={key}
                   style={{ transform }}
                   css={`
-                    ${ABSOLUTE_FULL};
+                    ${ABSOLUTE_FILL};
                     display: flex;
                     align-items: center;
                     justify-content: center;
