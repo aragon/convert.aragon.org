@@ -9,11 +9,11 @@ function PausedNotification() {
     <div
       css={`
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
         width: 100%;
         height: 100vh;
         padding: 20px;
+        overflow-y: auto;
       `}
     >
       <img
@@ -35,6 +35,7 @@ function PausedNotification() {
           border-radius: 12px;
           box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
           z-index: 2;
+          margin: auto;
         `}
       >
         <h1
