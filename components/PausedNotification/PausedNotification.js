@@ -49,7 +49,7 @@ function PausedNotification() {
           The ANJ : ANT bonding curve has been paused by the Aragon Network's
           Governor Council in response to the{' '}
           <a
-            href="https://gov.aragon.org/#/aragon/all"
+            href="https://gov.aragon.org/#/aragon"
             target="_blank"
             rel="noopener noreferrer"
           >
