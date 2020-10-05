@@ -44,7 +44,7 @@ function PausedNotification() {
             line-height: 1.15;
           `}
         >
-          ANJ : ANT trading has been&nbsp;paused
+          ANJ : ANT conversion has been&nbsp;paused
         </h1>
         <p>
           The ANJ : ANT bonding curve has been paused by the Aragon Network's
