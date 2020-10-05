@@ -77,7 +77,7 @@ function PausedNotification() {
               margin-right: 12px;
             `}
           />
-          1.000
+          1.0000
           <span
             css={`
               opacity: 0.5;
@@ -96,7 +96,7 @@ function PausedNotification() {
               margin-right: 6px;
             `}
           />
-          0.015
+          0.0148
         </h2>
 
         <Button
